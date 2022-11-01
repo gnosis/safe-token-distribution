@@ -1,14 +1,7 @@
 {
-  "name": "@prb/hardhat-template",
-  "description": "Hardhat-based template for developing Solidity smart contracts",
+  "name": "safe-distribution-token",
   "version": "1.0.0",
-  "author": {
-    "name": "Paul Razvan Berg",
-    "url": "https://github.com/paulrberg"
-  },
   "devDependencies": {
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
     "@ethersproject/abi": "^5.6.4",
     "@ethersproject/abstract-signer": "^5.6.2",
     "@ethersproject/bignumber": "^5.6.2",
@@ -29,9 +22,7 @@
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "chai": "^4.3.6",
-    "commitizen": "^4.2.5",
     "cross-env": "^7.0.3",
-    "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.0.1",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
@@ -39,11 +30,9 @@
     "fs-extra": "^10.1.0",
     "hardhat": "^2.10.1",
     "hardhat-gas-reporter": "^1.0.8",
-    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "lodash": "^4.17.21",
     "mocha": "^10.0.0",
-    "pinst": "^3.0.0",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.24",
     "shx": "^0.3.4",
@@ -55,41 +44,21 @@
     "typechain": "^8.1.0",
     "typescript": "^4.7.4"
   },
-  "files": [
-    "/contracts"
-  ],
-  "keywords": [
-    "blockchain",
-    "ethers",
-    "ethereum",
-    "hardhat",
-    "smart-contracts",
-    "solidity",
-    "template",
-    "typescript",
-    "typechain"
-  ],
-  "packageManager": "yarn@3.2.1",
-  "publishConfig": {
-    "access": "public"
-  },
   "resolutions": {
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
-    "commit": "git-cz",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",
     "deploy": "hardhat deploy:Greeter",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yml --ignore-path ./.eslintignore --ext .js,.ts .",
-    "postinstall": "husky install && DOTENV_CONFIG_PATH=./.env.example yarn typechain",
-    "postpublish": "pinst --enable",
-    "prepublishOnly": "pinst --disable",
+    "postinstall": "DOTENV_CONFIG_PATH=./.env.example yarn typechain",
     "prettier": "prettier --config ./.prettierrc.yml --write \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:check": "prettier --check --config ./.prettierrc.yml \"**/*.{js,json,md,sol,ts,yml}\"",
+    "fmt:sol": "prettier --config ./.prettierrc.yml --write \"**/*.sol\"",
     "test": "hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
   }
