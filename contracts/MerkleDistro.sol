@@ -24,9 +24,13 @@ contract MerkleDistro is Ownable {
     transferOwnership(owner);
   }
 
-  function claim(uint256 amount, Permit calldata permit) external {
-    enforceAccess(permit);
-    enforceCredit(permit, amount);
+  function claim(
+    uint256 amount,
+    bytes32[] calldata merkleProof,
+    uint256 granted
+  ) external {
+    enforceAccess(merkleProof, granted);
+    enforceCredit(amount, granted);
 
     claimed[msg.sender] += amount;
     token.safeTransfer(msg.sender, amount);
@@ -34,25 +38,20 @@ contract MerkleDistro is Ownable {
     emit Claimed(msg.sender, amount);
   }
 
-  function enforceAccess(Permit calldata permit) internal view {
-    bytes32[] calldata proof = permit.merkleProof;
+  function enforceAccess(bytes32[] calldata proof, uint256 granted) internal view {
     bytes32 root = merkleRoot;
-    bytes32 leaf = keccak256(abi.encodePacked(msg.sender, permit.granted));
+    bytes32 leaf = keccak256(abi.encodePacked(msg.sender, granted));
 
     require(MerkleProof.verify(proof, root, leaf), "Invalid MerkleProof");
   }
 
-  function enforceCredit(Permit calldata permit, uint256 amount) internal view {
-    require(claimed[msg.sender] + amount <= permit.granted, "No Credit For Claim");
+  function enforceCredit(uint256 amount, uint256 granted) internal view {
+    require(claimed[msg.sender] + amount <= granted, "No Credit For Claim");
   }
 
   function setMerkleRoot(bytes32 nextMerkleRoot) external onlyOwner {
     merkleRoot = nextMerkleRoot;
   }
 
-  struct Permit {
-    bytes32[] merkleProof;
-    uint256 granted;
-  }
   event Claimed(address indexed claimer, uint256 amount);
 }
