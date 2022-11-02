@@ -1,9 +1,8 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import { keccak256, solidityPack } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 
-import { createAllocation, packLeaf } from "../../src/allocation";
+import { createAllocation } from "../../src/allocation";
 import { deployMerkleDistroFixture } from "./MerkleDistro.fixture";
 
 describe("MerkleDistro", function () {
@@ -15,14 +14,14 @@ describe("MerkleDistro", function () {
       { address: signer2.address, amount: 700 },
       { address: signer3.address, amount: 300 },
     ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.tree.getHexRoot());
+    await merkleDistro.connect(admin).setMerkleRoot(allocation.tree.root);
     expect(await token.balanceOf(signer1.address)).to.equal(0);
     expect(await token.balanceOf(signer2.address)).to.equal(0);
     expect(await token.balanceOf(signer3.address)).to.equal(0);
 
-    const proof1 = allocation.tree.getHexProof(keccak256(packLeaf(signer1.address, 1000)));
-    const proof2 = allocation.tree.getHexProof(keccak256(packLeaf(signer2.address, 700)));
-    const proof3 = allocation.tree.getHexProof(keccak256(packLeaf(signer3.address, 300)));
+    const proof1 = allocation.tree.getProof([signer1.address, 1000]);
+    const proof2 = allocation.tree.getProof([signer2.address, 700]);
+    const proof3 = allocation.tree.getProof([signer3.address, 300]);
     await merkleDistro.connect(signer1).claim(proof1, 1000);
     expect(await token.balanceOf(signer1.address)).to.equal(1000);
     await merkleDistro.connect(signer2).claim(proof2, 700);

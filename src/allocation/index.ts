@@ -1,10 +1,8 @@
-import { BigNumberish } from "ethers";
-import { keccak256, solidityPack } from "ethers/lib/utils";
-import MerkleTree from "merkletreejs";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 type Allocation = {
   entries: AllocationEntry[];
-  tree: MerkleTree;
+  tree: StandardMerkleTree<(string | number)[]>;
 };
 
 type AllocationEntry = {
@@ -13,19 +11,11 @@ type AllocationEntry = {
 };
 
 export function createAllocation(entries: AllocationEntry[]): Allocation {
-  const leaves = entries.map(({ address, amount }) => packLeaf(address, amount));
+  const leaves = entries.map(({ address, amount }) => [address, amount]);
 
-  const tree = new MerkleTree(leaves, keccak256, {
-    hashLeaves: true,
-    sortPairs: true,
-  });
-
+  const tree = StandardMerkleTree.of(leaves, ["address", "uint256"]);
   return {
     entries,
     tree,
   };
-}
-
-export function packLeaf(address: string, amount: BigNumberish) {
-  return solidityPack(["address", "uint256"], [address, amount]);
 }
