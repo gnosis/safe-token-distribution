@@ -10,9 +10,11 @@ import "./MerkleProof.sol";
 contract MerkleDistro is Ownable {
   using SafeERC20 for ERC20;
 
+  event Claimed(address indexed claimer, uint256 amount);
+
   ERC20 public immutable token;
   bytes32 public merkleRoot;
-  mapping(address => uint256) private claimed;
+  mapping(address => uint256) public claimed;
 
   constructor(
     ERC20 _token,
@@ -24,34 +26,31 @@ contract MerkleDistro is Ownable {
     transferOwnership(owner);
   }
 
-  function claim(
-    uint256 amount,
-    bytes32[] calldata merkleProof,
-    uint256 granted
-  ) external {
-    enforceAccess(merkleProof, granted);
-    enforceCredit(amount, granted);
+  function claim(bytes32[] calldata merkleProof, uint256 allocated) external {
+    verify(merkleProof, allocated);
 
-    claimed[msg.sender] += amount;
+    uint256 amount = calculate(allocated);
+
     token.safeTransfer(msg.sender, amount);
+    claimed[msg.sender] += amount;
 
     emit Claimed(msg.sender, amount);
   }
 
-  function enforceAccess(bytes32[] calldata proof, uint256 granted) internal view {
+  function verify(bytes32[] calldata proof, uint256 allocated) internal view {
     bytes32 root = merkleRoot;
-    bytes32 leaf = keccak256(abi.encodePacked(msg.sender, granted));
+    bytes32 leaf = keccak256(abi.encodePacked(msg.sender, allocated));
 
-    require(MerkleProof.verify(proof, root, leaf), "Invalid MerkleProof");
+    require(MerkleProof.verify(proof, root, leaf), "Invalid Allocation Proof");
   }
 
-  function enforceCredit(uint256 amount, uint256 granted) internal view {
-    require(claimed[msg.sender] + amount <= granted, "No Credit For Claim");
+  function calculate(uint256 amountAllocated) internal view returns (uint256 amountToClaim) {
+    uint256 amountClaimed = claimed[msg.sender];
+    assert(amountClaimed <= amountAllocated);
+    amountToClaim = amountAllocated - amountClaimed;
   }
 
   function setMerkleRoot(bytes32 nextMerkleRoot) external onlyOwner {
     merkleRoot = nextMerkleRoot;
   }
-
-  event Claimed(address indexed claimer, uint256 amount);
 }
