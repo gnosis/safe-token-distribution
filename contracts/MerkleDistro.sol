@@ -39,7 +39,8 @@ contract MerkleDistro is Ownable {
 
   function verify(bytes32[] calldata proof, uint256 allocated) internal view {
     bytes32 root = merkleRoot;
-    bytes32 leaf = keccak256(abi.encodePacked(msg.sender, allocated));
+    // use leaf double hashing https://flawed.net.nz/2018/02/21/attacking-merkle-trees-with-a-second-preimage-attack/
+    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, allocated))));
 
     require(MerkleProof.verify(proof, root, leaf), "Invalid Allocation Proof");
   }
