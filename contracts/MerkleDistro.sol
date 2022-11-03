@@ -16,11 +16,7 @@ contract MerkleDistro is Ownable {
   bytes32 public merkleRoot;
   mapping(address => uint256) public claimed;
 
-  constructor(
-    ERC20 _token,
-    bytes32 _merkleRoot,
-    address owner
-  ) {
+  constructor(ERC20 _token, bytes32 _merkleRoot, address owner) {
     token = _token;
     merkleRoot = _merkleRoot;
     transferOwnership(owner);
@@ -40,12 +36,16 @@ contract MerkleDistro is Ownable {
   function verify(bytes32[] calldata proof, uint256 allocated) internal view {
     bytes32 root = merkleRoot;
     // use leaf double hashing https://flawed.net.nz/2018/02/21/attacking-merkle-trees-with-a-second-preimage-attack/
-    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, allocated))));
+    bytes32 leaf = keccak256(
+      bytes.concat(keccak256(abi.encode(msg.sender, allocated)))
+    );
 
     require(MerkleProof.verify(proof, root, leaf), "Invalid Allocation Proof");
   }
 
-  function calculate(uint256 amountAllocated) internal view returns (uint256 amountToClaim) {
+  function calculate(
+    uint256 amountAllocated
+  ) internal view returns (uint256 amountToClaim) {
     uint256 amountClaimed = claimed[msg.sender];
     assert(amountClaimed <= amountAllocated);
     amountToClaim = amountAllocated - amountClaimed;
