@@ -2,21 +2,18 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./MerkleProof.sol";
 
 contract MerkleDistro is Ownable {
-  using SafeERC20 for ERC20;
-
   event Claimed(address indexed claimer, uint256 amount);
 
-  ERC20 public immutable token;
+  address public immutable token;
   bytes32 public merkleRoot;
   mapping(address => uint256) public claimed;
 
-  constructor(ERC20 _token, bytes32 _merkleRoot, address owner) {
+  constructor(address _token, bytes32 _merkleRoot, address owner) {
     token = _token;
     merkleRoot = _merkleRoot;
     transferOwnership(owner);
@@ -25,12 +22,16 @@ contract MerkleDistro is Ownable {
   function claim(bytes32[] calldata merkleProof, uint256 allocated) external {
     verify(merkleProof, allocated);
 
-    uint256 amount = calculate(allocated);
+    address beneficiary = msg.sender;
+    uint256 amount = calculate(beneficiary, allocated);
 
-    token.safeTransfer(msg.sender, amount);
-    claimed[msg.sender] += amount;
+    require(
+      IERC20(token).transfer(beneficiary, amount),
+      "Token Transfer Failed"
+    );
+    claimed[beneficiary] += amount;
 
-    emit Claimed(msg.sender, amount);
+    emit Claimed(beneficiary, amount);
   }
 
   function verify(bytes32[] calldata proof, uint256 allocated) internal view {
@@ -44,9 +45,10 @@ contract MerkleDistro is Ownable {
   }
 
   function calculate(
+    address beneficiary,
     uint256 amountAllocated
   ) internal view returns (uint256 amountToClaim) {
-    uint256 amountClaimed = claimed[msg.sender];
+    uint256 amountClaimed = claimed[beneficiary];
     assert(amountClaimed <= amountAllocated);
     amountToClaim = amountAllocated - amountClaimed;
   }
