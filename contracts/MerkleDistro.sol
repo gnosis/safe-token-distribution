@@ -25,11 +25,11 @@ contract MerkleDistro is Ownable {
     address beneficiary = msg.sender;
     uint256 amount = calculate(beneficiary, allocated);
 
+    claimed[beneficiary] += amount;
     require(
       IERC20(token).transfer(beneficiary, amount),
       "Token Transfer Failed"
     );
-    claimed[beneficiary] += amount;
 
     emit Claimed(beneficiary, amount);
   }
