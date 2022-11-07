@@ -1,28 +1,11 @@
-import { SAFE_TOKEN } from "../src/constants";
-import { Provider } from "@ethersproject/providers";
 import Safe from "@gnosis.pm/safe-core-sdk";
 import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
-import { Contract, Signer } from "ethers";
+import { Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import hre, { ethers } from "hardhat";
+import { ethers } from "hardhat";
 
-export async function fork(blockNumber: number) {
-  const { ALCHEMY_KEY } = process.env;
-  await hre.network.provider.request({
-    method: "hardhat_reset",
-    params: [
-      {
-        forking: {
-          jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
-          blockNumber,
-        },
-      },
-    ],
-  });
-}
-
-export async function overrideSafeOwner(
+export default async function safeSetOwner(
   safeAddress: string,
   newOwner: Signer,
 ): Promise<Safe> {
@@ -62,19 +45,6 @@ export async function overrideSafeOwner(
     safeAddress,
     contractNetworks: CONTRACT_NETWORKS,
   });
-}
-
-export async function unpauseSafeToken(provider: Provider) {
-  const safeToken = new Contract(SAFE_TOKEN.address, SAFE_TOKEN.abi, provider);
-
-  const owner = await safeToken.owner();
-  await setBalance(owner, parseUnits("100", "ether"));
-  const impersonatedOwner = await ethers.getImpersonatedSigner(owner);
-  await new Contract(
-    SAFE_TOKEN.address,
-    SAFE_TOKEN.abi,
-    impersonatedOwner,
-  ).unpause();
 }
 
 const CONTRACT_NETWORKS = {
