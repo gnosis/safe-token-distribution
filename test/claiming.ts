@@ -46,4 +46,35 @@ describe("Claiming", function () {
 
     expect(await safeToken.balanceOf(safeAddress)).to.equal(tokensToClaim);
   });
+  it("claim vested tokens", async () => {
+    const [signer] = await ethers.getSigners();
+
+    await safeTokenUnpause(ethers.provider);
+
+    const safeAddress = VESTING_BENEFICIARY;
+    const safeSdk = await safeSetOwner(safeAddress, signer);
+    const safeToken = new Contract(
+      SAFE_TOKEN.address,
+      SAFE_TOKEN.abi,
+      ethers.provider,
+    );
+    const tokensToClaim = await queryTokensToClaim(
+      VESTING_CONTRACT.address,
+      VESTING_ID,
+      ethers.provider,
+    );
+
+    expect(await safeToken.balanceOf(safeAddress)).to.equal(0);
+    const safeTransactionData = await encodeClaim(
+      VESTING_CONTRACT.address,
+      VESTING_ID,
+      safeAddress,
+      tokensToClaim,
+    );
+
+    const tx = await safeSdk.createTransaction({ safeTransactionData });
+    await safeSdk.executeTransaction(tx);
+
+    expect(await safeToken.balanceOf(safeAddress)).to.equal(tokensToClaim);
+  });
 });

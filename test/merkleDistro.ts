@@ -1,16 +1,20 @@
+import { createAllocation } from "../src/allocation";
+import { deployMerkleDistro } from "../tasks/deploy/merkleDistro";
+import { ERC20Mock__factory } from "../typechain";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
+import { Signer } from "ethers";
 import { ethers } from "hardhat";
-
-import { createAllocation } from "../../src/allocation";
-import { deployMerkleDistroFixture } from "./MerkleDistro.fixture";
 
 describe("MerkleDistro", function () {
   before(async () => {
-    await loadFixture(deployMerkleDistroFixture);
+    // by invoking this once, we avoid having one test bearing the most penalty for loading
+    await loadFixture(setup);
   });
+
   it("simple claim", async () => {
-    const { merkleDistro, token } = await loadFixture(deployMerkleDistroFixture);
+    const { merkleDistro, token } = await loadFixture(setup);
+
     const [admin, claimer1, claimer2, claimer3] = await ethers.getSigners();
     const allocation = createAllocation([
       { address: claimer1.address, amount: 1000 },
@@ -34,7 +38,7 @@ describe("MerkleDistro", function () {
   });
 
   it("simple claim emits event", async () => {
-    const { merkleDistro } = await loadFixture(deployMerkleDistroFixture);
+    const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
     const allocation = createAllocation([
       { address: claimer1.address, amount: 500 },
@@ -49,7 +53,7 @@ describe("MerkleDistro", function () {
   });
 
   it("reverts on claimer✅ proof✅ allocation🤡", async () => {
-    const { merkleDistro } = await loadFixture(deployMerkleDistroFixture);
+    const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
     const allocation = createAllocation([
       { address: claimer1.address, amount: 800 },
@@ -61,13 +65,16 @@ describe("MerkleDistro", function () {
     const badAmount = 100;
 
     const proof = allocation.tree.getProof([claimer1.address, goodAmount]);
-    await expect(merkleDistro.connect(claimer1).claim(proof, badAmount)).to.revertedWith("Invalid Allocation Proof");
+    await expect(
+      merkleDistro.connect(claimer1).claim(proof, badAmount),
+    ).to.revertedWith("Invalid Allocation Proof");
 
-    await expect(merkleDistro.connect(claimer1).claim(proof, goodAmount)).to.not.be.reverted;
+    await expect(merkleDistro.connect(claimer1).claim(proof, goodAmount)).to.not
+      .be.reverted;
   });
 
   it("reverts on claimer✅ proof🤡 allocation✅", async () => {
-    const { merkleDistro } = await loadFixture(deployMerkleDistroFixture);
+    const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
     const allocation = createAllocation([
       { address: claimer1.address, amount: 800 },
@@ -79,12 +86,15 @@ describe("MerkleDistro", function () {
     const badProof = [ethers.constants.HashZero];
     const goodProof = allocation.tree.getProof([claimer1.address, amount]);
 
-    await expect(merkleDistro.connect(claimer1).claim(badProof, amount)).to.revertedWith("Invalid Allocation Proof");
-    await expect(merkleDistro.connect(claimer1).claim(goodProof, amount)).to.not.be.reverted;
+    await expect(
+      merkleDistro.connect(claimer1).claim(badProof, amount),
+    ).to.revertedWith("Invalid Allocation Proof");
+    await expect(merkleDistro.connect(claimer1).claim(goodProof, amount)).to.not
+      .be.reverted;
   });
 
   it("reverts on claimer🤡 proof✅ allocation✅", async () => {
-    const { merkleDistro } = await loadFixture(deployMerkleDistroFixture);
+    const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
     const allocation = createAllocation([
       { address: claimer1.address, amount: 1000 },
@@ -98,9 +108,36 @@ describe("MerkleDistro", function () {
 
     const proof = allocation.tree.getProof([rightClaimer.address, allocated]);
 
-    await expect(merkleDistro.connect(wrongClaimer).claim(proof, allocated)).to.revertedWith(
-      "Invalid Allocation Proof",
-    );
-    await expect(merkleDistro.connect(rightClaimer).claim(proof, allocated)).to.not.be.reverted;
+    await expect(
+      merkleDistro.connect(wrongClaimer).claim(proof, allocated),
+    ).to.revertedWith("Invalid Allocation Proof");
+    await expect(merkleDistro.connect(rightClaimer).claim(proof, allocated)).to
+      .not.be.reverted;
   });
 });
+
+async function setup() {
+  const [owner] = await ethers.getSigners();
+
+  const token = await deployMockToken(owner);
+  const merkleDistro = await deployMerkleDistro(
+    token,
+    ethers.constants.HashZero,
+    owner,
+  );
+
+  await token
+    .connect(owner)
+    .transfer(merkleDistro.address, await token.totalSupply());
+
+  return { merkleDistro, token };
+}
+
+async function deployMockToken(owner: Signer) {
+  const erc20Factory = (await ethers.getContractFactory(
+    "ERC20Mock",
+  )) as ERC20Mock__factory;
+  const token = await erc20Factory.connect(owner).deploy(10000);
+  await token.deployed();
+  return token;
+}
