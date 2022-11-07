@@ -35,8 +35,10 @@ contract MerkleDistro is Ownable {
   }
 
   function verify(bytes32[] calldata proof, uint256 allocated) internal view {
+    // Computing proof using leaf double hashing
+    // https://flawed.net.nz/2018/02/21/attacking-merkle-trees-with-a-second-preimage-attack/
+
     bytes32 root = merkleRoot;
-    // use leaf double hashing https://flawed.net.nz/2018/02/21/attacking-merkle-trees-with-a-second-preimage-attack/
     bytes32 leaf = keccak256(
       bytes.concat(keccak256(abi.encode(msg.sender, allocated)))
     );
