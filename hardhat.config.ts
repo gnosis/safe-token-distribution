@@ -1,11 +1,10 @@
+import "./tasks/accounts";
+import "./tasks/deploy";
 import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
 import type { HardhatUserConfig } from "hardhat/config";
 import type { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
-
-import "./tasks/accounts";
-import "./tasks/deploy";
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
@@ -19,6 +18,16 @@ if (!mnemonic) {
 const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
 if (!infuraApiKey) {
   throw new Error("Please set your INFURA_API_KEY in a .env file");
+}
+
+const safeTokenAddress: string | undefined = process.env.SAFE_TOKEN_ADDRESS;
+if (!safeTokenAddress) {
+  throw new Error("Please set your SAFE_TOKEN_ADDRESS in a .env file");
+}
+
+const vestingPoolAddress: string | undefined = process.env.VESTING_POOL_ADDRESS;
+if (!vestingPoolAddress) {
+  throw new Error("Please set your VESTING_POOL_ADDRESS in a .env file");
 }
 
 const chainIds = {

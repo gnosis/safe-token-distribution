@@ -1,10 +1,6 @@
-import type {
-  ERC20,
-  MerkleDistro,
-  MerkleDistro__factory,
-} from "../../typechain";
+import type { MerkleDistro, MerkleDistro__factory } from "../../typechain";
 import { Signer } from "ethers";
-import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 // import { task } from "hardhat/config";
 // import type { TaskArguments } from "hardhat/types";
@@ -22,19 +18,17 @@ import { ethers } from "hardhat";
 //   });
 
 export async function deployMerkleDistro(
-  token: ERC20,
-  merkleRoot: string,
-  owner: Signer,
+  hre: HardhatRuntimeEnvironment,
+  args: { token: string; merkleRoot: string; owner: string },
+  deployer: Signer,
 ): Promise<MerkleDistro> {
-  const ownerAddress = await owner.getAddress();
-
-  const merkleDistroFactory = (await ethers.getContractFactory(
+  const merkleDistroFactory = (await hre.ethers.getContractFactory(
     "MerkleDistro",
   )) as MerkleDistro__factory;
 
   const merkleDistro = await merkleDistroFactory
-    .connect(owner)
-    .deploy(token.address, merkleRoot, ownerAddress);
+    .connect(deployer)
+    .deploy(args.token, args.merkleRoot, args.owner);
 
   await merkleDistro.deployed();
 
