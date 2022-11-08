@@ -2,7 +2,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 type Allocation = {
   entries: AllocationEntry[];
-  tree: StandardMerkleTree<(string | number)[]>;
+  merkleTree: StandardMerkleTree<(string | number)[]>;
 };
 
 type AllocationEntry = {
@@ -10,12 +10,12 @@ type AllocationEntry = {
   amount: number;
 };
 
-export function createAllocation(entries: AllocationEntry[]): Allocation {
+export default function createAllocation(
+  entries: AllocationEntry[],
+): Allocation {
   const leaves = entries.map(({ address, amount }) => [address, amount]);
-
-  const tree = StandardMerkleTree.of(leaves, ["address", "uint256"]);
   return {
     entries,
-    tree,
+    merkleTree: StandardMerkleTree.of(leaves, ["address", "uint256"]),
   };
 }
