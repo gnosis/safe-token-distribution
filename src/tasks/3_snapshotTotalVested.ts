@@ -23,6 +23,8 @@ task(
   .addOptionalParam("vestingPool", "", VESTING_POOL_ADDRESS, types.string)
   .addOptionalParam("vestingId", "", VESTING_ID, types.string)
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+    console.log("Starting snapshot:totalVested...");
+
     const blocks = loadBlocks();
     const entries = Object.keys(blocks);
     sanityCheck(entries);
@@ -32,7 +34,7 @@ task(
     for (const iso of entries) {
       const blockNumber = blocks[iso].mainnet.blockNumber;
       if (taskArgs.lazy === false || !totalsVested[blockNumber]) {
-        console.log(`Querying totalVested at block ${blockNumber}`);
+        console.log(`querying totalVested at block ${blockNumber}...`);
         totalsVested[blockNumber] = await queryTotalVested(
           hre,
           blockNumber,

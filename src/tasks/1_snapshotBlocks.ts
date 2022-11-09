@@ -27,6 +27,7 @@ task(
     types.boolean,
   )
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+    console.log("Starting snapshot:blocks...");
     const schedule = createSchedule(taskArgs.schedule);
     const blocks = loadBlocks();
 
@@ -60,12 +61,6 @@ task(
           },
         };
         writeBlocks(blocks);
-      } else {
-        console.log(
-          `Already determined blocks for ${entry.iso} -> ${
-            blocks[entry.iso].mainnet.blockNumber
-          }`,
-        );
       }
     }
   });

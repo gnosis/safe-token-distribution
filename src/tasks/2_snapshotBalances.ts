@@ -24,6 +24,8 @@ task(
     types.boolean,
   )
   .setAction(async (taskArgs) => {
+    console.log("Starting snapshot:balances...");
+
     const blocks = loadBlocks();
     const entries = Object.keys(blocks);
 
@@ -33,6 +35,7 @@ task(
       const blockNumber = blocks[iso].mainnet.blockNumber;
       let balancesMainnet = loadBalancesMainnet(blockNumber);
       if (taskArgs.lazy === false || balancesMainnet === null) {
+        console.log(`querying mainnet balances for ${blockNumber}...`);
         balancesMainnet = await queryBalancesMainnet(blockNumber);
         writeBalancesMainnet(blockNumber, balancesMainnet);
       }
@@ -46,6 +49,7 @@ task(
       // load using mainnet block
       let balancesGC = loadBalancesGC(blockNumber);
       if (taskArgs.lazy === false || balancesGC === null) {
+        console.log(`querying gc balances for ${blockNumberGC}...`);
         // query using gc
         balancesGC = await queryBalancesGC(blockNumberGC);
         // load using mainnet block
