@@ -1,8 +1,7 @@
-import fs from "fs";
-import path from "path";
-
 import { task, types } from "hardhat/config";
 import moment from "moment";
+
+import { writeSchedule } from "../persistance";
 
 import {
   DISTRIBUTION_INCEPTION_DATE,
@@ -33,7 +32,7 @@ task(
     types.int,
   )
   .setAction(async ({ start, end, frequency }) => {
-    write(generate(start, end, frequency));
+    writeSchedule(generate(start, end, frequency));
   });
 
 function generate(start: string, end: string, frequency: number) {
@@ -46,11 +45,4 @@ function generate(start: string, end: string, frequency: number) {
     sweep = sweep.add(frequency, "minutes");
   }
   return result;
-}
-
-function write(timestamps: any) {
-  const file = path.resolve(
-    path.join(__dirname, "..", "..", "harvest", "schedule.json"),
-  );
-  fs.writeFileSync(file, JSON.stringify(timestamps, null, 2), "utf8");
 }
