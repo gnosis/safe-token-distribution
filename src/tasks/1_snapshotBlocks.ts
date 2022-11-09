@@ -7,21 +7,23 @@ import moment from "moment";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
 
-task("snapshot:blocks", "Finds the closest blocks for each timestamp")
+task(
+  "snapshot:blocks",
+  "Finds the closest block (Mainnet and GC) for each timestamp",
+)
   .addOptionalParam(
-    "timestamps",
-    "Input file with the list of snapshot timestamps",
-    `${__dirname}/../../harvest/timestamps.json`,
+    "schedule",
+    "Input file with the timestamp schedule",
+    `${__dirname}/../../harvest/schedule.json`,
     types.inputFile,
   )
   .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const schedule = loadSchedule();
+    const schedule = loadSchedule(_taskArgs.schedule);
     const blocks = loadBlocks();
 
     const mainnetProvider = new hre.ethers.providers.JsonRpcProvider(
       `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     );
-    //const mainnetProvider = hre.ethers.providers.getDefaultProvider(1);
 
     const gcProvider = new hre.ethers.providers.JsonRpcProvider(
       `https://rpc.gnosischain.com `,
@@ -71,14 +73,9 @@ export type Blocks = {
   };
 };
 
-function loadSchedule(): Slice[] {
+function loadSchedule(filePath: string): Slice[] {
   const rawTimestamps = JSON.parse(
-    fs.readFileSync(
-      path.resolve(
-        path.join(__dirname, "..", "..", "harvest", "schedule.json"),
-      ),
-      "utf8",
-    ),
+    fs.readFileSync(filePath, "utf8"),
   ) as string[];
 
   const now = moment();

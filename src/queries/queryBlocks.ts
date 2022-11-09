@@ -1,5 +1,10 @@
 import { Provider } from "@ethersproject/providers";
 
+/*
+ * Uses divide and conquer to find the closes block to a timestamp
+ * This strategy can can execution complexity to O(logN)
+ */
+
 export async function queryClosestBlock(timestamp: number, provider: Provider) {
   let minBlockNumber = 0;
   let maxBlockNumber = await provider.getBlockNumber();
