@@ -9,6 +9,7 @@ import "./src/tasks/deploy";
 import "./src/tasks/0_snapshotSchedule";
 import "./src/tasks/1_snapshotBlocks";
 import "./src/tasks/2_snapshotBalances";
+//import "./src/tasks/3_snapshotTotalVested";
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });

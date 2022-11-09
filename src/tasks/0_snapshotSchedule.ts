@@ -4,45 +4,59 @@ import moment from "moment";
 import { writeSchedule } from "../persistence";
 
 import {
-  DISTRIBUTION_INCEPTION_DATE,
-  DISTRIBUTION_SUNSET_DATE,
-  DISTRIBUTION_SNAPSHOT_DURATION_IN_MINUTES,
+  DISTRIBUTION_INCEPTION_BLOCK,
+  DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES,
 } from "../config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 task(
   "snapshot:schedule",
   "Generates and persists the sequence of timestamps that will be used to take balance snapshots",
 )
   .addOptionalParam(
-    "start",
+    "inception",
     "distribution start date",
-    DISTRIBUTION_INCEPTION_DATE,
-    types.string,
-  )
-  .addOptionalParam(
-    "end",
-    "distribution sunsetting date",
-    DISTRIBUTION_SUNSET_DATE,
-    types.string,
+    DISTRIBUTION_INCEPTION_BLOCK,
+    types.int,
   )
   .addOptionalParam(
     "frequency",
     "distribution snapshot frequency in minutes",
-    DISTRIBUTION_SNAPSHOT_DURATION_IN_MINUTES,
+    DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES,
     types.int,
   )
-  .setAction(async ({ start, end, frequency }) => {
-    writeSchedule(generate(start, end, frequency));
-  });
+  .setAction(
+    async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
+      const schedule = await generate(inception, frequency, hre);
+      writeSchedule(schedule);
+    },
+  );
 
-function generate(start: string, end: string, frequency: number) {
+async function generate(
+  inception: string,
+  frequency: number,
+  hre: HardhatRuntimeEnvironment,
+) {
+  const provider = new hre.ethers.providers.JsonRpcProvider(
+    `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  );
+
   const result: string[] = [];
 
-  let sweep = moment(start);
-  const sunset = moment(end);
-  while (sweep.isBefore(sunset)) {
+  const block = await provider.getBlock(inception);
+
+  const start = moment
+    .unix(block.timestamp)
+    .set("minute", 0)
+    .set("second", 0)
+    .add(1, "hour");
+  const end = moment(start).add(4, "year");
+
+  const sweep = moment(start);
+  while (sweep.isSameOrBefore(end)) {
     result.push(sweep.toISOString());
-    sweep = sweep.add(frequency, "minutes");
+    sweep.add(frequency, "minutes");
   }
+
   return result;
 }
