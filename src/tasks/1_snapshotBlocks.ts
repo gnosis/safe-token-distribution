@@ -20,8 +20,14 @@ task(
     scheduleFilePath(),
     types.inputFile,
   )
-  .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const schedule = createSchedule(_taskArgs.schedule);
+  .addOptionalParam(
+    "lazy",
+    "Don't recalculate if result is found on disk",
+    true,
+    types.boolean,
+  )
+  .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+    const schedule = createSchedule(taskArgs.schedule);
     const blocks = loadBlocks();
 
     const mainnetProvider = new hre.ethers.providers.JsonRpcProvider(
@@ -33,7 +39,7 @@ task(
     );
 
     for (const entry of schedule) {
-      if (!blocks[entry.iso]) {
+      if (taskArgs.lazy === false || !blocks[entry.iso]) {
         const mainnetBlock = await queryClosestBlock(
           entry.timestamp,
           mainnetProvider,
