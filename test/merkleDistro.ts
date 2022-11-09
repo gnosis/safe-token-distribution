@@ -1,10 +1,11 @@
-import createAllocation from "../src/createAllocation";
-import { deployMerkleDistro } from "../tasks/deploy/merkleDistro";
-import { ERC20Mock__factory } from "../typechain";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import hre, { ethers } from "hardhat";
 import { expect } from "chai";
 import { Signer } from "ethers";
-import hre, { ethers } from "hardhat";
+
+import createAllocation from "../src/createAllocation";
+import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
+import { ERC20Mock__factory } from "../typechain";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("MerkleDistro", function () {
   before(async () => {
