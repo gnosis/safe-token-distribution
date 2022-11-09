@@ -57,6 +57,8 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
+    "snapshot:schedule": "yarn hardhat snapshot:schedule",
+    "snapshot:blocks": "yarn hardhat snapshot:blocks",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",

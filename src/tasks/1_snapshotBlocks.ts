@@ -1,11 +1,10 @@
 import fs from "fs";
-import path from "path";
-
+import moment from "moment";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import moment from "moment";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
+import { loadBlocks, loadSchedule, writeBlocks } from "../persistance";
 
 task(
   "snapshot:blocks",
@@ -18,7 +17,7 @@ task(
     types.inputFile,
   )
   .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const schedule = loadSchedule(_taskArgs.schedule);
+    const schedule = createSchedule(_taskArgs.schedule);
     const blocks = loadBlocks();
 
     const mainnetProvider = new hre.ethers.providers.JsonRpcProvider(
@@ -61,22 +60,13 @@ task(
     }
   });
 
-type Slice = {
+type ScheduleEntry = {
   timestamp: number;
   iso: string;
 };
 
-export type Blocks = {
-  [key: string]: {
-    mainnet: { blockNumber: number; timestamp: number; iso: string };
-    gc: { blockNumber: number; timestamp: number; iso: string };
-  };
-};
-
-function loadSchedule(filePath: string): Slice[] {
-  const rawTimestamps = JSON.parse(
-    fs.readFileSync(filePath, "utf8"),
-  ) as string[];
+function createSchedule(filePath: string): ScheduleEntry[] {
+  const rawTimestamps = loadSchedule(filePath);
 
   const now = moment();
   return rawTimestamps
@@ -86,22 +76,4 @@ function loadSchedule(filePath: string): Slice[] {
       timestamp: date.unix(),
       iso: date.toISOString(),
     }));
-}
-
-function loadBlocks(): Blocks {
-  const file = filePath();
-
-  return fs.existsSync(file)
-    ? (JSON.parse(fs.readFileSync(file, "utf8")) as Blocks)
-    : {};
-}
-
-function writeBlocks(data: Blocks) {
-  fs.writeFileSync(filePath(), JSON.stringify(data, null, 2), "utf8");
-}
-
-function filePath() {
-  return path.resolve(
-    path.join(__dirname, "..", "..", "harvest", "blocks.json"),
-  );
 }
