@@ -9,7 +9,6 @@ task("harvest", "")
     types.boolean,
   )
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-    await hre.run("snapshot:schedule", { lazy: taskArgs.lazy });
     await hre.run("snapshot:blocks", { lazy: taskArgs.lazy });
     //await hre.run("snapshot:balances");
     await hre.run("snapshot:totalvested", { lazy: taskArgs.lazy });
