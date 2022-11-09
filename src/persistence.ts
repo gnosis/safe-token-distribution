@@ -13,6 +13,14 @@ export type Balances = {
   [key: number]: BigNumber;
 };
 
+export type TotalsVested = {
+  [key: number]: BigNumber;
+};
+
+export type JSONMap = {
+  [key: string]: string;
+};
+
 export function loadSchedule(filePath?: string): string[] {
   return JSON.parse(
     fs.readFileSync(filePath || scheduleFilePath(), "utf8"),
@@ -74,14 +82,45 @@ function writeBalances(block: number, name: string, balances: Balances) {
   fs.writeFileSync(filePath, JSON.stringify(balances, null, 2), "utf8");
 }
 
+export function loadTotalsVested(filePath?: string): TotalsVested {
+  const file = filePath || totalsVestedFilePath();
+  if (!fs.existsSync(file)) {
+    return {};
+  }
+
+  const serialized = JSON.parse(fs.readFileSync(file, "utf8")) as JSONMap;
+
+  return Object.keys(serialized).reduce(
+    (prev, next) => ({
+      ...prev,
+      [Number(next)]: BigNumber.from(serialized[next]),
+    }),
+    {},
+  );
+}
+
+export function writeTotalsVested(data: TotalsVested, filePath?: string) {
+  const serialized = Object.keys(data).reduce(
+    (prev, next) => ({
+      ...prev,
+      [next]: data[next as unknown as number].toString(),
+    }),
+    {},
+  );
+
+  fs.writeFileSync(
+    filePath || totalsVestedFilePath(),
+    JSON.stringify(serialized, null, 2),
+    "utf8",
+  );
+}
+
 export function scheduleFilePath() {
   return path.resolve(path.join(__dirname, "..", "data", "schedule.json"));
 }
 
 function blocksFilePath() {
-  return path.resolve(
-    path.join(__dirname, "..", "data", "scheduleToBlocks.json"),
-  );
+  return path.resolve(path.join(__dirname, "..", "data", "blocks.json"));
 }
 
 function balancesFilePath(block: number, name: string) {
@@ -90,4 +129,8 @@ function balancesFilePath(block: number, name: string) {
   );
   fs.ensureDirSync(dirName);
   return path.resolve(path.join(dirName, name));
+}
+
+function totalsVestedFilePath() {
+  return path.resolve(path.join(__dirname, "..", "data", "totalsVested.json"));
 }
