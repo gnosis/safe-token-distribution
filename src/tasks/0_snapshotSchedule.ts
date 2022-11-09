@@ -11,8 +11,8 @@ import {
 } from "../config";
 
 task(
-  "snapshotTimestamps",
-  "Generates and persists the timestamps that will be used to take balance snapshots",
+  "snapshot:schedule",
+  "Generates and persists the sequence of timestamps that will be used to take balance snapshots",
 )
   .addOptionalParam(
     "start",
@@ -50,7 +50,7 @@ function generate(start: string, end: string, frequency: number) {
 
 function write(timestamps: any) {
   const file = path.resolve(
-    path.join(__dirname, "..", "..", "harvest", "timestamps.json"),
+    path.join(__dirname, "..", "..", "harvest", "schedule.json"),
   );
   fs.writeFileSync(file, JSON.stringify(timestamps, null, 2), "utf8");
 }

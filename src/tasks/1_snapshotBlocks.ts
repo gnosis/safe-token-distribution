@@ -7,7 +7,7 @@ import moment from "moment";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
 
-task("snapshotBlocks", "Finds the closest blocks for each timestamp")
+task("snapshot:blocks", "Finds the closest blocks for each timestamp")
   .addOptionalParam(
     "timestamps",
     "Input file with the list of snapshot timestamps",
@@ -15,8 +15,8 @@ task("snapshotBlocks", "Finds the closest blocks for each timestamp")
     types.inputFile,
   )
   .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const slices = loadSlices();
     const schedule = loadSchedule();
+    const blocks = loadBlocks();
 
     const mainnetProvider = new hre.ethers.providers.JsonRpcProvider(
       `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -27,16 +27,16 @@ task("snapshotBlocks", "Finds the closest blocks for each timestamp")
       `https://rpc.gnosischain.com `,
     );
 
-    for (const slice of slices) {
-      if (!schedule[slice.iso]) {
+    for (const entry of schedule) {
+      if (!blocks[entry.iso]) {
         const mainnetBlock = await queryClosestBlock(
-          slice.timestamp,
+          entry.timestamp,
           mainnetProvider,
         );
 
-        const gcBlock = await queryClosestBlock(slice.timestamp, gcProvider);
+        const gcBlock = await queryClosestBlock(entry.timestamp, gcProvider);
 
-        schedule[slice.iso] = {
+        blocks[entry.iso] = {
           mainnet: {
             blockNumber: mainnetBlock.number,
             timestamp: mainnetBlock.timestamp,
@@ -48,7 +48,13 @@ task("snapshotBlocks", "Finds the closest blocks for each timestamp")
             iso: moment.unix(gcBlock.timestamp).toISOString(),
           },
         };
-        writeSchedule(schedule);
+        writeBlocks(blocks);
+      } else {
+        console.log(
+          `Already determined blocks for ${entry.iso} -> ${
+            blocks[entry.iso].mainnet.blockNumber
+          }`,
+        );
       }
     }
   });
@@ -58,18 +64,18 @@ type Slice = {
   iso: string;
 };
 
-type Schedule = {
+export type Blocks = {
   [key: string]: {
     mainnet: { blockNumber: number; timestamp: number; iso: string };
     gc: { blockNumber: number; timestamp: number; iso: string };
   };
 };
 
-function loadSlices(): Slice[] {
+function loadSchedule(): Slice[] {
   const rawTimestamps = JSON.parse(
     fs.readFileSync(
       path.resolve(
-        path.join(__dirname, "..", "..", "harvest", "timestamps.json"),
+        path.join(__dirname, "..", "..", "harvest", "schedule.json"),
       ),
       "utf8",
     ),
@@ -85,20 +91,20 @@ function loadSlices(): Slice[] {
     }));
 }
 
-function loadSchedule(): Schedule {
+function loadBlocks(): Blocks {
   const file = filePath();
 
   return fs.existsSync(file)
-    ? (JSON.parse(fs.readFileSync(file, "utf8")) as Schedule)
+    ? (JSON.parse(fs.readFileSync(file, "utf8")) as Blocks)
     : {};
 }
 
-function writeSchedule(schedule: Schedule) {
-  fs.writeFileSync(filePath(), JSON.stringify(schedule, null, 2), "utf8");
+function writeBlocks(data: Blocks) {
+  fs.writeFileSync(filePath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 function filePath() {
   return path.resolve(
-    path.join(__dirname, "..", "..", "harvest", "schedule.json"),
+    path.join(__dirname, "..", "..", "harvest", "blocks.json"),
   );
 }
