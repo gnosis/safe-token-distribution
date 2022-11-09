@@ -4,7 +4,7 @@ import moment from "moment";
 import {
   loadBalancesGC,
   loadBalancesMainnet,
-  loadBlocks,
+  loadDateToBlockMap,
   writeBalancesGC,
   writeBalancesMainnet,
 } from "../persistence";
@@ -26,13 +26,13 @@ task(
   .setAction(async (taskArgs) => {
     console.log("Starting snapshot:balances...");
 
-    const blocks = loadBlocks();
-    const entries = Object.keys(blocks);
+    const dateToBlock = loadDateToBlockMap();
+    const entries = Object.keys(dateToBlock);
 
     sanityCheck(entries);
 
     for (const iso of entries) {
-      const blockNumber = blocks[iso].mainnet.blockNumber;
+      const blockNumber = dateToBlock[iso].mainnet.blockNumber;
       let balancesMainnet = loadBalancesMainnet(blockNumber);
       if (taskArgs.lazy === false || balancesMainnet === null) {
         console.log(`querying mainnet balances for ${blockNumber}...`);
@@ -45,7 +45,7 @@ task(
        * but we persist it under the mainnet file path
        * both are to be loaded at the same, and the reference is the mainnet block
        */
-      const blockNumberGC = blocks[iso].gc.blockNumber;
+      const blockNumberGC = dateToBlock[iso].gc.blockNumber;
       // load using mainnet block
       let balancesGC = loadBalancesGC(blockNumber);
       if (taskArgs.lazy === false || balancesGC === null) {

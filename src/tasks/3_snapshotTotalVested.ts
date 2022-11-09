@@ -4,9 +4,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import moment from "moment";
 import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
 import {
-  loadBlocks,
-  loadTotalsVested,
-  writeTotalsVested,
+  loadBlockToVestedMap,
+  loadDateToBlockMap,
+  writeBlockToVestedMap,
 } from "../persistence";
 import { queryTotalVested } from "../queries/queryTotalVested";
 
@@ -25,24 +25,24 @@ task(
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     console.log("Starting snapshot:totalVested...");
 
-    const blocks = loadBlocks();
-    const entries = Object.keys(blocks);
+    const dateToBlock = loadDateToBlockMap();
+    const entries = Object.keys(dateToBlock);
     sanityCheck(entries);
 
-    const totalsVested = loadTotalsVested();
+    const blockToTotalVested = loadBlockToVestedMap();
 
     for (const iso of entries) {
-      const blockNumber = blocks[iso].mainnet.blockNumber;
-      if (taskArgs.lazy === false || !totalsVested[blockNumber]) {
+      const blockNumber = dateToBlock[iso].mainnet.blockNumber;
+      if (taskArgs.lazy === false || !blockToTotalVested[blockNumber]) {
         console.log(`querying totalVested at block ${blockNumber}...`);
-        totalsVested[blockNumber] = await queryTotalVested(
+        blockToTotalVested[blockNumber] = await queryTotalVested(
           hre,
           blockNumber,
           taskArgs.vestingPool,
           taskArgs.vestingId,
         );
 
-        writeTotalsVested(totalsVested);
+        writeBlockToVestedMap(blockToTotalVested);
       }
     }
   });

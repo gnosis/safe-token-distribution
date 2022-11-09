@@ -35,19 +35,49 @@ export function writeSchedule(timestamps: any, filePath?: string) {
   );
 }
 
-export function loadBlocks(filePath?: string): Blocks {
-  const file = filePath || blocksFilePath();
+export function loadDateToBlockMap(filePath?: string): Blocks {
+  const file = filePath || dateToBlockFilePath();
 
   return fs.existsSync(file)
     ? (JSON.parse(fs.readFileSync(file, "utf8")) as Blocks)
     : {};
 }
 
-export function writeBlocks(data: Blocks, filePath?: string) {
+export function writeDateToBlockMap(data: Blocks, filePath?: string) {
   fs.writeFileSync(
-    filePath || blocksFilePath(),
+    filePath || dateToBlockFilePath(),
     JSON.stringify(data, null, 2),
     "utf8",
+  );
+}
+
+function dateToBlockFilePath() {
+  return path.resolve(
+    path.join(__dirname, "..", "data", "dateToBlockMap.json"),
+  );
+}
+
+export function loadBlockToVestedMap(filePath?: string): TotalsVested {
+  const file = filePath || blockToVestedFilePath();
+  if (!fs.existsSync(file)) {
+    return {};
+  }
+
+  const map = JSON.parse(fs.readFileSync(file, "utf8")) as JSONMap;
+  return mapValuesToBigNumber(map);
+}
+
+export function writeBlockToVestedMap(map: TotalsVested, filePath?: string) {
+  fs.writeFileSync(
+    filePath || blockToVestedFilePath(),
+    JSON.stringify(mapValuesToString(map), null, 2),
+    "utf8",
+  );
+}
+
+function blockToVestedFilePath() {
+  return path.resolve(
+    path.join(__dirname, "..", "data", "blockToVestedMap.json"),
   );
 }
 
@@ -84,33 +114,8 @@ function writeBalances(block: number, name: string, balances: Balances) {
   fs.writeFileSync(filePath, JSON.stringify(map, null, 2), "utf8");
 }
 
-export function loadTotalsVested(filePath?: string): TotalsVested {
-  const file = filePath || totalsVestedFilePath();
-  if (!fs.existsSync(file)) {
-    return {};
-  }
-
-  const map = JSON.parse(fs.readFileSync(file, "utf8")) as JSONMap;
-
-  return mapValuesToBigNumber(map);
-}
-
-export function writeTotalsVested(map: TotalsVested, filePath?: string) {
-  fs.writeFileSync(
-    filePath || totalsVestedFilePath(),
-    JSON.stringify(mapValuesToString(map), null, 2),
-    "utf8",
-  );
-}
-
 export function scheduleFilePath() {
   return path.resolve(path.join(__dirname, "..", "data", "schedule.json"));
-}
-
-function blocksFilePath() {
-  return path.resolve(
-    path.join(__dirname, "..", "data", "mapDateToBlock.json"),
-  );
 }
 
 function balancesFilePath(block: number, name: string) {
@@ -119,12 +124,6 @@ function balancesFilePath(block: number, name: string) {
   );
   fs.ensureDirSync(dirName);
   return path.resolve(path.join(dirName, name));
-}
-
-function totalsVestedFilePath() {
-  return path.resolve(
-    path.join(__dirname, "..", "data", "mapBlockToVested.json"),
-  );
 }
 
 function mapValuesToString(map: Balances): JSONMap {

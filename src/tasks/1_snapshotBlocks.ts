@@ -4,10 +4,10 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
 import {
-  loadBlocks,
+  loadDateToBlockMap,
   loadSchedule,
   scheduleFilePath,
-  writeBlocks,
+  writeDateToBlockMap,
 } from "../persistence";
 
 task(
@@ -29,7 +29,7 @@ task(
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     console.log("Starting snapshot:blocks...");
     const schedule = createSchedule(taskArgs.schedule);
-    const blocks = loadBlocks();
+    const dateToBlock = loadDateToBlockMap();
 
     const mainnetProvider = new hre.ethers.providers.JsonRpcProvider(
       `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -40,7 +40,7 @@ task(
     );
 
     for (const entry of schedule) {
-      if (taskArgs.lazy === false || !blocks[entry.iso]) {
+      if (taskArgs.lazy === false || !dateToBlock[entry.iso]) {
         const mainnetBlock = await queryClosestBlock(
           entry.timestamp,
           mainnetProvider,
@@ -48,7 +48,7 @@ task(
 
         const gcBlock = await queryClosestBlock(entry.timestamp, gcProvider);
 
-        blocks[entry.iso] = {
+        dateToBlock[entry.iso] = {
           mainnet: {
             blockNumber: mainnetBlock.number,
             timestamp: mainnetBlock.timestamp,
@@ -60,7 +60,7 @@ task(
             iso: moment.unix(gcBlock.timestamp).toISOString(),
           },
         };
-        writeBlocks(blocks);
+        writeDateToBlockMap(dateToBlock);
       }
     }
   });
