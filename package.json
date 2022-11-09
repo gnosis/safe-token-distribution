@@ -57,6 +57,7 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
+    "harvest": "yarn hardhat harvest",
     "snapshot:schedule": "yarn hardhat snapshot:schedule",
     "snapshot:blocks": "yarn hardhat snapshot:blocks",
     "snapshot:balances": "yarn hardhat snapshot:balances",
