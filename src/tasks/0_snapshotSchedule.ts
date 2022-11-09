@@ -1,7 +1,7 @@
 import { task, types } from "hardhat/config";
 import moment from "moment";
 
-import { writeSchedule } from "../persistance";
+import { writeSchedule } from "../persistence";
 
 import {
   DISTRIBUTION_INCEPTION_DATE,

@@ -11,7 +11,7 @@ type Result = { [key: string]: BigNumber };
 /*
  * Note gets the mainnet block
  */
-export async function queryMainnetBalances(block: number): Promise<Result> {
+export async function queryBalancesMainnet(block: number): Promise<Result> {
   const result = await request(mainnetEndpoint, mainnetQuery, {
     block,
     count: 100,
@@ -33,7 +33,7 @@ export async function queryMainnetBalances(block: number): Promise<Result> {
   );
 }
 
-export async function queryGCBalances(block: number): Promise<Result> {
+export async function queryBalancesGC(block: number): Promise<Result> {
   const result = await request(gcEndpoint, gcQuery, { block, count: 100 });
 
   return (

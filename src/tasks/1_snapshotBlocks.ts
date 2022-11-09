@@ -1,10 +1,9 @@
-import fs from "fs";
 import moment from "moment";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
-import { loadBlocks, loadSchedule, writeBlocks } from "../persistance";
+import { loadBlocks, loadSchedule, writeBlocks } from "../persistence";
 
 task(
   "snapshot:blocks",
