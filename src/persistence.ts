@@ -65,21 +65,23 @@ function loadBalances(block: number, name: string): Balances | null {
     return null;
   }
 
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const map = JSON.parse(fs.readFileSync(filePath, "utf8")) as JSONMap;
+  return mapValuesToBigNumber(map);
 }
 
 export function writeBalancesMainnet(block: number, balances: Balances) {
-  writeBalances(block, "balances.gc.json", balances);
+  writeBalances(block, "balances.mainnet.json", balances);
 }
 
 export function writeBalancesGC(block: number, balances: Balances) {
-  writeBalances(block, "balances.mainnet.json", balances);
+  writeBalances(block, "balances.gc.json", balances);
 }
 
 function writeBalances(block: number, name: string, balances: Balances) {
   const filePath = balancesFilePath(block, name);
-  console.log(filePath);
-  fs.writeFileSync(filePath, JSON.stringify(balances, null, 2), "utf8");
+  const map = mapValuesToString(balances);
+
+  fs.writeFileSync(filePath, JSON.stringify(map, null, 2), "utf8");
 }
 
 export function loadTotalsVested(filePath?: string): TotalsVested {
@@ -88,29 +90,15 @@ export function loadTotalsVested(filePath?: string): TotalsVested {
     return {};
   }
 
-  const serialized = JSON.parse(fs.readFileSync(file, "utf8")) as JSONMap;
+  const map = JSON.parse(fs.readFileSync(file, "utf8")) as JSONMap;
 
-  return Object.keys(serialized).reduce(
-    (prev, next) => ({
-      ...prev,
-      [Number(next)]: BigNumber.from(serialized[next]),
-    }),
-    {},
-  );
+  return mapValuesToBigNumber(map);
 }
 
-export function writeTotalsVested(data: TotalsVested, filePath?: string) {
-  const serialized = Object.keys(data).reduce(
-    (prev, next) => ({
-      ...prev,
-      [next]: data[next as unknown as number].toString(),
-    }),
-    {},
-  );
-
+export function writeTotalsVested(map: TotalsVested, filePath?: string) {
   fs.writeFileSync(
     filePath || totalsVestedFilePath(),
-    JSON.stringify(serialized, null, 2),
+    JSON.stringify(mapValuesToString(map), null, 2),
     "utf8",
   );
 }
@@ -133,4 +121,24 @@ function balancesFilePath(block: number, name: string) {
 
 function totalsVestedFilePath() {
   return path.resolve(path.join(__dirname, "..", "data", "totalsVested.json"));
+}
+
+function mapValuesToString(map: Balances): JSONMap {
+  return Object.keys(map).reduce(
+    (prev, next) => ({
+      ...prev,
+      [next]: map[next as unknown as number].toString(),
+    }),
+    {},
+  );
+}
+
+function mapValuesToBigNumber(map: JSONMap): Balances {
+  return Object.keys(map).reduce(
+    (prev, key) => ({
+      ...prev,
+      [Number(key)]: BigNumber.from(map[key]),
+    }),
+    {},
+  );
 }
