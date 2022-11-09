@@ -19,7 +19,7 @@ task(
 )
   .addOptionalParam(
     "lazy",
-    "Don't recalculate if result is found in disk",
+    "Don't recalculate if result is found on disk",
     true,
     types.boolean,
   )
@@ -34,6 +34,7 @@ task(
       let balancesMainnet = loadBalancesMainnet(blockNumber);
       if (taskArgs.lazy === false || balancesMainnet === null) {
         balancesMainnet = await queryBalancesMainnet(blockNumber);
+        writeBalancesMainnet(blockNumber, balancesMainnet);
       }
 
       /*
@@ -47,11 +48,9 @@ task(
       if (taskArgs.lazy === false || balancesGC === null) {
         // query using gc
         balancesGC = await queryBalancesGC(blockNumberGC);
+        // load using mainnet block
+        writeBalancesGC(blockNumber, balancesGC);
       }
-
-      writeBalancesMainnet(blockNumber, balancesMainnet);
-      // load using mainnet block
-      writeBalancesGC(blockNumber, balancesGC);
     }
   });
 
