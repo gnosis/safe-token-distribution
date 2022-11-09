@@ -3,7 +3,12 @@ import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryClosestBlock } from "../queries/queryBlocks";
-import { loadBlocks, loadSchedule, writeBlocks } from "../persistence";
+import {
+  loadBlocks,
+  loadSchedule,
+  scheduleFilePath,
+  writeBlocks,
+} from "../persistence";
 
 task(
   "snapshot:blocks",
@@ -12,7 +17,7 @@ task(
   .addOptionalParam(
     "schedule",
     "Input file with the timestamp schedule",
-    `${__dirname}/../../harvest/schedule.json`,
+    scheduleFilePath(),
     types.inputFile,
   )
   .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
