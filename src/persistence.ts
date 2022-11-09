@@ -108,7 +108,9 @@ export function scheduleFilePath() {
 }
 
 function blocksFilePath() {
-  return path.resolve(path.join(__dirname, "..", "data", "blocks.json"));
+  return path.resolve(
+    path.join(__dirname, "..", "data", "mapDateToBlock.json"),
+  );
 }
 
 function balancesFilePath(block: number, name: string) {
@@ -120,7 +122,9 @@ function balancesFilePath(block: number, name: string) {
 }
 
 function totalsVestedFilePath() {
-  return path.resolve(path.join(__dirname, "..", "data", "totalsVested.json"));
+  return path.resolve(
+    path.join(__dirname, "..", "data", "mapBlockToVested.json"),
+  );
 }
 
 function mapValuesToString(map: Balances): JSONMap {
