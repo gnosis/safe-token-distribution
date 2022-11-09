@@ -1,14 +1,15 @@
+import hre, { ethers } from "hardhat";
+import { expect } from "chai";
+import { BigNumber } from "ethers";
+
 import createClaimTransaction from "../src/createClaimTransaction";
-import { deployMerkleDistro } from "../tasks/deploy/merkleDistro";
+import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
 import { SafeToken__factory, VestingPool__factory } from "../typechain";
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
 import safeTokenUnpause from "./helpers/safeTokenUnpause";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { expect } from "chai";
-import { assert } from "console";
-import { BigNumber } from "ethers";
-import hre, { ethers } from "hardhat";
+import assert from "assert";
 
 const VESTING_ID =
   "0x501becc139a20ff5e3d4cfccde5f0d3ca1267319a1c0bd9bfb8b813ae9e3e042";
