@@ -4,7 +4,7 @@ import moment from "moment";
 import { writeSchedule } from "../persistence";
 
 import {
-  DISTRIBUTION_INCEPTION_BLOCK,
+  VESTING_CREATION_BLOCK,
   DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES,
 } from "../config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
@@ -16,7 +16,7 @@ task(
   .addOptionalParam(
     "inception",
     "distribution start date",
-    DISTRIBUTION_INCEPTION_BLOCK,
+    VESTING_CREATION_BLOCK,
     types.int,
   )
   .addOptionalParam(
