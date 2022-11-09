@@ -74,7 +74,7 @@ function writeBalances(block: number, name: string, balances: Balances) {
   fs.writeFileSync(filePath, JSON.stringify(balances, null, 2), "utf8");
 }
 
-function scheduleFilePath() {
+export function scheduleFilePath() {
   return path.resolve(path.join(__dirname, "..", "data", "schedule.json"));
 }
 
