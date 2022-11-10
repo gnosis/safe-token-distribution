@@ -10,6 +10,7 @@ import "./src/tasks/0_snapshotSchedule";
 import "./src/tasks/1_snapshotBlocks";
 import "./src/tasks/2_snapshotBalances";
 import "./src/tasks/3_snapshotTotalVested";
+import "./src/tasks/4_snapshotAllocation";
 
 import "./src/tasks/harvest";
 

@@ -10,11 +10,11 @@ export type Blocks = {
 };
 
 export type Balances = {
-  [key: number]: BigNumber;
+  [key: string]: BigNumber;
 };
 
 export type TotalsVested = {
-  [key: number]: BigNumber;
+  [key: string]: BigNumber;
 };
 
 export type JSONMap = {
@@ -33,6 +33,10 @@ export function writeSchedule(timestamps: any, filePath?: string) {
     JSON.stringify(timestamps, null, 2),
     "utf8",
   );
+}
+
+export function scheduleFilePath() {
+  return path.resolve(path.join(__dirname, "..", "data", "schedule.json"));
 }
 
 export function loadDateToBlockMap(filePath?: string): Blocks {
@@ -90,7 +94,7 @@ export function loadBalancesGC(block: number): Balances | null {
 }
 
 function loadBalances(block: number, name: string): Balances | null {
-  const filePath = balancesFilePath(block, name);
+  const filePath = snapshotFilePath(block, name);
   if (!fs.existsSync(filePath)) {
     return null;
   }
@@ -108,17 +112,30 @@ export function writeBalancesGC(block: number, balances: Balances) {
 }
 
 function writeBalances(block: number, name: string, balances: Balances) {
-  const filePath = balancesFilePath(block, name);
+  const filePath = snapshotFilePath(block, name);
   const map = mapValuesToString(balances);
 
   fs.writeFileSync(filePath, JSON.stringify(map, null, 2), "utf8");
 }
 
-export function scheduleFilePath() {
-  return path.resolve(path.join(__dirname, "..", "data", "schedule.json"));
+export function writeAllocations(
+  block: number,
+  allocationMainnet: Balances,
+  allocationGC: Balances,
+) {
+  writeAllocation(block, "allocation.mainet.json", allocationMainnet);
+  writeAllocation(block, "allocation.gc.json", allocationGC);
 }
 
-function balancesFilePath(block: number, name: string) {
+function writeAllocation(block: number, name: string, allocation: Balances) {
+  fs.writeFileSync(
+    snapshotFilePath(block, name),
+    JSON.stringify(mapValuesToString(allocation), null, 2),
+    "utf8",
+  );
+}
+
+function snapshotFilePath(block: number, name: string) {
   const dirName = path.resolve(
     path.join(__dirname, "..", "data", "snapshots", String(block)),
   );
