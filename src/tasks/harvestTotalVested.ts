@@ -11,7 +11,7 @@ import {
 import { queryTotalVested } from "../queries/queryTotalVested";
 
 task(
-  "snapshot:totalvested",
+  "harvest:totalvested",
   "Calculated the total vested for every vesting slice",
 )
   .addOptionalParam(
@@ -23,7 +23,7 @@ task(
   .addOptionalParam("vestingPool", "", VESTING_POOL_ADDRESS, types.string)
   .addOptionalParam("vestingId", "", VESTING_ID, types.string)
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-    console.log("Starting snapshot:totalVested...");
+    console.log("Starting harvest:totalvested...");
 
     const dateToBlock = loadDateToBlockMap();
     const entries = Object.keys(dateToBlock);

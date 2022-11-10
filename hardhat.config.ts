@@ -6,11 +6,12 @@ import type { NetworkUserConfig } from "hardhat/types";
 import "@nomicfoundation/hardhat-toolbox";
 
 import "./src/tasks/deploy";
-import "./src/tasks/0_snapshotSchedule";
-import "./src/tasks/1_snapshotBlocks";
-import "./src/tasks/2_snapshotBalances";
-import "./src/tasks/3_snapshotTotalVested";
-import "./src/tasks/4_snapshotAllocation";
+
+import "./src/tasks/schedule";
+import "./src/tasks/harvestBlocks";
+import "./src/tasks/harvestBalances";
+import "./src/tasks/harvestTotalVested";
+import "./src/tasks/harvestAllocation";
 
 import "./src/tasks/harvest";
 

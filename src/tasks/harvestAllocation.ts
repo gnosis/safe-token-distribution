@@ -11,10 +11,10 @@ import {
 } from "../persistence";
 
 task(
-  "snapshot:allocation",
+  "harvest:allocation",
   "Calculated the total vested for every vesting slice",
 ).setAction(async () => {
-  console.log("Starting snapshot:allocation...");
+  console.log("Starting harvest:allocation...");
 
   const dateToBlockMap = loadDateToBlockMap();
   const blockToVestedMap = loadBlockToVestedMap();
@@ -25,11 +25,11 @@ task(
   for (const date of schedule) {
     const blockNumber = dateToBlockMap[date].mainnet.blockNumber;
 
-    assert(!!blockToVestedMap[blockNumber], "snapshot:allocation 404");
+    assert(!!blockToVestedMap[blockNumber], "harvest:allocation 404");
     const balancesMainnet = loadBalancesMainnet(blockNumber);
-    assert(!!balancesMainnet, "snapshot:allocation 404");
+    assert(!!balancesMainnet, "harvest:allocation 404");
     const balancesGC = loadBalancesGC(blockNumber);
-    assert(!!balancesGC, "snapshot:allocation 404");
+    assert(!!balancesGC, "harvest:allocation 404");
 
     const vestingSlice = blockToVestedMap[blockNumber].sub(
       prevBlockNumber ? blockToVestedMap[prevBlockNumber] : BigNumber.from(0),
