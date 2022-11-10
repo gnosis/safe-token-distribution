@@ -14,7 +14,7 @@ import {
 } from "../queries/queryBalances";
 
 task(
-  "snapshot:balances",
+  "harvest:balances",
   "For every blockHeight in schedule fetches a balance snapshot (mainnet and gc)",
 )
   .addOptionalParam(
@@ -24,7 +24,7 @@ task(
     types.boolean,
   )
   .setAction(async (taskArgs) => {
-    console.log("Starting snapshot:balances...");
+    console.log("Starting harvest:balances...");
 
     const dateToBlock = loadDateToBlockMap();
     const entries = Object.keys(dateToBlock);

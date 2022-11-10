@@ -11,7 +11,7 @@ import {
 } from "../persistence";
 
 task(
-  "snapshot:blocks",
+  "harvest:blocks",
   "Finds the closest block (Mainnet and GC) for each timestamp",
 )
   .addOptionalParam(
@@ -27,7 +27,7 @@ task(
     types.boolean,
   )
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-    console.log("Starting snapshot:blocks...");
+    console.log("Starting harvest:blocks...");
     const schedule = createSchedule(taskArgs.schedule);
     const dateToBlock = loadDateToBlockMap();
 

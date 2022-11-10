@@ -57,11 +57,13 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
+    "schedule": "yarn hardhat schedule",
     "harvest": "yarn hardhat harvest",
-    "snapshot:schedule": "yarn hardhat snapshot:schedule",
-    "snapshot:blocks": "yarn hardhat snapshot:blocks",
-    "snapshot:balances": "yarn hardhat snapshot:balances",
-    "snapshot:totalvested": "yarn hardhat snapshot:totalvested",
+    "harvest:blocks": "yarn hardhat harvest:blocks",
+    "harvest:balances": "yarn hardhat harvest:balances",
+    "harvest:totalvested": "yarn hardhat harvest:totalvested",
+    "harvest:allocations": "yarn hardhat harvest:allocations",
+    "distribution": "echo TODO",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",
