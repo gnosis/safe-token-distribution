@@ -111,28 +111,19 @@ export function writeBalancesGC(block: number, balances: Balances) {
   writeBalances(block, "balances.gc.json", balances);
 }
 
+export function writeAllocationsMainnet(block: number, allocations: Balances) {
+  writeBalances(block, "allocations.mainnet.json", allocations);
+}
+
+export function writeAllocationsGC(block: number, allocations: Balances) {
+  writeBalances(block, "allocations.gc.json", allocations);
+}
+
 function writeBalances(block: number, name: string, balances: Balances) {
   const filePath = snapshotFilePath(block, name);
   const map = mapValuesToString(balances);
 
   fs.writeFileSync(filePath, JSON.stringify(map, null, 2), "utf8");
-}
-
-export function writeAllocations(
-  block: number,
-  allocationMainnet: Balances,
-  allocationGC: Balances,
-) {
-  writeAllocation(block, "allocation.mainet.json", allocationMainnet);
-  writeAllocation(block, "allocation.gc.json", allocationGC);
-}
-
-function writeAllocation(block: number, name: string, allocation: Balances) {
-  fs.writeFileSync(
-    snapshotFilePath(block, name),
-    JSON.stringify(mapValuesToString(allocation), null, 2),
-    "utf8",
-  );
 }
 
 function snapshotFilePath(block: number, name: string) {
@@ -157,7 +148,7 @@ function mapValuesToBigNumber(map: JSONMap): Balances {
   return Object.keys(map).reduce(
     (prev, key) => ({
       ...prev,
-      [Number(key)]: BigNumber.from(map[key]),
+      [key]: BigNumber.from(map[key]),
     }),
     {},
   );
