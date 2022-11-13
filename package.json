@@ -49,20 +49,17 @@
     "@gnosis.pm/safe-ethers-lib": "^1.6.1",
     "@openzeppelin/contracts": "^4.7.3",
     "@openzeppelin/merkle-tree": "^1.0.1",
+    "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
-    "graphql-request": "^5.0.0",
-    "moment": "^2.29.4"
+    "graphql-request": "^5.0.0"
   },
   "resolutions": {
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
-    "schedule": "yarn hardhat schedule",
+    "schedule:expand": "yarn hardhat schedule:expand",
+    "schedule:validate": "yarn hardhat schedule:validate --deep false",
     "harvest": "yarn hardhat harvest",
-    "harvest:blocks": "yarn hardhat harvest:blocks",
-    "harvest:balances": "yarn hardhat harvest:balances",
-    "harvest:totalvested": "yarn hardhat harvest:totalvested",
-    "harvest:allocations": "yarn hardhat harvest:allocations",
     "distribution": "echo TODO",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",

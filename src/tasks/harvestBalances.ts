@@ -1,10 +1,7 @@
-import assert from "assert";
 import { task, types } from "hardhat/config";
-import moment from "moment";
 import {
   loadBalancesGC,
   loadBalancesMainnet,
-  loadDateToBlockMap,
   writeBalancesGC,
   writeBalancesMainnet,
 } from "../persistence";
@@ -59,12 +56,12 @@ task(
   });
 
 function sanityCheck(schedule: string[]) {
-  assert(
-    schedule
-      .map((entry) => moment(entry))
-      .every(
-        (entry, index, entries) =>
-          index === 0 || entries[index - 1].isBefore(entry),
-      ),
-  );
+  // assert(
+  //   schedule
+  //     .map((entry) => moment(entry))
+  //     .every(
+  //       (entry, index, entries) =>
+  //         index === 0 || entries[index - 1].isBefore(entry),
+  //     ),
+  // );
 }

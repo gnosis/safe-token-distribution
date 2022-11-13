@@ -1,0 +1,532 @@
+[
+  {
+    "mainnet": {
+      "timestamp": 1663803515,
+      "blockNumber": 15585066
+    },
+    "gc": {
+      "timestamp": 1663803515,
+      "blockNumber": 24285339
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1663887803,
+      "blockNumber": 15592042
+    },
+    "gc": {
+      "timestamp": 1663887795,
+      "blockNumber": 24299029
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1663960991,
+      "blockNumber": 15598109
+    },
+    "gc": {
+      "timestamp": 1663960990,
+      "blockNumber": 24310919
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664063351,
+      "blockNumber": 15606605
+    },
+    "gc": {
+      "timestamp": 1664063350,
+      "blockNumber": 24327538
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664124863,
+      "blockNumber": 15611713
+    },
+    "gc": {
+      "timestamp": 1664124860,
+      "blockNumber": 24337523
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664225951,
+      "blockNumber": 15620075
+    },
+    "gc": {
+      "timestamp": 1664225950,
+      "blockNumber": 24353944
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664341895,
+      "blockNumber": 15629663
+    },
+    "gc": {
+      "timestamp": 1664341895,
+      "blockNumber": 24372775
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664437199,
+      "blockNumber": 15637568
+    },
+    "gc": {
+      "timestamp": 1664437195,
+      "blockNumber": 24388255
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664462267,
+      "blockNumber": 15639641
+    },
+    "gc": {
+      "timestamp": 1664462265,
+      "blockNumber": 24392329
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664581835,
+      "blockNumber": 15649547
+    },
+    "gc": {
+      "timestamp": 1664581835,
+      "blockNumber": 24411753
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664662607,
+      "blockNumber": 15656219
+    },
+    "gc": {
+      "timestamp": 1664662605,
+      "blockNumber": 24424876
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664788583,
+      "blockNumber": 15666671
+    },
+    "gc": {
+      "timestamp": 1664788580,
+      "blockNumber": 24445339
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664864819,
+      "blockNumber": 15672979
+    },
+    "gc": {
+      "timestamp": 1664864815,
+      "blockNumber": 24457723
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664962691,
+      "blockNumber": 15681059
+    },
+    "gc": {
+      "timestamp": 1664962690,
+      "blockNumber": 24473555
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1664985731,
+      "blockNumber": 15682964
+    },
+    "gc": {
+      "timestamp": 1664985730,
+      "blockNumber": 24477092
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665074555,
+      "blockNumber": 15690320
+    },
+    "gc": {
+      "timestamp": 1665074555,
+      "blockNumber": 24490388
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665180023,
+      "blockNumber": 15699049
+    },
+    "gc": {
+      "timestamp": 1665180020,
+      "blockNumber": 24506164
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665321911,
+      "blockNumber": 15710819
+    },
+    "gc": {
+      "timestamp": 1665321910,
+      "blockNumber": 24527226
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665333647,
+      "blockNumber": 15711792
+    },
+    "gc": {
+      "timestamp": 1665333635,
+      "blockNumber": 24528950
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665415295,
+      "blockNumber": 15718561
+    },
+    "gc": {
+      "timestamp": 1665415295,
+      "blockNumber": 24540933
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665582503,
+      "blockNumber": 15732431
+    },
+    "gc": {
+      "timestamp": 1665582500,
+      "blockNumber": 24566084
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665667079,
+      "blockNumber": 15739443
+    },
+    "gc": {
+      "timestamp": 1665667075,
+      "blockNumber": 24578943
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665727931,
+      "blockNumber": 15744479
+    },
+    "gc": {
+      "timestamp": 1665727930,
+      "blockNumber": 24588117
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665799763,
+      "blockNumber": 15750434
+    },
+    "gc": {
+      "timestamp": 1665799760,
+      "blockNumber": 24598955
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665912563,
+      "blockNumber": 15759785
+    },
+    "gc": {
+      "timestamp": 1665912560,
+      "blockNumber": 24615900
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1665981383,
+      "blockNumber": 15765489
+    },
+    "gc": {
+      "timestamp": 1665981380,
+      "blockNumber": 24626245
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666017911,
+      "blockNumber": 15768504
+    },
+    "gc": {
+      "timestamp": 1666017910,
+      "blockNumber": 24631763
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666160723,
+      "blockNumber": 15780349
+    },
+    "gc": {
+      "timestamp": 1666160720,
+      "blockNumber": 24653170
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666200419,
+      "blockNumber": 15783638
+    },
+    "gc": {
+      "timestamp": 1666200410,
+      "blockNumber": 24659061
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666290599,
+      "blockNumber": 15791110
+    },
+    "gc": {
+      "timestamp": 1666290595,
+      "blockNumber": 24672283
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666384787,
+      "blockNumber": 15798924
+    },
+    "gc": {
+      "timestamp": 1666384785,
+      "blockNumber": 24686064
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666479995,
+      "blockNumber": 15806820
+    },
+    "gc": {
+      "timestamp": 1666479995,
+      "blockNumber": 24699924
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666587947,
+      "blockNumber": 15815766
+    },
+    "gc": {
+      "timestamp": 1666587935,
+      "blockNumber": 24715494
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666670435,
+      "blockNumber": 15822570
+    },
+    "gc": {
+      "timestamp": 1666670435,
+      "blockNumber": 24727347
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666718087,
+      "blockNumber": 15826519
+    },
+    "gc": {
+      "timestamp": 1666718085,
+      "blockNumber": 24734156
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666856339,
+      "blockNumber": 15837973
+    },
+    "gc": {
+      "timestamp": 1666856330,
+      "blockNumber": 24753705
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1666911143,
+      "blockNumber": 15842512
+    },
+    "gc": {
+      "timestamp": 1666911140,
+      "blockNumber": 24761435
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667025959,
+      "blockNumber": 15852015
+    },
+    "gc": {
+      "timestamp": 1667025955,
+      "blockNumber": 24777574
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667096819,
+      "blockNumber": 15857882
+    },
+    "gc": {
+      "timestamp": 1667096810,
+      "blockNumber": 24787581
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667183075,
+      "blockNumber": 15865036
+    },
+    "gc": {
+      "timestamp": 1667183075,
+      "blockNumber": 24800208
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667309027,
+      "blockNumber": 15875452
+    },
+    "gc": {
+      "timestamp": 1667309020,
+      "blockNumber": 24818675
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667379587,
+      "blockNumber": 15881299
+    },
+    "gc": {
+      "timestamp": 1667379585,
+      "blockNumber": 24829023
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667400635,
+      "blockNumber": 15883044
+    },
+    "gc": {
+      "timestamp": 1667400635,
+      "blockNumber": 24832110
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667520587,
+      "blockNumber": 15892975
+    },
+    "gc": {
+      "timestamp": 1667520585,
+      "blockNumber": 24849701
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667580143,
+      "blockNumber": 15897916
+    },
+    "gc": {
+      "timestamp": 1667580140,
+      "blockNumber": 24858435
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667717711,
+      "blockNumber": 15909321
+    },
+    "gc": {
+      "timestamp": 1667717705,
+      "blockNumber": 24876720
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667771567,
+      "blockNumber": 15913788
+    },
+    "gc": {
+      "timestamp": 1667771565,
+      "blockNumber": 24883901
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667899955,
+      "blockNumber": 15924437
+    },
+    "gc": {
+      "timestamp": 1667899955,
+      "blockNumber": 24901018
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1667946959,
+      "blockNumber": 15928334
+    },
+    "gc": {
+      "timestamp": 1667946955,
+      "blockNumber": 24907276
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1668042191,
+      "blockNumber": 15936214
+    },
+    "gc": {
+      "timestamp": 1668042185,
+      "blockNumber": 24919968
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1668168431,
+      "blockNumber": 15946670
+    },
+    "gc": {
+      "timestamp": 1668168430,
+      "blockNumber": 24937415
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1668233315,
+      "blockNumber": 15952043
+    },
+    "gc": {
+      "timestamp": 1668233310,
+      "blockNumber": 24946923
+    }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1668300023,
+      "blockNumber": 15957581
+    },
+    "gc": {
+      "timestamp": 1668300020,
+      "blockNumber": 24956818
+    }
+  }
+]
