@@ -1,9 +1,9 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 import { task, types } from "hardhat/config";
+import { merge, Snapshot, sum } from "../snapshot";
 
 import {
-  Balances,
   loadBalancesGC,
   loadBalancesMainnet,
   loadBlockToVestedMap,
@@ -19,7 +19,7 @@ task("harvest:allocation", "")
     true,
     types.boolean,
   )
-  .setAction(async (taskArgs) => {
+  .setAction(async () => {
     console.log("Starting harvest:allocation...");
 
     const dateToBlock = loadDateToBlockMap();
@@ -32,39 +32,44 @@ task("harvest:allocation", "")
       const balancesMainnet = loadBalancesMainnet(blockNumber);
       if (balancesMainnet && totalToAllocate) {
         console.log(`calculating mainnet allocations for ${blockNumber}...`);
-        const result = distribute(balancesMainnet, totalToAllocate);
-        console.log(totalToAllocate.toString());
-        console.log(sum(result).toString());
+        const result = allocate(balancesMainnet, totalToAllocate);
+        assert(totalToAllocate.eq(sum(result)), "Mistmatch in allocation math");
         writeAllocationsMainnet(blockNumber, result);
       }
 
-      /*
-       * note: we load the balances using the GC blockNumber
-       * but we persist it under the mainnet file path
-       * both are to be loaded at the same, and the reference is the mainnet block
-       */
       const blockNumberGC = dateToBlock[iso].gc.blockNumber;
       // load using mainnet block
       const balancesGC = loadBalancesGC(blockNumber);
       if (balancesGC && totalToAllocate) {
         console.log(`calculating gc allocations for ${blockNumberGC}...`);
-        const result = distribute(balancesGC, totalToAllocate);
-        console.log(totalToAllocate.toString());
-        console.log(sum(result).toString());
+        const result = allocate(balancesGC, totalToAllocate);
+        assert(totalToAllocate.eq(sum(result)), "Mistmatch in allocation math");
         writeAllocationsGC(blockNumber, result);
       }
     }
   });
 
-function distribute(balances: Balances, totalToAllocate: BigNumber): Balances {
-  const isDusty = totalToAllocate.lte(Object.keys(balances).length);
-
-  if (isDusty) {
-    return distributeDust(balances, totalToAllocate.toNumber());
+function allocate(balances: Snapshot, totalToAllocate: BigNumber): Snapshot {
+  if (totalToAllocate.eq(0)) {
+    return {};
   }
 
-  const totalBalances = sum(balances);
+  const { allocations, remainder } = calculate(balances, totalToAllocate);
 
+  return merge(allocations, allocate(balances, remainder));
+}
+
+function calculate(balances: Snapshot, totalToAllocate: BigNumber) {
+  const holderCount = Object.keys(balances).length;
+  const isDusty = totalToAllocate.lte(holderCount);
+
+  return isDusty
+    ? calculateSpread(balances, totalToAllocate)
+    : calculateRatio(balances, totalToAllocate);
+}
+
+function calculateRatio(balances: Snapshot, totalToAllocate: BigNumber) {
+  const totalBalances = sum(balances);
   const allocations = Object.keys(balances)
     .map((address) => ({
       address,
@@ -72,51 +77,33 @@ function distribute(balances: Balances, totalToAllocate: BigNumber): Balances {
     }))
     .filter(({ amount }) => amount.gt(0))
     .reduce(
-      (prev, { address, amount }) => ({
-        ...prev,
-        [address]: amount,
-      }),
+      (prev, { address, amount }) => ({ ...prev, [address]: amount }),
       {},
     );
 
-  assert(
-    Object.keys(allocations).length > 0,
-    "Unexpected Distribution Standstill",
-  );
+  const totalAllocated = sum(allocations);
 
-  const remainder = totalToAllocate.sub(sum(allocations));
-  return merge(allocations, distribute(balances, remainder));
+  assert(totalAllocated.gt(0), "Unexpected Standstill");
+
+  return {
+    allocations,
+    remainder: totalToAllocate.sub(totalAllocated),
+  };
 }
 
-function distributeDust(balances: Balances, dust: number) {
-  assert(dust <= Object.keys(balances).length);
+function calculateSpread(balances: Snapshot, totalToAllocate: BigNumber) {
+  const holderCount = Object.keys(balances).length;
+  const dust = totalToAllocate.toNumber();
+  assert(dust <= holderCount);
 
-  return Object.keys(balances)
-    .map((address) => ({
-      address,
-      amount: balances[address],
-    }))
+  const allocations = Object.keys(balances)
+    .map((address) => ({ address, amount: balances[address] }))
     .sort((a, b) => (a.amount.gt(b.amount) ? -1 : 1))
     .slice(0, dust)
     .reduce(
-      (result, { address }) => ({ ...result, [address]: BigNumber.from("1") }),
+      (result, { address }) => ({ ...result, [address]: BigNumber.from(1) }),
       {},
     );
-}
 
-function sum(bag: Balances) {
-  return Object.keys(bag).reduce(
-    (prev, next) => prev.add(bag[next]),
-    BigNumber.from("0"),
-  );
-}
-
-function merge(b1: Balances, b2: Balances): Balances {
-  return Object.keys(b2).reduce(
-    (result, key) => ({
-      ...result,
-      [key]: (result[key] || BigNumber.from(0)).add(b2[key]),
-    }),
-    b1,
-  );
+  return { allocations, remainder: BigNumber.from(0) };
 }
