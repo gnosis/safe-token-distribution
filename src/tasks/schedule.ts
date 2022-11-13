@@ -1,62 +1,144 @@
 import { task, types } from "hardhat/config";
-import moment from "moment";
-
-import { writeSchedule } from "../persistence";
 
 import {
   VESTING_CREATION_BLOCK,
-  DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES,
+  SNAPSHOT_FREQUENCY_IN_MINUTES,
 } from "../config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import {
+  generate as generateIntervals,
+  isPast as isPastInterval,
+} from "../intervals";
+import {
+  load as loadSchedule,
+  write as writeSchedule,
+  validateShallow,
+  validateDeep,
+  assignRandomBlocks,
+  expandEntry,
+} from "../schedule";
+import assert from "assert";
+
 task(
-  "snapshot:schedule",
-  "Generates and persists the sequence of timestamps that will be used to take balance snapshots",
+  "schedule:expand",
+  "Appends to the schedule.json file - generates block numbers and timestamps for all past and not yet generated intervals",
 )
   .addOptionalParam(
     "inception",
-    "distribution start date",
+    "vesting start block",
     VESTING_CREATION_BLOCK,
     types.int,
   )
   .addOptionalParam(
     "frequency",
     "distribution snapshot frequency in minutes",
-    DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES,
+    SNAPSHOT_FREQUENCY_IN_MINUTES,
     types.int,
   )
   .setAction(
     async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
-      const schedule = await generate(inception, frequency, hre);
-      writeSchedule(schedule);
+      console.log("schedule:expand Starting...");
+      const providers = getProviders(hre);
+
+      const intervals = generateIntervals(
+        await providers.mainnet.getBlock(inception),
+        frequency,
+      ).filter(isPastInterval);
+
+      const prevSchedule = loadSchedule();
+      validateShallow(intervals, prevSchedule);
+
+      assert(prevSchedule.length <= intervals.length);
+
+      if (prevSchedule.length == intervals.length) {
+        console.log("schedule:expand Already up to date");
+        return;
+      }
+
+      console.log(
+        `schedule:expand Expanding ${
+          intervals.length - prevSchedule.length
+        } new entries`,
+      );
+
+      const nextMainnetEntries = await assignRandomBlocks(
+        intervals.slice(prevSchedule.length),
+        providers.mainnet,
+      );
+
+      let nextSchedule = [...prevSchedule];
+      for (const mainnetEntry of nextMainnetEntries) {
+        console.log(
+          `schedule:expand Finding GC's equivalent for mainnet block ${mainnetEntry.blockNumber}`,
+        );
+        const entry = await expandEntry(mainnetEntry, providers);
+        nextSchedule = [...nextSchedule, entry];
+        validateShallow(intervals, nextSchedule);
+        writeSchedule(nextSchedule);
+      }
+
+      console.log("schedule:expand Done");
     },
   );
 
-async function generate(
-  inception: string,
-  frequency: number,
-  hre: HardhatRuntimeEnvironment,
-) {
-  const provider = new hre.ethers.providers.JsonRpcProvider(
+task(
+  "schedule:validate",
+  "Validates the schedule written to disk, and ensures it matches interval guidelines",
+)
+  .addOptionalParam(
+    "inception",
+    "vesting start block",
+    VESTING_CREATION_BLOCK,
+    types.int,
+  )
+  .addOptionalParam(
+    "frequency",
+    "distribution snapshot frequency in minutes",
+    SNAPSHOT_FREQUENCY_IN_MINUTES,
+    types.int,
+  )
+  .addOptionalParam(
+    "deep",
+    "refetch block info, and do exhaustive checks",
+    false,
+    types.boolean,
+  )
+  .setAction(
+    async ({ inception, frequency, deep }, hre: HardhatRuntimeEnvironment) => {
+      console.log("schedule:validate Starting...");
+
+      const providers = getProviders(hre);
+
+      const intervals = generateIntervals(
+        await providers.mainnet.getBlock(inception),
+        frequency,
+      ).filter(isPastInterval);
+
+      const prevSchedule = loadSchedule();
+      console.log(
+        `schedule:validate Validating ${prevSchedule.length} entries ${
+          deep ? "(with block metadata refetching)" : ""
+        }`,
+      );
+
+      if (deep) {
+        await validateDeep(intervals, prevSchedule, providers);
+      } else {
+        validateShallow(intervals, prevSchedule);
+      }
+      console.log("schedule:validate Done");
+    },
+  );
+
+function getProviders(hre: HardhatRuntimeEnvironment) {
+  const mainnet = new hre.ethers.providers.JsonRpcProvider(
     `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
   );
 
-  const result: string[] = [];
+  const gc = new hre.ethers.providers.JsonRpcProvider(
+    `https://rpc.gnosischain.com `,
+  );
 
-  const block = await provider.getBlock(inception);
-
-  const start = moment
-    .unix(block.timestamp)
-    .set("minute", 0)
-    .set("second", 0)
-    .add(1, "hour");
-  const end = moment(start).add(4, "year");
-
-  const sweep = moment(start);
-  while (sweep.isSameOrBefore(end)) {
-    result.push(sweep.toISOString());
-    sweep.add(frequency, "minutes");
-  }
-
-  return result;
+  return { mainnet, gc };
 }

@@ -6,8 +6,6 @@ import { merge, Snapshot, sum } from "../snapshot";
 import {
   loadBalancesGC,
   loadBalancesMainnet,
-  loadBlockToVestedMap,
-  loadDateToBlockMap,
   writeAllocationsGC,
   writeAllocationsMainnet,
 } from "../persistence";
@@ -38,7 +36,6 @@ task("harvest:allocation", "")
       }
 
       const blockNumberGC = dateToBlock[iso].gc.blockNumber;
-      // load using mainnet block
       const balancesGC = loadBalancesGC(blockNumber);
       if (balancesGC && totalToAllocate) {
         console.log(`calculating gc allocations for ${blockNumberGC}...`);

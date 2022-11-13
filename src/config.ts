@@ -1,4 +1,4 @@
-export const DISTRIBUTION_SNAPSHOT_FREQUENCY_IN_MINUTES = 60 * 24; // once a day
+export const SNAPSHOT_FREQUENCY_IN_MINUTES = 60 * 24; // once a day
 
 export const VESTING_CREATION_BLOCK = 15582160;
 
