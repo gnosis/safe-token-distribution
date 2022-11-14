@@ -3,8 +3,8 @@ import path from "path";
 import assert from "assert";
 
 import { Provider } from "@ethersproject/providers";
-import { Interval } from "./intervals";
-import queryClosestBlock from "./queries/queryClosestBlock";
+import { Interval } from "../intervals";
+import queryClosestBlock from "../queries/queryClosestBlock";
 
 export type Schedule = { blockNumber: number; timestamp: number };
 export type BridgedSchedule = { mainnet: Schedule; gc: Schedule };
@@ -46,7 +46,7 @@ export async function assignRandomBlocks(
   );
 
   if (index === -1) {
-    // try again
+    // narrow down and try again
     const left = intervals[0].left;
     const right = intervals[intervals.length - 1].right;
     return assignRandomBlocks(

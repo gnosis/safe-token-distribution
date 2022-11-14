@@ -16,8 +16,8 @@ import {
   saveAllocationGC as saveGC,
   saveAllocationMainnet as saveMainnet,
 } from "../persistence";
-import { BridgedSchedule, load as loadSchedule } from "../schedule";
-import { calculate } from "../allocation";
+import { BridgedSchedule, load as loadSchedule } from "../domain/schedule";
+import { calculate } from "../domain/allocation";
 
 import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
 

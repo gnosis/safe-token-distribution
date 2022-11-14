@@ -17,7 +17,7 @@ import {
   validateDeep,
   assignRandomBlocks,
   expandEntry,
-} from "../schedule";
+} from "../domain/schedule";
 import assert from "assert";
 
 task(
