@@ -2,7 +2,7 @@ import hre, { ethers } from "hardhat";
 import { expect } from "chai";
 import { BigNumber, Signer } from "ethers";
 
-import { createMerkleTree } from "../src/distribution";
+import { createMerkleTree } from "../src/domain/distribution";
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
 import { ERC20Mock__factory } from "../typechain";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
