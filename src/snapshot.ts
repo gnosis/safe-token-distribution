@@ -1,5 +1,5 @@
+import fs from "fs";
 import { BigNumber } from "ethers";
-import fs from "fs-extra";
 
 export type Snapshot = {
   [key: string]: BigNumber;
