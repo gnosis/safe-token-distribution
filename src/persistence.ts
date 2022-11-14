@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs-extra";
+import { BigNumber } from "ethers";
 
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
@@ -8,7 +9,6 @@ import {
   write as writeSnapshot,
   load as loadSnapshot,
 } from "./snapshot";
-import { BigNumber } from "ethers";
 
 export type Schedule = { blockNumber: number; timestamp: number };
 export type BridgedSchedule = { mainnet: Schedule; gc: Schedule };
@@ -52,7 +52,6 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
     path.join(
       __dirname,
       "..",
-      "..",
       "snapshots",
       "allocations",
       `${chain}.${block}.json`,
@@ -61,31 +60,26 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
 }
 
 export function saveDistribution(
-  chain: "mainnet" | "gc",
   tree: StandardMerkleTree<(string | BigNumber)[]>,
 ) {
-  const filePath = distributionFilePath(chain, tree.root);
+  const filePath = distributionFilePath(tree.root);
   fs.ensureDirSync(path.dirname(filePath));
-  fs.writeFileSync(filePath, JSON.stringify(tree.dump()), "utf8");
+  fs.writeFileSync(filePath, JSON.stringify(tree.dump(), null, 2), "utf8");
 }
 
-export function distributionExists(
-  chain: "mainnet" | "gc",
-  root: string,
-): boolean {
-  const filePath = distributionFilePath(chain, root);
+export function distributionExists(root: string): boolean {
+  const filePath = distributionFilePath(root);
   return fs.existsSync(filePath);
 }
 
-function distributionFilePath(chain: "mainnet" | "gc", rootHash: string) {
+function distributionFilePath(rootHash: string) {
   return path.resolve(
     path.join(
       __dirname,
       "..",
-      "..",
       "snapshots",
       "distributions",
-      `${chain}.${rootHash}.json`,
+      `${rootHash}.json`,
     ),
   );
 }

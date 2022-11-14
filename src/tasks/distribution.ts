@@ -8,12 +8,7 @@ import {
   generate as generateIntervals,
   isPast as isPastInterval,
 } from "../intervals";
-import {
-  loadSchedule,
-  loadAllocationGC,
-  loadAllocationMainnet,
-  saveDistribution,
-} from "../persistence";
+import { loadAllocation, loadSchedule, saveDistribution } from "../persistence";
 
 import { Snapshot, merge } from "../snapshot";
 
@@ -56,10 +51,11 @@ task("distribution:calculate", "")
       let accumulatedAllocationGC: Snapshot = {};
 
       for (const entry of schedule) {
-        const allocationMainnet = loadAllocationMainnet(
+        const allocationMainnet = loadAllocation(
+          "mainnet",
           entry.mainnet.blockNumber,
         );
-        const allocationGC = loadAllocationGC(entry.gc.blockNumber);
+        const allocationGC = loadAllocation("gc", entry.gc.blockNumber);
 
         if (!allocationMainnet || !allocationGC) {
           throw new Error(
@@ -76,8 +72,8 @@ task("distribution:calculate", "")
       const distroTreeMainnet = createMerkleTree(accumulatedAllocationMainnet);
       const distroTreeGC = createMerkleTree(accumulatedAllocationGC);
 
-      saveDistribution("mainnet", distroTreeMainnet);
-      saveDistribution("gc", distroTreeGC);
+      saveDistribution(distroTreeMainnet);
+      saveDistribution(distroTreeGC);
     },
   );
 
