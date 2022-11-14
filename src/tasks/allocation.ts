@@ -11,12 +11,12 @@ import queryVestedInInterval from "../queries/queryVestedInInterval";
 
 import { sum } from "../snapshot";
 import {
-  loadAllocationGC as loadGC,
-  loadAllocationMainnet as loadMainnet,
-  saveAllocationGC as saveGC,
-  saveAllocationMainnet as saveMainnet,
+  BridgedSchedule,
+  loadSchedule,
+  loadAllocation,
+  saveAllocation,
 } from "../persistence";
-import { BridgedSchedule, load as loadSchedule } from "../domain/schedule";
+
 import { calculate } from "../domain/allocation";
 
 import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
@@ -39,8 +39,11 @@ task("allocation:calculate", "")
     log("Starting");
 
     for (const entry of schedule) {
-      let allocationsMainnet = loadMainnet(entry.mainnet.blockNumber);
-      let allocationsGC = loadGC(entry.gc.blockNumber);
+      let allocationsMainnet = loadAllocation(
+        "mainnet",
+        entry.mainnet.blockNumber,
+      );
+      let allocationsGC = loadAllocation("gc", entry.gc.blockNumber);
 
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
         log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
@@ -57,8 +60,12 @@ task("allocation:calculate", "")
         allocationsGC = calculate(balances.gc, toAllocate.gc);
         assert(sum(allocationsGC).eq(toAllocate.gc));
 
-        saveMainnet(entry.mainnet.blockNumber, allocationsMainnet);
-        saveGC(entry.gc.blockNumber, allocationsGC);
+        saveAllocation(
+          "mainnet",
+          entry.mainnet.blockNumber,
+          allocationsMainnet,
+        );
+        saveAllocation("gc", entry.gc.blockNumber, allocationsGC);
       }
     }
   });

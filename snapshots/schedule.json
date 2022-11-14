@@ -528,5 +528,15 @@
       "timestamp": 1668300020,
       "blockNumber": 24956818
     }
+  },
+  {
+    "mainnet": {
+      "timestamp": 1668355991,
+      "blockNumber": 15962221
+    },
+    "gc": {
+      "timestamp": 1668355990,
+      "blockNumber": 24965768
+    }
   }
 ]

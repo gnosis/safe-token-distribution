@@ -6,9 +6,6 @@ import { Provider } from "@ethersproject/providers";
 import { Interval } from "../intervals";
 import queryClosestBlock from "../queries/queryClosestBlock";
 
-export type Schedule = { blockNumber: number; timestamp: number };
-export type BridgedSchedule = { mainnet: Schedule; gc: Schedule };
-
 export async function expandEntry(
   mainnetEntry: Schedule,
   providers: { mainnet: Provider; gc: Provider },
@@ -146,23 +143,4 @@ function randomBlockNumber(floor: number, ceiling: number) {
   assert(result >= floor);
   assert(result <= ceiling);
   return result;
-}
-
-export function load(filePath?: string): { mainnet: Schedule; gc: Schedule }[] {
-  return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));
-}
-
-export function write(
-  schedule: { mainnet: Schedule; gc: Schedule }[],
-  filePath?: string,
-) {
-  fs.writeFileSync(
-    filePath || scheduleFilePath(),
-    JSON.stringify(schedule, null, 2),
-    "utf8",
-  );
-}
-
-export function scheduleFilePath() {
-  return path.resolve(path.join(__dirname, "..", "snapshots", "schedule.json"));
 }

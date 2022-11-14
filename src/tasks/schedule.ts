@@ -1,24 +1,25 @@
+import assert from "assert";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { task, types } from "hardhat/config";
 
-import {
-  VESTING_CREATION_BLOCK,
-  SNAPSHOT_FREQUENCY_IN_MINUTES,
-} from "../config";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { loadSchedule, saveSchedule } from "../persistence";
 
 import {
-  generate as generateIntervals,
-  isPast as isPastInterval,
-} from "../intervals";
-import {
-  load as loadSchedule,
-  write as writeSchedule,
   validateShallow,
   validateDeep,
   assignRandomBlocks,
   expandEntry,
 } from "../domain/schedule";
-import assert from "assert";
+
+import {
+  generate as generateIntervals,
+  isPast as isPastInterval,
+} from "../intervals";
+
+import {
+  VESTING_CREATION_BLOCK,
+  SNAPSHOT_FREQUENCY_IN_MINUTES,
+} from "../config";
 
 task(
   "schedule:expand",
@@ -75,7 +76,7 @@ task(
         const entry = await expandEntry(mainnetEntry, providers);
         nextSchedule = [...nextSchedule, entry];
         validateShallow(intervals, nextSchedule);
-        writeSchedule(nextSchedule);
+        saveSchedule(nextSchedule);
       }
 
       console.log("schedule:expand Done");

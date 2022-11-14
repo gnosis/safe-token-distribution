@@ -1,8 +1,8 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import { load as loadSchedule } from "../domain/schedule";
 
+import { loadSchedule } from "../persistence";
 import { VestingPool__factory } from "../../typechain";
 
 export default async function queryVestedInInterval(
