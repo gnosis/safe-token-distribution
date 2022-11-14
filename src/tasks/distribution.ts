@@ -1,30 +1,27 @@
-import path from "path";
-import assert from "assert";
 import { Provider } from "@ethersproject/providers";
 import { task, types } from "hardhat/config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+import { createMerkleTree } from "../domain/distribution";
 
 import {
   generate as generateIntervals,
   isPast as isPastInterval,
 } from "../intervals";
-
 import {
-  Snapshot,
-  sum,
-  write as writeSnapshot,
-  load as loadSnapshot,
-  merge,
-} from "../snapshot";
+  loadSchedule,
+  loadAllocationGC,
+  loadAllocationMainnet,
+  saveDistribution,
+} from "../persistence";
 
-import { load as loadSchedule } from "../domain/schedule";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Snapshot, merge } from "../snapshot";
 
 import {
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   VESTING_CREATION_BLOCK,
 } from "../config";
-import { calculate } from "../domain/allocation";
-import { loadAllocationGC, loadAllocationMainnet } from "../persistence";
+import { validateShallow } from "../domain/schedule";
 
 task("distribution:calculate", "")
   .addOptionalParam(
@@ -55,8 +52,8 @@ task("distribution:calculate", "")
         providers.mainnet,
       );
 
-      let mainnetAllocations: Snapshot[] = [];
-      let gcAllocations: Snapshot[] = [];
+      let accumulatedAllocationMainnet: Snapshot = {};
+      let accumulatedAllocationGC: Snapshot = {};
 
       for (const entry of schedule) {
         const allocationMainnet = loadAllocationMainnet(
@@ -69,19 +66,18 @@ task("distribution:calculate", "")
             `Allocation Not Calculated ${entry.mainnet.blockNumber}`,
           );
         }
-        mainnetAllocations = [...mainnetAllocations, allocationMainnet];
-        gcAllocations = [...gcAllocations, allocationMainnet];
+        accumulatedAllocationMainnet = merge(
+          accumulatedAllocationMainnet,
+          allocationMainnet,
+        );
+        accumulatedAllocationGC = merge(accumulatedAllocationGC, allocationGC);
       }
 
-      const mainnetTotals = mainnetAllocations.reduce(
-        (prev, next) => merge(prev, next),
-        {},
-      );
+      const distroTreeMainnet = createMerkleTree(accumulatedAllocationMainnet);
+      const distroTreeGC = createMerkleTree(accumulatedAllocationGC);
 
-      const gcTotals = gcAllocations.reduce(
-        (prev, next) => merge(prev, next),
-        {},
-      );
+      saveDistribution("mainnet", distroTreeMainnet);
+      saveDistribution("gc", distroTreeGC);
     },
   );
 
@@ -96,31 +92,12 @@ async function ensureScheduleIsFresh(
     frequency,
   ).filter(isPastInterval);
 
+  validateShallow(intervals, schedule);
   if (intervals.length !== schedule.length) {
-    throw new Error("Schedule is stale");
+    throw new Error(
+      "The schedule found in Disk is valid, but should be expanded further",
+    );
   }
-}
-
-function loadMainnet(block: number): Snapshot | null {
-  return loadSnapshot(filePath(`mainnet.${block}.json`));
-}
-
-function loadGC(block: number): Snapshot | null {
-  return loadSnapshot(filePath(`gc.${block}.json`));
-}
-
-function saveMainnet(block: number, allocations: Snapshot) {
-  writeSnapshot(filePath(`mainnet.${block}.json`), allocations);
-}
-
-function saveGC(block: number, allocations: Snapshot) {
-  writeSnapshot(filePath(`gc.${block}.json`), allocations);
-}
-
-function filePath(end: string) {
-  return path.resolve(
-    path.join(__dirname, "..", "..", "snapshots", "allocations", `${end}`),
-  );
 }
 
 function getProviders(hre: HardhatRuntimeEnvironment) {

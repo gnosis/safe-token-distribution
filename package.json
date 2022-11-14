@@ -49,6 +49,7 @@
     "@openzeppelin/contracts": "^4.7.3",
     "@openzeppelin/merkle-tree": "^1.0.1",
     "date-fns": "^2.29.3",
+    "fs-extra": "^10.1.0",
     "graphql": "^16.6.0",
     "graphql-request": "^5.0.0"
   },
