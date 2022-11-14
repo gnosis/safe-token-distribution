@@ -1,8 +1,8 @@
 import hre, { ethers } from "hardhat";
 import { expect } from "chai";
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 
-import createAllocation from "../src/createAllocation";
+import { createMerkleTree } from "../src/distribution";
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
 import { ERC20Mock__factory } from "../typechain";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -17,37 +17,41 @@ describe("MerkleDistro", function () {
     const { merkleDistro, token } = await loadFixture(setup);
 
     const [admin, claimer1, claimer2, claimer3] = await ethers.getSigners();
-    const allocation = createAllocation([
-      { address: claimer1.address, amount: 1000 },
-      { address: claimer2.address, amount: 700 },
-      { address: claimer3.address, amount: 300 },
-    ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.merkleTree.root);
+    const merkleTree = createMerkleTree({
+      [claimer1.address]: BigNumber.from(1000),
+      [claimer2.address]: BigNumber.from(700),
+      [claimer3.address]: BigNumber.from(300),
+    });
+    await merkleDistro.connect(admin).setMerkleRoot(merkleTree.root);
     expect(await token.balanceOf(claimer1.address)).to.equal(0);
     expect(await token.balanceOf(claimer2.address)).to.equal(0);
     expect(await token.balanceOf(claimer3.address)).to.equal(0);
 
-    const proof1 = allocation.merkleTree.getProof([claimer1.address, 1000]);
-    const proof2 = allocation.merkleTree.getProof([claimer2.address, 700]);
-    const proof3 = allocation.merkleTree.getProof([claimer3.address, 300]);
+    const proof1 = merkleTree.getProof([
+      claimer1.address,
+      BigNumber.from(1000),
+    ]);
+    const proof2 = merkleTree.getProof([claimer2.address, BigNumber.from(700)]);
+    const proof3 = merkleTree.getProof([claimer3.address, BigNumber.from(300)]);
+
     await merkleDistro.connect(claimer1).claim(proof1, 1000);
     expect(await token.balanceOf(claimer1.address)).to.equal(1000);
-    await merkleDistro.connect(claimer2).claim(proof2, 700);
+    await merkleDistro.connect(claimer2).claim(proof2, BigNumber.from(700));
     expect(await token.balanceOf(claimer2.address)).to.equal(700);
-    await merkleDistro.connect(claimer3).claim(proof3, 300);
+    await merkleDistro.connect(claimer3).claim(proof3, BigNumber.from(300));
     expect(await token.balanceOf(claimer3.address)).to.equal(300);
   });
 
   it("simple claim emits event", async () => {
     const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
-    const allocation = createAllocation([
-      { address: claimer1.address, amount: 500 },
-      { address: claimer2.address, amount: 300 },
-    ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.merkleTree.root);
+    const merkleTree = createMerkleTree({
+      [claimer1.address]: BigNumber.from(500),
+      [claimer2.address]: BigNumber.from(300),
+    });
+    await merkleDistro.connect(admin).setMerkleRoot(merkleTree.root);
 
-    const proof = allocation.merkleTree.getProof([claimer1.address, 500]);
+    const proof = merkleTree.getProof([claimer1.address, BigNumber.from(500)]);
     await expect(merkleDistro.connect(claimer1).claim(proof, 500))
       .to.emit(merkleDistro, "Claimed")
       .withArgs(claimer1.address, 500);
@@ -56,19 +60,16 @@ describe("MerkleDistro", function () {
   it("reverts on claimer✅ proof✅ allocation🤡", async () => {
     const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
-    const allocation = createAllocation([
-      { address: claimer1.address, amount: 800 },
-      { address: claimer2.address, amount: 400 },
-    ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.merkleTree.root);
+    const merkleTree = createMerkleTree({
+      [claimer1.address]: BigNumber.from(800),
+      [claimer2.address]: BigNumber.from(400),
+    });
+    await merkleDistro.connect(admin).setMerkleRoot(merkleTree.root);
 
-    const goodAmount = 800;
-    const badAmount = 100;
+    const goodAmount = BigNumber.from(800);
+    const badAmount = BigNumber.from(100);
 
-    const proof = allocation.merkleTree.getProof([
-      claimer1.address,
-      goodAmount,
-    ]);
+    const proof = merkleTree.getProof([claimer1.address, goodAmount]);
     await expect(
       merkleDistro.connect(claimer1).claim(proof, badAmount),
     ).to.revertedWith("Invalid Allocation Proof");
@@ -80,18 +81,15 @@ describe("MerkleDistro", function () {
   it("reverts on claimer✅ proof🤡 allocation✅", async () => {
     const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
-    const allocation = createAllocation([
-      { address: claimer1.address, amount: 800 },
-      { address: claimer2.address, amount: 400 },
-    ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.merkleTree.root);
+    const merkleTree = createMerkleTree({
+      [claimer1.address]: BigNumber.from(800),
+      [claimer2.address]: BigNumber.from(400),
+    });
+    await merkleDistro.connect(admin).setMerkleRoot(merkleTree.root);
 
-    const amount = 800;
+    const amount = BigNumber.from(800);
     const badProof = [ethers.constants.HashZero];
-    const goodProof = allocation.merkleTree.getProof([
-      claimer1.address,
-      amount,
-    ]);
+    const goodProof = merkleTree.getProof([claimer1.address, amount]);
 
     await expect(
       merkleDistro.connect(claimer1).claim(badProof, amount),
@@ -103,20 +101,17 @@ describe("MerkleDistro", function () {
   it("reverts on claimer🤡 proof✅ allocation✅", async () => {
     const { merkleDistro } = await loadFixture(setup);
     const [admin, claimer1, claimer2] = await ethers.getSigners();
-    const allocation = createAllocation([
-      { address: claimer1.address, amount: 1000 },
-      { address: claimer2.address, amount: 200 },
-    ]);
-    await merkleDistro.connect(admin).setMerkleRoot(allocation.merkleTree.root);
+    const merkleTree = createMerkleTree({
+      [claimer1.address]: BigNumber.from(1000),
+      [claimer2.address]: BigNumber.from(200),
+    });
+    await merkleDistro.connect(admin).setMerkleRoot(merkleTree.root);
 
-    const allocated = 200;
+    const allocated = BigNumber.from(200);
     const wrongClaimer = claimer1;
     const rightClaimer = claimer2;
 
-    const proof = allocation.merkleTree.getProof([
-      rightClaimer.address,
-      allocated,
-    ]);
+    const proof = merkleTree.getProof([rightClaimer.address, allocated]);
 
     await expect(
       merkleDistro.connect(wrongClaimer).claim(proof, allocated),

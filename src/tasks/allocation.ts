@@ -1,25 +1,25 @@
-import path from "path";
 import assert from "assert";
 import { Provider } from "@ethersproject/providers";
 import { task, types } from "hardhat/config";
-
-import {
-  Snapshot,
-  sum,
-  write as writeSnapshot,
-  load as loadSnapshot,
-} from "../snapshot";
-
-import { BridgedSchedule, load as loadSchedule } from "../schedule";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+
 import {
   queryBalancesGC,
   queryBalancesMainnet,
 } from "../queries/queryBalances";
+import queryVestedInInterval from "../queries/queryVestedInInterval";
+
+import { sum } from "../snapshot";
+import {
+  loadAllocationGC as loadGC,
+  loadAllocationMainnet as loadMainnet,
+  saveAllocationGC as saveGC,
+  saveAllocationMainnet as saveMainnet,
+} from "../persistence";
+import { BridgedSchedule, load as loadSchedule } from "../schedule";
+import { calculate } from "../allocation";
 
 import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
-import queryVestedInInterval from "../queries/queryVestedInInterval";
-import { calculate } from "../allocation";
 
 task("allocation:calculate", "")
   .addOptionalParam(
@@ -92,28 +92,6 @@ async function fetchBalancesAndTotals(
     balances: { mainnet: balancesMainnet, gc: balancesGC },
     toAllocate,
   };
-}
-
-function loadMainnet(block: number): Snapshot | null {
-  return loadSnapshot(filePath(`mainnet.${block}.json`));
-}
-
-function loadGC(block: number): Snapshot | null {
-  return loadSnapshot(filePath(`gc.${block}.json`));
-}
-
-function saveMainnet(block: number, allocations: Snapshot) {
-  writeSnapshot(filePath(`mainnet.${block}.json`), allocations);
-}
-
-function saveGC(block: number, allocations: Snapshot) {
-  writeSnapshot(filePath(`gc.${block}.json`), allocations);
-}
-
-function filePath(end: string) {
-  return path.resolve(
-    path.join(__dirname, "..", "..", "snapshots", "allocations", `${end}`),
-  );
 }
 
 function getProviders(hre: HardhatRuntimeEnvironment) {
