@@ -8,6 +8,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "./src/tasks/deploy";
 
 import "./src/tasks/schedule";
+import "./src/tasks/allocation";
 // import "./src/tasks/harvestBlocks";
 // import "./src/tasks/harvestBalances";
 // import "./src/tasks/harvestTotalVested";
