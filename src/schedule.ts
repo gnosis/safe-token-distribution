@@ -7,6 +7,7 @@ import { Interval } from "./intervals";
 import queryClosestBlock from "./queries/queryClosestBlock";
 
 export type Schedule = { blockNumber: number; timestamp: number };
+export type DualSchedule = { mainnet: Schedule; gc: Schedule };
 
 export async function expandEntry(
   mainnetEntry: Schedule,
