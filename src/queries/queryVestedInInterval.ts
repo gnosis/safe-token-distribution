@@ -1,7 +1,7 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import { load as loadSchedule } from "../schedule";
+import { load as loadSchedule } from "../domain/schedule";
 
 import { VestingPool__factory } from "../../typechain";
 

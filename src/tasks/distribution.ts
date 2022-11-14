@@ -16,14 +16,14 @@ import {
   merge,
 } from "../snapshot";
 
-import { load as loadSchedule } from "../schedule";
+import { load as loadSchedule } from "../domain/schedule";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import {
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   VESTING_CREATION_BLOCK,
 } from "../config";
-import { calculate } from "../allocation";
+import { calculate } from "../domain/allocation";
 import { loadAllocationGC, loadAllocationMainnet } from "../persistence";
 
 task("distribution:calculate", "")

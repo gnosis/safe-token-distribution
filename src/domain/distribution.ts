@@ -1,6 +1,6 @@
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber } from "ethers";
-import { Snapshot } from "./snapshot";
+import { Snapshot } from "../snapshot";
 
 export function createMerkleTree(
   snapshot: Snapshot,

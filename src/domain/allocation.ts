@@ -1,7 +1,7 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import { Snapshot, merge, sum } from "./snapshot";
+import { Snapshot, merge, sum } from "../snapshot";
 
 export function calculate(
   balances: Snapshot,
