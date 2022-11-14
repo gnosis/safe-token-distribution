@@ -43,7 +43,7 @@ task("allocation:calculate", "")
       let allocationsGC = loadGC(entry.gc.blockNumber);
 
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
-        log(`Calculating for ${entry.mainnet.blockNumber}`);
+        log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
         const { balances, toAllocate } = await fetchBalancesAndTotals(
           entry,
           VESTING_POOL_ADDRESS,
