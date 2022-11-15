@@ -1,27 +1,23 @@
-import assert from "assert";
-import { Provider } from "@ethersproject/providers";
-import { task, types } from "hardhat/config";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
-import {
-  queryBalancesGC,
-  queryBalancesMainnet,
-} from "../queries/queryBalances";
-import queryVestedInInterval from "../queries/queryVestedInInterval";
-
-import { sum } from "../snapshot";
+import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
+import { calculate } from "../domain/allocation";
 import {
   BridgedSchedule,
   loadSchedule,
   loadAllocation,
   saveAllocation,
 } from "../persistence";
+import {
+  queryBalancesGC,
+  queryBalancesMainnet,
+} from "../queries/queryBalances";
+import queryVestedInInterval from "../queries/queryVestedInInterval";
+import { sum } from "../snapshot";
+import { Provider } from "@ethersproject/providers";
+import assert from "assert";
+import { task, types } from "hardhat/config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { calculate } from "../domain/allocation";
-
-import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
-
-task("allocation:calculate", "")
+task("snapshot:write-all-missing", "")
   .addOptionalParam(
     "lazy",
     "Don't recalculate if result is found on disk",

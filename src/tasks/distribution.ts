@@ -1,24 +1,20 @@
-import { Provider } from "@ethersproject/providers";
-import { task, types } from "hardhat/config";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
+import {
+  SNAPSHOT_FREQUENCY_IN_MINUTES,
+  VESTING_CREATION_BLOCK,
+} from "../config";
 import { createMerkleTree } from "../domain/distribution";
-
+import { validateShallow } from "../domain/schedule";
 import {
   generate as generateIntervals,
   isPast as isPastInterval,
 } from "../intervals";
 import { loadAllocation, loadSchedule, saveDistribution } from "../persistence";
-
 import { Snapshot, merge } from "../snapshot";
+import { Provider } from "@ethersproject/providers";
+import { task, types } from "hardhat/config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import {
-  SNAPSHOT_FREQUENCY_IN_MINUTES,
-  VESTING_CREATION_BLOCK,
-} from "../config";
-import { validateShallow } from "../domain/schedule";
-
-task("distribution:calculate", "")
+task("distribution:generate", "")
   .addOptionalParam(
     "inception",
     "vesting start block",
