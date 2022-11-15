@@ -1,14 +1,12 @@
-import path from "path";
-import fs from "fs-extra";
-import { BigNumber } from "ethers";
-
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-
 import {
   Snapshot,
   write as writeSnapshot,
   load as loadSnapshot,
 } from "./snapshot";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+import { BigNumber } from "ethers";
+import fs from "fs-extra";
+import path from "path";
 
 export type Schedule = { blockNumber: number; timestamp: number };
 export type BridgedSchedule = { mainnet: Schedule; gc: Schedule };
@@ -26,7 +24,9 @@ export function saveSchedule(schedule: BridgedSchedule[], filePath?: string) {
 }
 
 function scheduleFilePath() {
-  return path.resolve(path.join(__dirname, "..", "snapshots", "schedule.json"));
+  return path.resolve(
+    path.join(__dirname, "..", "harvesting", "schedule.json"),
+  );
 }
 
 export function loadAllocation(
@@ -52,8 +52,8 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
     path.join(
       __dirname,
       "..",
+      "harvesting",
       "snapshots",
-      "allocations",
       `${chain}.${block}.json`,
     ),
   );
@@ -77,7 +77,7 @@ function distributionFilePath(rootHash: string) {
     path.join(
       __dirname,
       "..",
-      "snapshots",
+      "harvesting",
       "distributions",
       `${rootHash}.json`,
     ),
