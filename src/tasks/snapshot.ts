@@ -27,7 +27,7 @@ task("snapshot:write-all-missing", "")
   .setAction(async ({ lazy }, hre: HardhatRuntimeEnvironment) => {
     await hre.run("schedule:validate");
 
-    const log = (text: string) => console.info(`allocation:calculate ${text}`);
+    const log = (text: string) => console.info(`snapshot:write ${text}`);
 
     const schedule = loadSchedule();
     const providers = getProviders(hre);
