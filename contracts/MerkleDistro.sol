@@ -16,10 +16,10 @@ contract MerkleDistro is Ownable {
   bytes32 public merkleRoot;
   mapping(address => uint256) public claimed;
 
-  constructor(address _token, bytes32 _merkleRoot, address owner) {
+  constructor(address _token, bytes32 _merkleRoot, address owner) Ownable() {
     token = _token;
     merkleRoot = _merkleRoot;
-    transferOwnership(owner);
+    _transferOwnership(owner);
   }
 
   function claim(
