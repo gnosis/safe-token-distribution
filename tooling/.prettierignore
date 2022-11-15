@@ -11,7 +11,6 @@
 **/node_modules
 **/types
 **/typechain
-**/harvesting
 
 # files
 *.env
