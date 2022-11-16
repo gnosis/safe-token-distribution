@@ -1,12 +1,16 @@
-import "./src/tasks/deploy";
-import "./src/tasks/distribution";
-import "./src/tasks/schedule";
-import "./src/tasks/snapshot";
+import "@typechain/hardhat";
+import "@nomiclabs/hardhat-ethers";
+
 import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
 import type { HardhatUserConfig } from "hardhat/config";
 import type { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
+
+import "./src/tasks/deploy";
+import "./src/tasks/distribution";
+import "./src/tasks/schedule";
+import "./src/tasks/snapshot";
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });

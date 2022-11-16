@@ -1,10 +1,9 @@
-import fs from "fs";
-import path from "path";
 import assert from "assert";
 
 import { Provider } from "@ethersproject/providers";
 import { Interval } from "../intervals";
 import queryClosestBlock from "../queries/queryClosestBlock";
+import { Schedule } from "../persistence";
 
 export async function expandEntry(
   mainnetEntry: Schedule,
