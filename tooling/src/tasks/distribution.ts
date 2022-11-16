@@ -43,8 +43,8 @@ task("distribution:generate", "")
         providers.mainnet,
       );
 
-      let accumulatedAllocationMainnet: Snapshot = {};
-      let accumulatedAllocationGC: Snapshot = {};
+      let distributionMainnet: Snapshot = {};
+      let distributionGC: Snapshot = {};
 
       for (const entry of schedule) {
         const allocationMainnet = loadAllocation(
@@ -58,18 +58,12 @@ task("distribution:generate", "")
             `Allocation Not Calculated ${entry.mainnet.blockNumber}`,
           );
         }
-        accumulatedAllocationMainnet = merge(
-          accumulatedAllocationMainnet,
-          allocationMainnet,
-        );
-        accumulatedAllocationGC = merge(accumulatedAllocationGC, allocationGC);
+        distributionMainnet = merge(distributionMainnet, allocationMainnet);
+        distributionGC = merge(distributionGC, allocationGC);
       }
 
-      const distroTreeMainnet = createMerkleTree(accumulatedAllocationMainnet);
-      const distroTreeGC = createMerkleTree(accumulatedAllocationGC);
-
-      saveDistribution(distroTreeMainnet);
-      saveDistribution(distroTreeGC);
+      saveDistribution(createMerkleTree(distributionMainnet));
+      saveDistribution(createMerkleTree(distributionGC));
     },
   );
 
