@@ -81,8 +81,8 @@ const config: HardhatUserConfig = {
     gnosischain: getChainConfig("gnosischain"),
   },
   paths: {
-    artifacts: "./artifacts",
-    cache: "./cache",
+    artifacts: "./build/artifacts",
+    cache: "./build/cache",
     sources: "./contracts",
     tests: "./test",
   },
