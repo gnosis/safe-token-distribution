@@ -1,6 +1,7 @@
 import hre, { ethers } from "hardhat";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import createClaimTransaction from "../src/createClaimTransaction";
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
@@ -8,8 +9,8 @@ import { SafeToken__factory, VestingPool__factory } from "../typechain";
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
 import safeTokenUnpause from "./helpers/safeTokenUnpause";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import assert from "assert";
+
+import { SAFE_TOKEN_ADDRESS, VESTING_POOL_ADDRESS } from "../src/config";
 
 const VESTING_ID =
   "0x501becc139a20ff5e3d4cfccde5f0d3ca1267319a1c0bd9bfb8b813ae9e3e042";
@@ -65,18 +66,15 @@ async function setup() {
   const safeAddress = VESTING_BENEFICIARY;
   const safeSdk = await safeSetOwner(safeAddress, deployer);
 
-  assert(process.env.SAFE_TOKEN_ADDRESS);
-
   const safeToken = SafeToken__factory.connect(
-    process.env.SAFE_TOKEN_ADDRESS as string,
+    SAFE_TOKEN_ADDRESS,
     ethers.provider,
   );
 
   await safeTokenUnpause(safeToken);
 
-  assert(process.env.VESTING_POOL_ADDRESS);
   const vestingPool = VestingPool__factory.connect(
-    process.env.VESTING_POOL_ADDRESS as string,
+    VESTING_POOL_ADDRESS as string,
     ethers.provider,
   );
 
