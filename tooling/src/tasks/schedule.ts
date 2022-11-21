@@ -39,7 +39,9 @@ task(
   )
   .setAction(
     async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
-      console.log("schedule:expand Starting...");
+      const log = (text: string) => console.info(`schedule:expand ${text}`);
+
+      log("Starting...");
       const providers = getProviders(hre);
 
       const intervals = generateIntervals(
@@ -53,15 +55,11 @@ task(
       assert(prevSchedule.length <= intervals.length);
 
       if (prevSchedule.length == intervals.length) {
-        console.log("schedule:expand Already up to date");
+        log("Already up to date");
         return;
       }
 
-      console.log(
-        `schedule:expand Expanding ${
-          intervals.length - prevSchedule.length
-        } new entries`,
-      );
+      log(`Inserting ${intervals.length - prevSchedule.length} new entries`);
 
       const nextMainnetEntries = await assignRandomBlocks(
         intervals.slice(prevSchedule.length),
@@ -70,8 +68,8 @@ task(
 
       let nextSchedule = [...prevSchedule];
       for (const mainnetEntry of nextMainnetEntries) {
-        console.log(
-          `schedule:expand Finding GC's equivalent for mainnet block ${mainnetEntry.blockNumber}`,
+        log(
+          `Finding GC's equivalent for mainnet block ${mainnetEntry.blockNumber}`,
         );
         const entry = await expandEntry(mainnetEntry, providers);
         nextSchedule = [...nextSchedule, entry];
@@ -79,7 +77,7 @@ task(
         saveSchedule(nextSchedule);
       }
 
-      console.log("schedule:expand Done");
+      log("Done");
     },
   );
 
@@ -107,7 +105,8 @@ task(
   )
   .setAction(
     async ({ inception, frequency, deep }, hre: HardhatRuntimeEnvironment) => {
-      console.log("schedule:validate Starting...");
+      const log = (text: string) => console.info(`schedule:validate ${text}`);
+      log("Starting...");
 
       const providers = getProviders(hre);
 
@@ -117,14 +116,14 @@ task(
       ).filter(isPastInterval);
 
       const prevSchedule = loadSchedule();
-      console.log(
-        `schedule:validate Validating ${prevSchedule.length} entries ${
+      log(
+        `Validating ${prevSchedule.length} entries ${
           deep ? "(with block metadata refetching)" : ""
         }`,
       );
 
       if (deep) {
-        await validateDeep(intervals, prevSchedule, providers);
+        await validateDeep(intervals, prevSchedule, providers, log);
       } else {
         validateShallow(intervals, prevSchedule);
       }

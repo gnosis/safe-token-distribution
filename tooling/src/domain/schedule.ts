@@ -102,6 +102,7 @@ export async function validateDeep(
   intervals: Interval[],
   schedule: { mainnet: Schedule; gc: Schedule }[],
   providers: { mainnet: Provider; gc: Provider },
+  log?: (l: string) => void,
 ) {
   for (let i = 0; i < schedule.length; i++) {
     const { mainnet, gc } = schedule[i];
@@ -133,6 +134,8 @@ export async function validateDeep(
         `GC block ${gc.blockNumber} in schedule at position ${i} does not match interval`,
       );
     }
+
+    log?.(`${i}: OK`);
   }
 }
 
