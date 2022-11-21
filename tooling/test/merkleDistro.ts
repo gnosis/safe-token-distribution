@@ -1,11 +1,11 @@
 import hre, { ethers } from "hardhat";
 import { expect } from "chai";
 import { BigNumber, Signer } from "ethers";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { createMerkleTree } from "../src/domain/distribution";
+import { createMerkleTree } from "../src/domain/checkpoint";
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
 import { ERC20Mock__factory } from "../typechain";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("MerkleDistro", function () {
   before(async () => {

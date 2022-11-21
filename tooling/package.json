@@ -59,7 +59,7 @@
   "scripts": {
     "schedule:expand": "yarn hardhat schedule:expand",
     "schedule:validate": "yarn hardhat schedule:validate",
-    "snapshot:write": "yarn hardhat snapshot:write-all",
+    "allocation:write": "yarn hardhat allocation:write-all",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./typechain ./coverage.json",
     "compile": "hardhat compile --config hardhat.base.config.ts",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",

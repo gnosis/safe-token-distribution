@@ -53,33 +53,22 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
       __dirname,
       "..",
       "harvesting",
-      "snapshots",
+      "allocations",
       `${chain}.${block}.json`,
     ),
   );
 }
 
-export function saveDistribution(
+export function saveCheckpoint(
   tree: StandardMerkleTree<(string | BigNumber)[]>,
 ) {
-  const filePath = distributionFilePath(tree.root);
+  const filePath = checkpointFilePath(tree.root);
   fs.ensureDirSync(path.dirname(filePath));
   fs.writeFileSync(filePath, JSON.stringify(tree.dump(), null, 2), "utf8");
 }
 
-export function distributionExists(root: string): boolean {
-  const filePath = distributionFilePath(root);
-  return fs.existsSync(filePath);
-}
-
-function distributionFilePath(rootHash: string) {
+function checkpointFilePath(rootHash: string) {
   return path.resolve(
-    path.join(
-      __dirname,
-      "..",
-      "harvesting",
-      "distributions",
-      `${rootHash}.json`,
-    ),
+    path.join(__dirname, "..", "harvesting", "checkpoints", `${rootHash}.json`),
   );
 }

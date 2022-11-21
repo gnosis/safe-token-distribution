@@ -2,7 +2,7 @@ import {
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   VESTING_CREATION_BLOCK,
 } from "../config";
-import { createMerkleTree } from "../domain/distribution";
+import { createMerkleTree } from "../domain/checkpoint";
 import { validateShallow } from "../domain/schedule";
 import {
   generate as generateIntervals,
@@ -14,7 +14,7 @@ import { Provider } from "@ethersproject/providers";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-task("distribution:generate", "")
+task("checkpoint:generate", "")
   .addOptionalParam(
     "inception",
     "vesting start block",
@@ -29,8 +29,7 @@ task("distribution:generate", "")
   )
   .setAction(
     async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
-      const log = (text: string) =>
-        console.info(`distribution:calculate ${text}`);
+      const log = (text: string) => console.info(`checkpoint:generate ${text}`);
 
       const providers = getProviders(hre);
       const schedule = loadSchedule();

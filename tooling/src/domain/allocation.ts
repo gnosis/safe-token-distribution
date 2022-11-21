@@ -64,21 +64,3 @@ function distributeSettle(balances: Snapshot, dust: BigNumber) {
 
   return { allocations, remainder: BigNumber.from(0) };
 }
-
-export function toAllocateBreakdown(
-  balances: Snapshot,
-  balancesGC: Snapshot,
-  totalToAllocate: BigNumber,
-) {
-  const balanceSumMainnet = sum(balances);
-  const balanceSumGC = sum(balancesGC);
-  const balanceSum = balanceSumMainnet.add(balanceSumGC);
-
-  const toAllocateMainnet = balanceSumMainnet
-    .mul(totalToAllocate)
-    .div(balanceSum);
-
-  const toAllocateGC = totalToAllocate.sub(toAllocateMainnet);
-
-  return { toAllocateMainnet, toAllocateGC };
-}
