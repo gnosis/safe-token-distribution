@@ -1,7 +1,8 @@
 import "./src/tasks/deploy";
-import "./src/tasks/distribution";
+
 import "./src/tasks/schedule";
-import "./src/tasks/snapshot";
+import "./src/tasks/allocate";
+import "./src/tasks/checkpoint";
 
 import config from "./hardhat.base.config";
 

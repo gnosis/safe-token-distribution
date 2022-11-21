@@ -17,7 +17,7 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-task("snapshot:write-all-missing", "")
+task("allocate:write-all", "")
   .addOptionalParam(
     "lazy",
     "Don't recalculate if result is found on disk",
@@ -25,7 +25,7 @@ task("snapshot:write-all-missing", "")
     types.boolean,
   )
   .setAction(async ({ lazy }, hre: HardhatRuntimeEnvironment) => {
-    await hre.run("schedule:validate");
+    await hre.run("allocate:write-all");
 
     const log = (text: string) => console.info(`snapshot:write ${text}`);
 
