@@ -11,24 +11,16 @@ const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
 
 // Ensure that we have all the environment variables we need.
-const mnemonic: string | undefined = process.env.MNEMONIC;
+let mnemonic: string | undefined = process.env.MNEMONIC;
 if (!mnemonic) {
-  throw new Error("Please set your MNEMONIC in a .env file");
+  mnemonic = "test test test test test test test test test test test junk";
+  console.info("using bogus mnemonic");
+  //throw new Error("Please set your MNEMONIC in a .env file");
 }
 
 const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
 if (!infuraApiKey) {
   throw new Error("Please set your INFURA_API_KEY in a .env file");
-}
-
-const safeTokenAddress: string | undefined = process.env.SAFE_TOKEN_ADDRESS;
-if (!safeTokenAddress) {
-  throw new Error("Please set your SAFE_TOKEN_ADDRESS in a .env file");
-}
-
-const vestingPoolAddress: string | undefined = process.env.VESTING_POOL_ADDRESS;
-if (!vestingPoolAddress) {
-  throw new Error("Please set your VESTING_POOL_ADDRESS in a .env file");
 }
 
 const chainIds = {
