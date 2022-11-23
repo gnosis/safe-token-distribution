@@ -62,8 +62,9 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
 export function saveCheckpoint(
   checkpoint: Snapshot,
   tree: StandardMerkleTree<(string | BigNumber)[]>,
+  dirPath?: string,
 ) {
-  const dirPath = checkpointDirPath();
+  dirPath = dirPath || checkpointDirPath();
   fs.ensureDirSync(dirPath);
 
   const checkpointPath = path.join(dirPath, `${tree.root}.json`);
