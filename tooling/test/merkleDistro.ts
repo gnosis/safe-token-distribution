@@ -135,6 +135,8 @@ async function setup() {
     owner,
   );
 
+  await token.mint(owner.address, 10000);
+
   await token
     .connect(owner)
     .transfer(merkleDistro.address, await token.totalSupply());

@@ -46,12 +46,15 @@
     "@gnosis.pm/safe-core-sdk": "^3.1.1",
     "@gnosis.pm/safe-core-sdk-types": "^1.6.1",
     "@gnosis.pm/safe-ethers-lib": "^1.6.1",
+    "@gnosis.pm/safe-singleton-factory": "^1.0.11",
     "@openzeppelin/contracts": "4.8.0",
     "@openzeppelin/merkle-tree": "^1.0.1",
     "date-fns": "^2.29.3",
+    "eslint-plugin-prettier": "^4.2.1",
     "fs-extra": "^10.1.0",
     "graphql": "^16.6.0",
-    "graphql-request": "^5.0.0"
+    "graphql-request": "^5.0.0",
+    "hardhat-deploy": "^0.11.20"
   },
   "resolutions": {
     "solhint/@solidity-parser/parser": "^0.14.5"
@@ -60,12 +63,12 @@
     "schedule:expand": "yarn hardhat schedule:expand",
     "schedule:validate": "yarn hardhat schedule:validate",
     "allocation:write": "yarn hardhat allocation:write-all",
-    "clean": "shx rm -rf ./artifacts ./cache ./coverage ./build ./typechain ./coverage.json",
-    "compile": "hardhat compile --config hardhat.base.config.ts",
+    "clean": "shx rm -rf ./artifacts ./cache ./build ./coverage ./typechain ./coverage.json",
+    "compile": "yarn clean && hardhat compile --config hardhat.base.config.ts",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 1 \"contracts/**/*.sol\"",
-    "lint:ts": "eslint --config ./.eslintrc.yml --ignore-path ./.eslintignore --ext .js,.ts .",
+    "lint:ts": "eslint --config ./.eslintrc.js --ignore-path ./.eslintignore --ext .js,.ts .",
     "prettier": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
     "test": "hardhat test --config hardhat.base.config.ts",

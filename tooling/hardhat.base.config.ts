@@ -1,11 +1,15 @@
-import "@typechain/hardhat";
-import "@nomiclabs/hardhat-ethers";
-
-import "@nomicfoundation/hardhat-toolbox";
+import { resolve } from "path";
+import { BigNumber } from "ethers";
 import { config as dotenvConfig } from "dotenv";
+
+import { getSingletonFactoryInfo } from "@gnosis.pm/safe-singleton-factory";
+
+import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-toolbox";
+import "@typechain/hardhat";
 import type { HardhatUserConfig } from "hardhat/config";
 import type { NetworkUserConfig } from "hardhat/types";
-import { resolve } from "path";
+import "hardhat-deploy";
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
@@ -53,6 +57,18 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
     url: jsonRpcUrl,
   };
 }
+const deterministicDeployment = (network: string) => {
+  const info = getSingletonFactoryInfo(parseInt(network));
+  if (!info) return undefined;
+  return {
+    factory: info.address,
+    deployer: info.signerAddress,
+    funding: BigNumber.from(info.gasLimit)
+      .mul(BigNumber.from(info.gasPrice))
+      .toString(),
+    signedTx: info.transaction,
+  };
+};
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -80,10 +96,16 @@ const config: HardhatUserConfig = {
     goerli: getChainConfig("goerli"),
     gnosischain: getChainConfig("gnosischain"),
   },
+  deterministicDeployment,
+  namedAccounts: {
+    deployer: 0,
+  },
   paths: {
-    artifacts: "./build/artifacts",
-    cache: "./build/cache",
-    sources: "./contracts",
+    artifacts: "build/artifacts",
+    cache: "build/cache",
+    deployments: "build/deployments",
+    deploy: "deploy",
+    sources: "contracts",
     tests: "./test",
   },
   solidity: {
