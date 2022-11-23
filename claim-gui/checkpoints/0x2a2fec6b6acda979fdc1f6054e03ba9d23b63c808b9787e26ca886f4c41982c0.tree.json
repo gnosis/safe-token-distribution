@@ -1,0 +1,34 @@
+{
+  "format": "standard-v1",
+  "tree": [
+    "0x2a2fec6b6acda979fdc1f6054e03ba9d23b63c808b9787e26ca886f4c41982c0",
+    "0xce76c16a09483c8f99a6416b2e65cb1993f4529dbac07931b63f431d2968ee0c",
+    "0x2eb56f19de300ce55ac7ab332a666c13d84848d1118f18e1a0013f7fc2abe447"
+  ],
+  "values": [
+    {
+      "value": [
+        "0x485E60C486671E932fd9C53d4110cdEab1E7F0eb",
+        {
+          "type": "BigNumber",
+          "hex": "0x2710"
+        }
+      ],
+      "treeIndex": 2
+    },
+    {
+      "value": [
+        "0x031487A94a58b6E438A571256C0bD9093B564a86",
+        {
+          "type": "BigNumber",
+          "hex": "0x2710"
+        }
+      ],
+      "treeIndex": 1
+    }
+  ],
+  "leafEncoding": [
+    "address",
+    "uint256"
+  ]
+}

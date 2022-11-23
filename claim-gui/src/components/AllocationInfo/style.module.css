@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  margin: 0;
+}
+
+.item {
+  margin-top: 1rem;
+  width: 50%;
+}
+
+.item > dt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.label {
+  color: #5d6d74;
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.item > dd {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 700;
+}
