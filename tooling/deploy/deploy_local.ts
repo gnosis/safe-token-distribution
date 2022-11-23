@@ -1,5 +1,7 @@
 import "hardhat-deploy";
 
+import path from "path";
+
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -71,6 +73,10 @@ function createDummyMerkleTree() {
   };
 
   const tree = createMerkleTree(checkpoint);
-  saveCheckpoint(checkpoint, tree);
+  saveCheckpoint(
+    checkpoint,
+    tree,
+    path.resolve(path.join(__dirname, "..", "..", "claim-gui", "checkpoints")),
+  );
   return tree.root;
 }
