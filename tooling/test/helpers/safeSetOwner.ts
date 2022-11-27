@@ -18,7 +18,7 @@ export default async function safeSetOwner(
   const safeSdk = await Safe.create({
     ethAdapter: new EthersAdapter({
       ethers,
-      signer: safeContractImpersonator,
+      signerOrProvider: safeContractImpersonator,
     }),
     safeAddress,
     contractNetworks: CONTRACT_NETWORKS,
@@ -40,7 +40,7 @@ export default async function safeSetOwner(
   return await Safe.create({
     ethAdapter: new EthersAdapter({
       ethers,
-      signer: newOwner,
+      signerOrProvider: newOwner,
     }),
     safeAddress,
     contractNetworks: CONTRACT_NETWORKS,
@@ -53,5 +53,8 @@ const CONTRACT_NETWORKS = {
     multiSendCallOnlyAddress: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
     safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
     safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+    fallbackHandlerAddress: "<FALLBACK_HANDLER_ADDRESS>",
+    signMessageLibAddress: "<SIGN_MESSAGE_LIB_ADDRESS>",
+    createCallAddress: "<CREATE_CALL_ADDRESS>",
   },
 };

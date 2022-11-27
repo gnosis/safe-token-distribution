@@ -41,9 +41,6 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
     case "gnosischain":
       jsonRpcUrl = "https://rpc.gnosischain.com";
       break;
-    case "local":
-      jsonRpcUrl = "http://127.0.0.1:8545/";
-      break;
     default:
       jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
   }
@@ -91,7 +88,6 @@ const config: HardhatUserConfig = {
       },
       chainId: chainIds.hardhat,
     },
-    local: getChainConfig("local"),
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),
     gnosischain: getChainConfig("gnosischain"),
