@@ -10,12 +10,13 @@
   font-weight: 700;
   line-height: 46px;
   margin: 0.5em auto;
+  padding: 0 0.5em;
   max-width: 360px;
   transition: background 0.12s ease-in-out;
   width: 100%;
 }
 .default:hover {
-  background: #04203d;
+  background: #e4eaf1;
 }
 .default:disabled {
   cursor: not-allowed;

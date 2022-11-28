@@ -1,0 +1,28 @@
+.connection {
+  display: flex;
+  gap: 1em;
+}
+
+.networkButton {
+  display: flex;
+  align-items: center;
+  flex-basis: content;
+}
+
+.iconContainer {
+  overflow: hidden;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.accountButton {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.blockie {
+  max-height: 2em;
+  aspect-ratio: 1;
+}
