@@ -17,9 +17,9 @@
     "wagmi": "0.8.5"
   },
   "scripts": {
-    "start": "yarn run bridge && GENERATE_SOURCEMAP=false react-scripts start",
-    "build": "yarn run bridge && GENERATE_SOURCEMAP=false react-scripts build",
-    "bridge": "rm -rf checkpoints && cp -R ../tooling/harvesting/checkpoints ."
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
+    "build": "yarn run copy:checkpoints && GENERATE_SOURCEMAP=false react-scripts build",
+    "copy:checkpoints": "rm -rf checkpoints && cp -R ../tooling/harvesting/checkpoints ."
   },
   "eslintConfig": {
     "extends": [
