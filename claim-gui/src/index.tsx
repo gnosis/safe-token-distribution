@@ -2,14 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-import {
-  getDefaultWallets,
-  RainbowKitProvider,
-  lightTheme,
-} from "@rainbow-me/rainbowkit";
-import "@rainbow-me/rainbowkit/styles.css";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import { AllocationProvider } from "./AllocationProvider";
 import HomePage from "./Pages/HomePage";
 
@@ -22,14 +17,9 @@ const { chains, provider } = configureChains(
   ],
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "Safe Token Distribution",
-  chains,
-});
-
 const wagmiClient = createClient({
   autoConnect: true,
-  connectors,
+  connectors: [new InjectedConnector({ chains })],
   provider,
 });
 
@@ -40,20 +30,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider
-        chains={chains}
-        theme={lightTheme({
-          accentColor: "#5d6d74",
-          accentColorForeground: "white",
-          borderRadius: "small",
-          fontStack: "system",
-          overlayBlur: "small",
-        })}
-      >
-        <AllocationProvider>
-          <HomePage />
-        </AllocationProvider>
-      </RainbowKitProvider>
+      <AllocationProvider>
+        <HomePage />
+      </AllocationProvider>
     </WagmiConfig>
   </React.StrictMode>,
 );
