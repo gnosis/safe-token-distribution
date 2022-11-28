@@ -52,7 +52,7 @@ export async function calculateAmountToBridge(
     const total = amountMainnet.add(amountGC);
 
     if (total.gt(amountToClaim)) {
-      throw new Error("CalculateAmountToBridge: Overflow Panic");
+      throw new Error("CalculateAmountToBridge: Accounting Overflow Panic");
     }
 
     if (total.eq(amountToClaim)) {
@@ -60,7 +60,7 @@ export async function calculateAmountToBridge(
     }
   }
 
-  throw new Error("CalculateAmountToBridge: Underflow Panic");
+  throw new Error("CalculateAmountToBridge: Accounting Underflow Panic");
 }
 
 export async function createDistributeTxMainnet(
@@ -91,12 +91,12 @@ export async function createDistributeTxMainnet(
 
   const safeAddress = await safeSdk.getAddress();
 
-  // encodes as multisend
+  // encode as multisend
   return safeSdk.createTransaction({
     safeTransactionData: [
       encodeClaim(vestingPoolAddress, vestingId, safeAddress, amountToClaim),
       encodeTransfer(safeTokenAddress, distroMainnetAddress, amountToClaim),
-      ...encodeBridge(
+      ...encodeBridgeSafeTokens(
         safeTokenAddress,
         omniMediatorAddress,
         distroGCAddress,
@@ -121,7 +121,7 @@ export async function createDistributeTxGC(
   });
 }
 
-export function encodeClaim(
+function encodeClaim(
   vestingPoolAddress: string,
   vestingId: string,
   safeAddress: string,
@@ -142,7 +142,7 @@ export function encodeClaim(
   };
 }
 
-export function encodeTransfer(
+function encodeTransfer(
   safeTokenAddress: string,
   merkleDistroAddress: string,
   amount: BigNumberish,
@@ -161,7 +161,7 @@ export function encodeTransfer(
   };
 }
 
-export function encodeSetMerkleRoot(
+function encodeSetMerkleRoot(
   merkleDistroAddress: string,
   nextMerkleRoot: string,
 ): SafeTransactionDataPartial {
@@ -176,7 +176,7 @@ export function encodeSetMerkleRoot(
   };
 }
 
-export function encodeBridge(
+function encodeBridgeSafeTokens(
   safeTokenAddress: string,
   omniMediatorAddress: string,
   merkleDistroGCAddress: string,
