@@ -8,14 +8,14 @@ import { BigNumber } from "ethers";
 import fs from "fs-extra";
 import path from "path";
 
-export type Schedule = { blockNumber: number; timestamp: number };
-export type BridgedSchedule = { mainnet: Schedule; gc: Schedule };
+export type Schedule = { mainnet: ScheduleEntry; gc: ScheduleEntry }[];
+export type ScheduleEntry = { blockNumber: number; timestamp: number };
 
-export function loadSchedule(filePath?: string): BridgedSchedule[] {
+export function loadSchedule(filePath?: string): Schedule {
   return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));
 }
 
-export function saveSchedule(schedule: BridgedSchedule[], filePath?: string) {
+export function saveSchedule(schedule: Schedule, filePath?: string) {
   fs.writeFileSync(
     filePath || scheduleFilePath(),
     JSON.stringify(schedule, null, 2),
@@ -72,6 +72,14 @@ export function saveCheckpoint(
 
   fs.writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2), "utf8");
   fs.writeFileSync(treePath, JSON.stringify(tree.dump(), null, 2), "utf8");
+}
+
+export function loadCheckpoint(treeRoot: string): Snapshot {
+  const dirPath = checkpointDirPath();
+
+  const filePath = path.join(dirPath, `${treeRoot}.json`);
+
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function checkpointDirPath() {

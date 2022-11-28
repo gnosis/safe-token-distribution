@@ -1,8 +1,8 @@
-import { createMerkleTree } from "../domain/checkpoint";
+import { task } from "hardhat/config";
 
+import { createMerkleTree } from "../domain/checkpoint";
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 import { Snapshot, merge } from "../snapshot";
-import { task } from "hardhat/config";
 
 task("checkpoint:generate", "").setAction(async () => {
   const log = (text: string) => console.info(`checkpoint:generate ${text}`);
@@ -43,22 +43,3 @@ task("checkpoint:generate", "").setAction(async () => {
 
   return [treeMainnet.root, treeGC.root];
 });
-
-// async function ensureScheduleIsFresh(
-//   inception: number,
-//   frequency: number,
-//   schedule: any[],
-//   provider: Provider,
-// ) {
-//   const intervals = generateIntervals(
-//     await provider.getBlock(inception),
-//     frequency,
-//   ).filter(isPastInterval);
-
-//   validateShallow(intervals, schedule);
-//   if (intervals.length !== schedule.length) {
-//     throw new Error(
-//       "The schedule found in Disk is valid, but should be expanded further",
-//     );
-//   }
-// }

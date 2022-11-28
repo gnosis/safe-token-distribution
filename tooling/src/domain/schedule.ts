@@ -2,33 +2,14 @@ import assert from "assert";
 
 import { Provider } from "@ethersproject/providers";
 import { Interval } from "../intervals";
-import queryClosestBlock from "../queries/queryClosestBlock";
-import { Schedule } from "../persistence";
-
-export async function expandEntry(
-  mainnetEntry: Schedule,
-  providers: { mainnet: Provider; gc: Provider },
-) {
-  const gcBlock = await queryClosestBlock(mainnetEntry.timestamp, providers.gc);
-
-  return {
-    mainnet: {
-      timestamp: mainnetEntry.timestamp,
-      blockNumber: mainnetEntry.blockNumber,
-    },
-    gc: {
-      timestamp: gcBlock.timestamp,
-      blockNumber: gcBlock.number,
-    },
-  };
-}
+import { Schedule, ScheduleEntry } from "../persistence";
 
 export async function assignRandomBlocks(
   intervals: Interval[],
   provider: Provider,
   floor?: number,
   ceiling?: number,
-): Promise<Schedule[]> {
+): Promise<ScheduleEntry[]> {
   if (intervals.length === 0) {
     return [];
   }
@@ -71,10 +52,7 @@ export async function assignRandomBlocks(
   ];
 }
 
-export function validateShallow(
-  intervals: Interval[],
-  schedule: { mainnet: Schedule; gc: Schedule }[],
-) {
+export function validateShallow(intervals: Interval[], schedule: Schedule) {
   for (let i = 0; i < schedule.length; i++) {
     const { mainnet, gc } = schedule[i];
     const interval = intervals[i];
@@ -100,7 +78,7 @@ export function validateShallow(
 
 export async function validateDeep(
   intervals: Interval[],
-  schedule: { mainnet: Schedule; gc: Schedule }[],
+  schedule: Schedule,
   providers: { mainnet: Provider; gc: Provider },
   log?: (l: string) => void,
 ) {
