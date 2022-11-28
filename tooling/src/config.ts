@@ -27,6 +27,22 @@ export const VESTING_ID =
 export const VESTING_CREATION_BLOCK = 15582160;
 export const VESTING_BENEFICIARY = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 
+/*
+ *
+ * TokenLock open timestamp is the same for both mainnet and gc
+ *
+ * Mainnet:
+ * (0x4f8ad938eba0cd19155a835f617317a6e788c868).depositDeadline() +
+ * (0x4f8ad938eba0cd19155a835f617317a6e788c868).lockDuration()
+ * 1644944444 + 31536000
+ *
+ * Gnosis-chain:
+ * (0xd4Ca39f78Bf14BfaB75226AC833b1858dB16f9a1).depositDeadline() +
+ * (0xd4Ca39f78Bf14BfaB75226AC833b1858dB16f9a1).lockDuration()
+ * 1644944444 + 31536000
+ */
+export const TOKEN_LOCK_OPEN_TIMESTAMP = 1644944444 + 31536000;
+
 export const MERKLE_DISTRO_DEPLOYMENT_SALT =
   "0x0000000000000000000000000000000000000000000000000000000000badfed";
 

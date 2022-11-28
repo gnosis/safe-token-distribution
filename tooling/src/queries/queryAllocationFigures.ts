@@ -1,5 +1,6 @@
 import { Provider } from "@ethersproject/providers";
 import assert from "assert";
+
 import { allocate } from "../domain/allocation";
 import { ScheduleEntry } from "../persistence";
 import { sum } from "../snapshot";
@@ -7,19 +8,30 @@ import { sum } from "../snapshot";
 import { queryBalancesMainnet, queryBalancesGC } from "./querySubgraph";
 import { queryVestedInInterval } from "./queryVestingPool";
 
+import {
+  TOKEN_LOCK_OPEN_TIMESTAMP,
+  VESTING_ID,
+  VESTING_POOL_ADDRESS,
+} from "../config";
+
 export async function queryAllocationAmounts(
   entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
-  vestingContract: string,
-  vestingId: string,
   provider: Provider,
+  log?: (text: string) => void,
 ) {
+  const withLGNO =
+    entry.mainnet.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP &&
+    entry.gc.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP;
+
+  log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
+
   const [balancesMainnet, balancesGC, amountVestedInInterval] =
     await Promise.all([
-      queryBalancesMainnet(entry.mainnet.blockNumber),
-      queryBalancesGC(entry.gc.blockNumber),
+      queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
+      queryBalancesGC(entry.gc.blockNumber, withLGNO),
       queryVestedInInterval(
-        vestingContract,
-        vestingId,
+        VESTING_POOL_ADDRESS,
+        VESTING_ID,
         entry.mainnet.blockNumber,
         provider,
       ),
