@@ -26,3 +26,29 @@
   font-size: 1.5em;
   font-weight: 700;
 }
+
+.status {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 1em 0;
+  margin: 0.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
+}
+
+.status.available {
+  background-color: #d6f7df;
+  border-color: #9fddaf;
+}
+
+.status.fullClaim {
+  background-color: #d6f7df;
+  border-color: #9fddaf;
+}
+
+.status.notAvailable {
+  background-color: #ebfcff;
+  border-color: #aad4db;
+}
