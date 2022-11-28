@@ -11,7 +11,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { loadAllocation, Schedule } from "../persistence";
 import { sum } from "../snapshot";
 
-import { queryAmountToClaim } from "../queries/queryVestedInInterval";
+import { queryAmountToClaim } from "../queries/queryVestingPool";
 
 import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
 import {

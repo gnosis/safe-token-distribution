@@ -1,26 +1,18 @@
-import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
-import { allocate } from "../domain/allocation";
-import {
-  loadSchedule,
-  loadAllocation,
-  saveAllocation,
-  ScheduleEntry,
-} from "../persistence";
-import {
-  queryBalancesGC,
-  queryBalancesMainnet,
-} from "../queries/queryBalances";
-import queryVestedInInterval from "../queries/queryVestedInInterval";
-import { sum } from "../snapshot";
-import { Provider } from "@ethersproject/providers";
 import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
+import { allocate } from "../domain/allocation";
+import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
+import { queryAllocationAmounts } from "../queries/queryAllocationFigures";
+import { queryBalancesMainnet } from "../queries/querySubgraph";
+import { sum } from "../snapshot";
+
 task("allocate:write-all", "")
   .addOptionalParam(
     "lazy",
-    "Don't recalculate if result is found on disk",
+    "Don't recalculate if already in disk",
     true,
     types.boolean,
   )
@@ -42,7 +34,7 @@ task("allocate:write-all", "")
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
         log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
         const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
-          await fetchBalancesAndTotals(
+          await queryAllocationAmounts(
             entry,
             VESTING_POOL_ADDRESS,
             VESTING_ID,
@@ -64,38 +56,3 @@ task("allocate:write-all", "")
       }
     }
   });
-
-async function fetchBalancesAndTotals(
-  entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
-  vestingContract: string,
-  vestingId: string,
-  provider: Provider,
-) {
-  const [balancesMainnet, balancesGC, amountVestedInInterval] =
-    await Promise.all([
-      queryBalancesMainnet(entry.mainnet.blockNumber),
-      queryBalancesGC(entry.gc.blockNumber),
-      queryVestedInInterval(
-        vestingContract,
-        vestingId,
-        entry.mainnet.blockNumber,
-        provider,
-      ),
-    ]);
-
-  // use the same allocate math to decide amounts going to mainnet
-  // and amount going to gc
-  const result = allocate(
-    { mainnet: sum(balancesMainnet), gc: sum(balancesGC) },
-    amountVestedInInterval,
-  );
-
-  assert(result.mainnet.add(result.gc).eq(amountVestedInInterval));
-
-  return {
-    balancesMainnet,
-    balancesGC,
-    toAllocateMainnet: result.mainnet,
-    toAllocateGC: result.gc,
-  };
-}
