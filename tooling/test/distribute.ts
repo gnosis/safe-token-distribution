@@ -6,14 +6,14 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { SafeToken__factory, VestingPool__factory } from "../typechain";
 
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
-import createDistributeTxMainnet from "../src/distribute";
+import { createDistributeTxMainnet } from "../src/domain/distribution";
 
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
 import safeTokenUnpause from "./helpers/safeTokenUnpause";
 
 import {
-  OMNI_MEDIATOR_ADDRESS,
+  OMNI_MEDIATOR_ADDRESS_MAINNET,
   SAFE_TOKEN_ADDRESS,
   VESTING_BENEFICIARY,
   VESTING_ID,
@@ -33,7 +33,9 @@ describe("createDistributeTxMainnet", function () {
 
     expect(await merkleDistro.merkleRoot()).to.equal(ethers.constants.HashZero);
     expect(await safeToken.balanceOf(merkleDistro.address)).to.equal(0);
-    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS)).to.equal(0);
+    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS_MAINNET)).to.equal(
+      0,
+    );
 
     const amountToClaim = BigNumber.from("10000000");
     const amountToBridge = BigNumber.from("500000");
@@ -43,7 +45,7 @@ describe("createDistributeTxMainnet", function () {
     const tx = await createDistributeTxMainnet(safeSdk, {
       safeTokenAddress: safeToken.address,
       vestingPoolAddress: vestingPool.address,
-      omniMediatorAddress: OMNI_MEDIATOR_ADDRESS,
+      omniMediatorAddress: OMNI_MEDIATOR_ADDRESS_MAINNET,
       distroMainnetAddress: merkleDistro.address,
       distroGCAddress: merkleDistro.address,
       vestingId: VESTING_ID,
@@ -58,7 +60,7 @@ describe("createDistributeTxMainnet", function () {
     expect(await safeToken.balanceOf(merkleDistro.address)).to.equal(
       amountToClaim,
     );
-    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS)).to.equal(
+    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS_MAINNET)).to.equal(
       amountToBridge,
     );
   });

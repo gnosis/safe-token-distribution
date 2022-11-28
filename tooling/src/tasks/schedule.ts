@@ -8,7 +8,6 @@ import {
   validateShallow,
   validateDeep,
   assignRandomBlocks,
-  expandEntry,
 } from "../domain/schedule";
 
 import {
@@ -19,7 +18,9 @@ import {
 import {
   VESTING_CREATION_BLOCK,
   SNAPSHOT_FREQUENCY_IN_MINUTES,
+  getProviders,
 } from "../config";
+import queryClosestBlock from "../queries/queryClosestBlock";
 
 task(
   "schedule:expand",
@@ -40,9 +41,9 @@ task(
   .setAction(
     async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
       const log = (text: string) => console.info(`schedule:expand ${text}`);
+      const providers = getProviders(hre);
 
       log("Starting...");
-      const providers = getProviders(hre);
 
       const intervals = generateIntervals(
         await providers.mainnet.getBlock(inception),
@@ -50,13 +51,11 @@ task(
       ).filter(isPastInterval);
 
       const prevSchedule = loadSchedule();
-      validateShallow(intervals, prevSchedule);
-
       assert(prevSchedule.length <= intervals.length);
 
       if (prevSchedule.length == intervals.length) {
         log("Already up to date");
-        return;
+        return prevSchedule;
       }
 
       log(`Inserting ${intervals.length - prevSchedule.length} new entries`);
@@ -69,15 +68,27 @@ task(
       let nextSchedule = [...prevSchedule];
       for (const mainnetEntry of nextMainnetEntries) {
         log(
-          `Finding GC's equivalent for mainnet block ${mainnetEntry.blockNumber}`,
+          `Finding a block in GC that matches mainnet ${mainnetEntry.blockNumber}`,
         );
-        const entry = await expandEntry(mainnetEntry, providers);
-        nextSchedule = [...nextSchedule, entry];
-        validateShallow(intervals, nextSchedule);
-        saveSchedule(nextSchedule);
+
+        const blockGC = await queryClosestBlock(
+          mainnetEntry.timestamp,
+          providers.gc,
+        );
+        nextSchedule = [
+          ...nextSchedule,
+          {
+            mainnet: mainnetEntry,
+            gc: { timestamp: blockGC.timestamp, blockNumber: blockGC.number },
+          },
+        ];
       }
 
+      validateShallow(intervals, nextSchedule);
+      saveSchedule(nextSchedule);
+
       log("Done");
+      return nextSchedule;
     },
   );
 
@@ -130,15 +141,3 @@ task(
       console.log("schedule:validate Done");
     },
   );
-
-function getProviders(hre: HardhatRuntimeEnvironment) {
-  const mainnet = new hre.ethers.providers.JsonRpcProvider(
-    `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-  );
-
-  const gc = new hre.ethers.providers.JsonRpcProvider(
-    `https://rpc.gnosischain.com `,
-  );
-
-  return { mainnet, gc };
-}

@@ -1,10 +1,10 @@
-import { VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
-import { calculate } from "../domain/allocation";
+import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
+import { allocate } from "../domain/allocation";
 import {
-  BridgedSchedule,
   loadSchedule,
   loadAllocation,
   saveAllocation,
+  ScheduleEntry,
 } from "../persistence";
 import {
   queryBalancesGC,
@@ -25,8 +25,6 @@ task("allocate:write-all", "")
     types.boolean,
   )
   .setAction(async ({ lazy }, hre: HardhatRuntimeEnvironment) => {
-    await hre.run("allocate:write-all");
-
     const log = (text: string) => console.info(`snapshot:write ${text}`);
 
     const schedule = loadSchedule();
@@ -43,18 +41,19 @@ task("allocate:write-all", "")
 
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
         log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
-        const { balances, toAllocate } = await fetchBalancesAndTotals(
-          entry,
-          VESTING_POOL_ADDRESS,
-          VESTING_ID,
-          providers.mainnet,
-        );
+        const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
+          await fetchBalancesAndTotals(
+            entry,
+            VESTING_POOL_ADDRESS,
+            VESTING_ID,
+            providers.mainnet,
+          );
 
-        allocationsMainnet = calculate(balances.mainnet, toAllocate.mainnet);
-        assert(sum(allocationsMainnet).eq(toAllocate.mainnet));
+        allocationsMainnet = allocate(balancesMainnet, toAllocateMainnet);
+        assert(sum(allocationsMainnet).eq(toAllocateMainnet));
 
-        allocationsGC = calculate(balances.gc, toAllocate.gc);
-        assert(sum(allocationsGC).eq(toAllocate.gc));
+        allocationsGC = allocate(balancesGC, toAllocateGC);
+        assert(sum(allocationsGC).eq(toAllocateGC));
 
         saveAllocation(
           "mainnet",
@@ -67,12 +66,12 @@ task("allocate:write-all", "")
   });
 
 async function fetchBalancesAndTotals(
-  entry: BridgedSchedule,
+  entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
   vestingContract: string,
   vestingId: string,
   provider: Provider,
 ) {
-  const [balancesMainnet, balancesGC, totalVestedInInterval] =
+  const [balancesMainnet, balancesGC, amountVestedInInterval] =
     await Promise.all([
       queryBalancesMainnet(entry.mainnet.blockNumber),
       queryBalancesGC(entry.gc.blockNumber),
@@ -84,27 +83,19 @@ async function fetchBalancesAndTotals(
       ),
     ]);
 
-  const toAllocate = calculate(
+  // use the same allocate math to decide amounts going to mainnet
+  // and amount going to gc
+  const result = allocate(
     { mainnet: sum(balancesMainnet), gc: sum(balancesGC) },
-    totalVestedInInterval,
+    amountVestedInInterval,
   );
 
-  assert(toAllocate.mainnet.add(toAllocate.gc).eq(totalVestedInInterval));
+  assert(result.mainnet.add(result.gc).eq(amountVestedInInterval));
 
   return {
-    balances: { mainnet: balancesMainnet, gc: balancesGC },
-    toAllocate,
+    balancesMainnet,
+    balancesGC,
+    toAllocateMainnet: result.mainnet,
+    toAllocateGC: result.gc,
   };
-}
-
-function getProviders(hre: HardhatRuntimeEnvironment) {
-  const mainnet = new hre.ethers.providers.JsonRpcProvider(
-    `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-  );
-
-  const gc = new hre.ethers.providers.JsonRpcProvider(
-    `https://rpc.gnosischain.com `,
-  );
-
-  return { mainnet, gc };
 }

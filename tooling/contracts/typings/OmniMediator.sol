@@ -8,5 +8,13 @@ abstract contract OmniMediator {
     uint256 _value
   ) external virtual;
 
-  // function relayTokens(address token, uint256 _value) external virtual;
+  function isTokenRegistered(address _token) public view virtual returns (bool);
+
+  function bridgedTokenAddress(
+    address _nativeToken
+  ) public view virtual returns (address);
+
+  function nativeTokenAddress(
+    address _bridgedToken
+  ) public view virtual returns (address);
 }
