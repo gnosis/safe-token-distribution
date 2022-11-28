@@ -5,7 +5,7 @@ import { Provider } from "@ethersproject/providers";
 import { loadSchedule } from "../persistence";
 import { VestingPool__factory } from "../../typechain";
 
-export default async function queryVestedInInterval(
+export async function queryVestedInInterval(
   vestingPoolAddress: string,
   vestingId: string,
   blockNumber: number,

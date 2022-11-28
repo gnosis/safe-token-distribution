@@ -61,9 +61,8 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
-    "schedule:expand": "yarn hardhat schedule:expand",
-    "schedule:validate": "yarn hardhat schedule:validate",
-    "allocation:write": "yarn hardhat allocation:write-all",
+    "schedule": "yarn hardhat schedule:expand",
+    "allocate": "yarn hardhat allocate:write-all",
     "clean": "shx rm -rf ./artifacts ./cache ./build ./coverage ./typechain ./coverage.json",
     "compile": "yarn clean && hardhat compile --config hardhat.base.config.ts",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",
