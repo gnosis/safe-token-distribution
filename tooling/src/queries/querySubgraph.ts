@@ -11,7 +11,10 @@ type User = {
   stakedGnoSgno: string;
 };
 
-export async function queryBalancesMainnet(block: number): Promise<Snapshot> {
+export async function queryBalancesMainnet(
+  block: number,
+  withLGNO: boolean,
+): Promise<Snapshot> {
   const users = await pagedRequest(async (lastId: string) =>
     request(mainnetEndpoint, mainnetQuery, {
       block,
@@ -19,10 +22,13 @@ export async function queryBalancesMainnet(block: number): Promise<Snapshot> {
     }).then((result) => result.users),
   );
 
-  return toSnapshot(users, ["lgno", "sgno"]);
+  return toSnapshot(users, withLGNO ? ["lgno", "sgno"] : ["sgno"]);
 }
 
-export async function queryBalancesGC(block: number): Promise<Snapshot> {
+export async function queryBalancesGC(
+  block: number,
+  withLGNO: boolean,
+): Promise<Snapshot> {
   const users = await pagedRequest((lastId: string) =>
     request(gcEndpoint, gcQuery, {
       block,
@@ -30,7 +36,11 @@ export async function queryBalancesGC(block: number): Promise<Snapshot> {
     }).then((result) => result.users),
   );
 
-  return toSnapshot(users, ["lgno", "mgno", "sgno", "stakedGnoSgno"]);
+  const keys: (keyof User)[] = withLGNO
+    ? ["lgno", "mgno", "sgno", "stakedGnoSgno"]
+    : ["mgno", "sgno", "stakedGnoSgno"];
+
+  return toSnapshot(users, keys);
 }
 
 async function pagedRequest(
@@ -55,7 +65,7 @@ function toSnapshot(users: User[], keys: (keyof User)[]): Snapshot {
         .map((key) => BigNumber.from(user[key] || 0))
         .reduce((prev, next) => prev.add(next), BigNumber.from(0)),
     }))
-    .filter(({ balance }: { balance: BigNumber }) => balance.gt(0));
+    .filter(({ balance }) => balance.gt(0));
 
   // .reduce((prev: Result, next: any) => {
   //   return {
