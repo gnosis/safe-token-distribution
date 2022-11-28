@@ -51,6 +51,12 @@ task("distribute", "")
       "checkpoint:generate",
     );
 
+    // move amount to bridge to checkpoint?
+    const { amountToClaim, amountToBridge } = await calculateAmountToBridge(
+      loadSchedule(),
+      hre,
+    );
+
     const {
       safeToken: safeTokenAddress,
       vestingPool: vestingPoolAddress,
@@ -58,11 +64,6 @@ task("distribute", "")
       distroMainnet: distroMainnetAddress,
       distroGC: distroGCAddress,
     } = await getAddressConfig(hre);
-
-    const { amountToClaim, amountToBridge } = await calculateAmountToBridge(
-      loadSchedule(),
-      hre,
-    );
 
     const {
       delegate,
@@ -89,10 +90,17 @@ task("distribute", "")
       nextMerkleRoot: merkleRootGC,
     });
 
+    await sanityCheck();
+
     // Post To Safes
     await propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet);
     await propose(safeSdkGC, serviceClientGC, delegate, txGC);
   });
+
+async function sanityCheck() {
+  // check MerkleDistros are deployed
+  // check delegate is enabled in both safes
+}
 
 async function propose(
   safeSdk: Safe,
