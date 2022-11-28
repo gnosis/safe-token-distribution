@@ -1,7 +1,10 @@
 import assert from "assert";
 import { BigNumber, BigNumberish } from "ethers";
 import Safe from "@gnosis.pm/safe-core-sdk";
-import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
+import {
+  SafeTransaction,
+  SafeTransactionDataPartial,
+} from "@gnosis.pm/safe-core-sdk-types";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -73,7 +76,7 @@ export async function createDistributeTxMainnet(
     amountToBridge: BigNumber;
     nextMerkleRoot: string;
   },
-) {
+): Promise<SafeTransaction> {
   const {
     safeTokenAddress,
     vestingPoolAddress,
@@ -110,7 +113,7 @@ export async function createDistributeTxGC(
     distroAddress: string;
     nextMerkleRoot: string;
   },
-) {
+): Promise<SafeTransaction> {
   const { distroAddress, nextMerkleRoot } = config;
 
   return safeSdk.createTransaction({

@@ -11,6 +11,10 @@ export const SNAPSHOT_FREQUENCY_IN_MINUTES = 60 * 24; // once a day
 
 export const SAFE_TOKEN_ADDRESS = "0x5aFE3855358E112B5647B952709E6165e1c1eEEe";
 
+export const SAFE_ADDRESS_MAINNET =
+  "0x849d52316331967b6ff1198e5e32a0eb168d039d";
+export const SAFE_ADDRESS_GC = "0x458cD345B4C05e8DF39d0A07220feb4Ec19F5e6f";
+
 export const OMNI_MEDIATOR_ADDRESS_MAINNET =
   "0x88ad09518695c6c3712AC10a214bE5109a655671";
 export const OMNI_MEDIATOR_ADDRESS_GC =
@@ -25,9 +29,6 @@ export const VESTING_BENEFICIARY = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 
 export const MERKLE_DISTRO_DEPLOYMENT_SALT =
   "0x0000000000000000000000000000000000000000000000000000000000badfed";
-
-export const SAFE_MAINNET = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
-export const SAFE_GC = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 
 export async function getAddressConfig(hre: HardhatRuntimeEnvironment) {
   const { gc: providerGC } = getProviders(hre);
@@ -68,12 +69,6 @@ export async function getAddressConfig(hre: HardhatRuntimeEnvironment) {
   };
 }
 
-function singletonFactoryAddress(network: string) {
-  const info = getSingletonFactoryInfo(parseInt(network));
-
-  return info?.address || "0x4e59b44847b379578588920ca78fbf26c0b4956c";
-}
-
 export function getProviders(hre: HardhatRuntimeEnvironment) {
   const mainnet = new hre.ethers.providers.JsonRpcProvider(
     `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -86,8 +81,14 @@ export function getProviders(hre: HardhatRuntimeEnvironment) {
   return { mainnet, gc };
 }
 
-export async function getSafeSDKs(hre: HardhatRuntimeEnvironment) {
-  const [delegate] = await hre.ethers.getSigners();
+export async function getSafes(
+  safeAddressMainnet: string,
+  safeAddressGC: string,
+  hre: HardhatRuntimeEnvironment,
+) {
+  assert(process.env.MNEMONIC);
+
+  const delegate = hre.ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
 
   const providers = getProviders(hre);
 
@@ -101,17 +102,9 @@ export async function getSafeSDKs(hre: HardhatRuntimeEnvironment) {
     signerOrProvider: delegate.connect(providers.gc),
   });
 
-  // https://safe-transaction-mainnet.safe.global/
-  // https://safe-transaction-gnosis-chain.safe.global/
-
   const serviceClientMainnet = new SafeServiceClient({
     txServiceUrl: "https://safe-transaction-mainnet.safe.global/",
     ethAdapter: ethAdapterMainnet,
-  });
-
-  const safeSdkMainnet = await Safe.create({
-    ethAdapter: ethAdapterMainnet,
-    safeAddress: SAFE_MAINNET,
   });
 
   const serviceClientGC = new SafeServiceClient({
@@ -119,15 +112,27 @@ export async function getSafeSDKs(hre: HardhatRuntimeEnvironment) {
     ethAdapter: ethAdapterGC,
   });
 
+  const safeSdkMainnet = await Safe.create({
+    ethAdapter: ethAdapterMainnet,
+    safeAddress: safeAddressMainnet,
+  });
+
   const safeSdkGC = await Safe.create({
     ethAdapter: ethAdapterGC,
-    safeAddress: SAFE_MAINNET,
+    safeAddress: safeAddressGC,
   });
 
   return {
     safeSdkMainnet,
-    serviceClientMainnet,
     safeSdkGC,
+    serviceClientMainnet,
     serviceClientGC,
+    delegate,
   };
+}
+
+function singletonFactoryAddress(network: string) {
+  const info = getSingletonFactoryInfo(parseInt(network));
+
+  return info?.address || "0x4e59b44847b379578588920ca78fbf26c0b4956c";
 }
