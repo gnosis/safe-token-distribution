@@ -2,14 +2,14 @@ import assert from "assert";
 
 import { Provider } from "@ethersproject/providers";
 import { Interval } from "../intervals";
-import { Schedule, ScheduleEntry } from "../persistence";
+import { Schedule, ScheduleEntry, ScheduleNetworkEntry } from "../persistence";
 
 export async function assignRandomBlocks(
   intervals: Interval[],
   provider: Provider,
   floor?: number,
   ceiling?: number,
-): Promise<ScheduleEntry[]> {
+): Promise<ScheduleNetworkEntry[]> {
   if (intervals.length === 0) {
     return [];
   }
@@ -123,4 +123,20 @@ function randomBlockNumber(floor: number, ceiling: number) {
   assert(result >= floor);
   assert(result <= ceiling);
   return result;
+}
+
+export function findEntry(schedule: Schedule, blockNumber: number) {
+  let prevEntry: ScheduleEntry | null = null;
+  for (const entry of schedule) {
+    const prevBlockNumber = prevEntry?.mainnet?.blockNumber || 0;
+    const nextBlockNumber = entry.mainnet.blockNumber;
+
+    if (prevBlockNumber < blockNumber && blockNumber <= nextBlockNumber) {
+      return entry;
+    }
+
+    prevEntry = entry;
+  }
+
+  return null;
 }

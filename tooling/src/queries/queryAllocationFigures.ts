@@ -15,7 +15,7 @@ import {
 } from "../config";
 
 export async function queryAllocationFigures(
-  entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
+  entry: ScheduleEntry,
   ignore: { mainnet: string[]; gc: string[] },
   provider: Provider,
   log?: (text: string) => void,
