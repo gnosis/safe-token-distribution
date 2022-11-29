@@ -14,7 +14,7 @@ import {
   VESTING_POOL_ADDRESS,
 } from "../config";
 
-export async function queryAllocationAmounts(
+export async function queryAllocationFigures(
   entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
   provider: Provider,
   log?: (text: string) => void,

@@ -5,7 +5,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getProviders } from "../config";
 import { allocate } from "../domain/allocation";
 import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
-import { queryAllocationAmounts } from "../queries/queryAllocationFigures";
+import { queryAllocationFigures } from "../queries/queryAllocationFigures";
 import { sum } from "../snapshot";
 
 task("allocate:write-all", "")
@@ -33,7 +33,7 @@ task("allocate:write-all", "")
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
         log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
         const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
-          await queryAllocationAmounts(entry, providers.mainnet, log);
+          await queryAllocationFigures(entry, providers.mainnet, log);
 
         allocationsMainnet = allocate(balancesMainnet, toAllocateMainnet);
         assert(sum(allocationsMainnet).eq(toAllocateMainnet));
