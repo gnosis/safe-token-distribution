@@ -8,8 +8,12 @@ import { BigNumber } from "ethers";
 import fs from "fs-extra";
 import path from "path";
 
-export type Schedule = { mainnet: ScheduleEntry; gc: ScheduleEntry }[];
-export type ScheduleEntry = { blockNumber: number; timestamp: number };
+export type Schedule = ScheduleEntry[];
+export type ScheduleEntry = {
+  mainnet: ScheduleNetworkEntry;
+  gc: ScheduleNetworkEntry;
+};
+export type ScheduleNetworkEntry = { blockNumber: number; timestamp: number };
 
 export function loadSchedule(filePath?: string): Schedule {
   return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));
