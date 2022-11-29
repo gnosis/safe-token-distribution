@@ -69,7 +69,10 @@ function toSnapshot(users: User[], keys: (keyof User)[]): Snapshot {
       id: getAddress(user.id),
       balance: keys
         .map((key) => BigNumber.from(user[key] || 0))
-        .reduce((prev, next) => prev.add(next), BigNumber.from(0)),
+        .reduce(
+          (accumulation, next) => accumulation.add(next),
+          BigNumber.from(0),
+        ),
     }))
     .filter(({ balance }) => balance.gt(0));
 
