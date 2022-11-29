@@ -2,7 +2,13 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { getProviders } from "../config";
+import {
+  DAO_ADDRESS_GC,
+  DAO_ADDRESS_MAINNET,
+  getProviders,
+  SAFE_ADDRESS_GC,
+  SAFE_ADDRESS_MAINNET,
+} from "../config";
 import { allocate } from "../domain/allocation";
 import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
 import { queryAllocationFigures } from "../queries/queryAllocationFigures";
@@ -20,6 +26,10 @@ task("allocate:write-all", "")
 
     const schedule = loadSchedule();
     const providers = getProviders(hre);
+    const ignoreAddresses = {
+      mainnet: [DAO_ADDRESS_MAINNET],
+      gc: [DAO_ADDRESS_GC],
+    };
 
     log("Starting");
 
@@ -33,7 +43,12 @@ task("allocate:write-all", "")
       if (lazy === false || !allocationsMainnet || !allocationsGC) {
         log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
         const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
-          await queryAllocationFigures(entry, providers.mainnet, log);
+          await queryAllocationFigures(
+            entry,
+            ignoreAddresses,
+            providers.mainnet,
+            log,
+          );
 
         allocationsMainnet = allocate(balancesMainnet, toAllocateMainnet);
         assert(sum(allocationsMainnet).eq(toAllocateMainnet));

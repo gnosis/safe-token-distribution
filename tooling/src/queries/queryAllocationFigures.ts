@@ -3,7 +3,7 @@ import assert from "assert";
 
 import { allocate } from "../domain/allocation";
 import { ScheduleEntry } from "../persistence";
-import { sum } from "../snapshot";
+import { sum, without } from "../snapshot";
 
 import { queryBalancesMainnet, queryBalancesGC } from "./querySubgraph";
 import { queryVestedInInterval } from "./queryVestingPool";
@@ -16,6 +16,7 @@ import {
 
 export async function queryAllocationFigures(
   entry: { mainnet: ScheduleEntry; gc: ScheduleEntry },
+  ignore: { mainnet: string[]; gc: string[] },
   provider: Provider,
   log?: (text: string) => void,
 ) {
@@ -25,8 +26,8 @@ export async function queryAllocationFigures(
 
   log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
 
-  const [balancesMainnet, balancesGC, amountVestedInInterval] =
-    await Promise.all([
+  let [balancesMainnet, balancesGC, amountVestedInInterval] = await Promise.all(
+    [
       queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
       queryBalancesGC(entry.gc.blockNumber, withLGNO),
       queryVestedInInterval(
@@ -35,7 +36,11 @@ export async function queryAllocationFigures(
         entry.mainnet.blockNumber,
         provider,
       ),
-    ]);
+    ],
+  );
+
+  balancesMainnet = without(balancesMainnet, ignore.mainnet);
+  balancesGC = without(balancesGC, ignore.gc);
 
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get

@@ -1,9 +1,11 @@
 import { BigNumber, constants } from "ethers";
+import { getAddress } from "ethers/lib/utils";
 import { request, gql } from "graphql-request";
 import { Snapshot } from "../snapshot";
 
 type User = {
   id: string;
+  deposit: string;
   gno: string;
   mgno: string;
   lgno: string;
@@ -15,6 +17,10 @@ export async function queryBalancesMainnet(
   block: number,
   withLGNO: boolean,
 ): Promise<Snapshot> {
+  if (!withLGNO) {
+    return {};
+  }
+
   const users = await pagedRequest(async (lastId: string) =>
     request(mainnetEndpoint, mainnetQuery, {
       block,
@@ -22,7 +28,7 @@ export async function queryBalancesMainnet(
     }).then((result) => result.users),
   );
 
-  return toSnapshot(users, withLGNO ? ["lgno", "sgno"] : ["sgno"]);
+  return toSnapshot(users, ["lgno"]);
 }
 
 export async function queryBalancesGC(
@@ -37,8 +43,8 @@ export async function queryBalancesGC(
   );
 
   const keys: (keyof User)[] = withLGNO
-    ? ["lgno", "mgno", "sgno", "stakedGnoSgno"]
-    : ["mgno", "sgno", "stakedGnoSgno"];
+    ? ["lgno", "deposit", "stakedGnoSgno"]
+    : ["deposit", "stakedGnoSgno"];
 
   return toSnapshot(users, keys);
 }
@@ -60,7 +66,7 @@ async function pagedRequest(
 function toSnapshot(users: User[], keys: (keyof User)[]): Snapshot {
   const idsAndBalances = users
     .map((user: User) => ({
-      id: user.id,
+      id: getAddress(user.id),
       balance: keys
         .map((key) => BigNumber.from(user[key] || 0))
         .reduce((prev, next) => prev.add(next), BigNumber.from(0)),
@@ -88,7 +94,6 @@ const mainnetQuery = gql`
     users(block: { number: $block }, first: 1000, where: { id_gt: $lastId }) {
       id
       lgno
-      sgno
     }
   }
 `;
@@ -101,8 +106,7 @@ const gcQuery = gql`
     users(block: { number: $block }, first: 1000, where: { id_gt: $lastId }) {
       id
       lgno
-      mgno
-      sgno
+      deposit
       stakedGnoSgno
     }
   }

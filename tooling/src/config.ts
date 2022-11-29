@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSingletonFactoryInfo } from "@gnosis.pm/safe-singleton-factory";
 import assert from "assert";
-import { keccak256 } from "ethers/lib/utils";
+import { getAddress, keccak256 } from "ethers/lib/utils";
 import { OmniMediator__factory } from "../typechain";
 import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
@@ -9,11 +9,21 @@ import Safe from "@gnosis.pm/safe-core-sdk";
 
 export const SNAPSHOT_FREQUENCY_IN_MINUTES = 60 * 24; // once a day
 
+export const DAO_ADDRESS_MAINNET = getAddress(
+  "0x849D52316331967b6fF1198e5E32A0eB168D039d",
+);
+export const DAO_ADDRESS_GC = getAddress(
+  "0x458cD345B4C05e8DF39d0A07220feb4Ec19F5e6f",
+);
+
 export const SAFE_TOKEN_ADDRESS = "0x5aFE3855358E112B5647B952709E6165e1c1eEEe";
 
-export const SAFE_ADDRESS_MAINNET =
-  "0x849d52316331967b6ff1198e5e32a0eb168d039d";
-export const SAFE_ADDRESS_GC = "0x458cD345B4C05e8DF39d0A07220feb4Ec19F5e6f";
+export const SAFE_ADDRESS_MAINNET = getAddress(
+  "0x849d52316331967b6ff1198e5e32a0eb168d039d",
+);
+export const SAFE_ADDRESS_GC = getAddress(
+  "0x458cD345B4C05e8DF39d0A07220feb4Ec19F5e6f",
+);
 
 export const OMNI_MEDIATOR_ADDRESS_MAINNET =
   "0x88ad09518695c6c3712AC10a214bE5109a655671";

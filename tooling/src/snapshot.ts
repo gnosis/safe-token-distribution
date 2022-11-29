@@ -7,9 +7,21 @@ export type Snapshot = {
 
 export function sum(snapshot: Snapshot): BigNumber {
   return Object.keys(snapshot).reduce(
-    (result, key) => result.add(snapshot[key]),
+    (result, address) => result.add(snapshot[address]),
     BigNumber.from(0),
   );
+}
+
+export function without(snapshot: Snapshot, toRemove: string[]): Snapshot {
+  const addresses = Object.keys(snapshot).filter(
+    (address) => !toRemove.includes(address),
+  );
+
+  const nextSnapshot: Snapshot = {};
+  for (const address of addresses) {
+    nextSnapshot[address] = snapshot[address];
+  }
+  return nextSnapshot;
 }
 
 export function merge(s1: Snapshot, s2: Snapshot): Snapshot {
