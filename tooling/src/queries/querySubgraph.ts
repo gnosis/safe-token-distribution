@@ -88,7 +88,7 @@ function toSnapshot(users: User[], keys: (keyof User)[]): Snapshot {
 }
 
 const mainnetEndpoint =
-  "https://api.thegraph.com/subgraphs/name/jfschwarz/gno-voting-power-eth";
+  "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip";
 const mainnetQuery = gql`
   query ($block: Int, $lastId: String) {
     users(block: { number: $block }, first: 1000, where: { id_gt: $lastId }) {
@@ -99,7 +99,7 @@ const mainnetQuery = gql`
 `;
 
 const gcEndpoint =
-  "https://api.thegraph.com/subgraphs/name/jfschwarz/gno-voting-power-gno";
+  "https://api.thegraph.com/subgraphs/id/QmbJaRFT59ANkbqXHHCkR6euNyTBD2ypnwek9Gneohx8ha";
 
 const gcQuery = gql`
   query ($block: Int, $lastId: String) {
