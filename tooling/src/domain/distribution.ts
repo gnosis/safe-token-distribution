@@ -95,8 +95,12 @@ export async function createDistributeTxMainnet(
   return safeSdk.createTransaction({
     safeTransactionData: [
       encodeClaim(vestingPoolAddress, vestingId, safeAddress, amountToClaim),
-      encodeTransfer(safeTokenAddress, distroMainnetAddress, amountToClaim),
-      ...encodeBridgeSafeTokens(
+      encodeFundDistroMainnet(
+        safeTokenAddress,
+        distroMainnetAddress,
+        amountToClaim,
+      ),
+      ...encodeFundDistroGC(
         safeTokenAddress,
         omniMediatorAddress,
         distroGCAddress,
@@ -142,7 +146,7 @@ function encodeClaim(
   };
 }
 
-function encodeTransfer(
+function encodeFundDistroMainnet(
   safeTokenAddress: string,
   merkleDistroAddress: string,
   amount: BigNumberish,
@@ -176,7 +180,7 @@ function encodeSetMerkleRoot(
   };
 }
 
-function encodeBridgeSafeTokens(
+function encodeFundDistroGC(
   safeTokenAddress: string,
   omniMediatorAddress: string,
   merkleDistroGCAddress: string,
