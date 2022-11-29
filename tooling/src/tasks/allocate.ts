@@ -42,7 +42,7 @@ task(
         : null;
 
       if (!allocationsMainnet || !allocationsGC) {
-        _writeOne(entry, providers, log);
+        await _writeOne(entry, providers, log);
       }
     }
   });
@@ -64,7 +64,7 @@ task(
       throw new Error(`Could not find a schedule entry for ${block}`);
     }
 
-    _writeOne(entry, providers, log);
+    await _writeOne(entry, providers, log);
   });
 
 async function _writeOne(
