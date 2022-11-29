@@ -24,7 +24,7 @@ import queryClosestBlock from "../queries/queryClosestBlock";
 
 task(
   "schedule:expand",
-  "Appends to the schedule.json file - generates block numbers and timestamps for all past and not yet generated intervals",
+  "For any past vesting interval not yet persisted, finds random blocks writes to schedule.json",
 )
   .addOptionalParam(
     "inception",
@@ -114,8 +114,17 @@ task(
     false,
     types.boolean,
   )
+  .addOptionalParam(
+    "frozen",
+    "ensures every past entry is in disk",
+    false,
+    types.boolean,
+  )
   .setAction(
-    async ({ inception, frequency, deep }, hre: HardhatRuntimeEnvironment) => {
+    async (
+      { inception, frequency, deep, frozen },
+      hre: HardhatRuntimeEnvironment,
+    ) => {
       const log = (text: string) => console.info(`schedule:validate ${text}`);
       log("Starting...");
 
@@ -126,17 +135,27 @@ task(
         frequency,
       ).filter(isPastInterval);
 
-      const prevSchedule = loadSchedule();
+      const schedule = loadSchedule();
       log(
-        `Validating ${prevSchedule.length} entries ${
+        `Validating ${schedule.length} entries ${
           deep ? "(with block metadata refetching)" : ""
         }`,
       );
 
+      if (schedule.length > intervals.length) {
+        throw new Error("More schedule entries than past vesting intervals");
+      }
+
       if (deep) {
-        await validateDeep(intervals, prevSchedule, providers, log);
+        await validateDeep(intervals, schedule, providers, log);
       } else {
-        validateShallow(intervals, prevSchedule);
+        validateShallow(intervals, schedule);
+      }
+
+      if (frozen && schedule.length < intervals.length) {
+        throw new Error(
+          "Some past vesting intervals don't yet have a matching entry in schedule",
+        );
       }
       console.log("schedule:validate Done");
     },
