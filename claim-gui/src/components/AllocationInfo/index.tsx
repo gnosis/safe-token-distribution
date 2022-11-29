@@ -2,11 +2,12 @@ import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import clsx from "clsx";
 
-import { useAllocation } from "../../AllocationProvider";
-import { useAmountClaimed } from "../../hooks";
+import { useAllocation } from "../../utils/AllocationProvider";
+import { useAmountClaimed } from "../../utils/hooks";
 import Card from "../Card";
 
 import classes from "./style.module.css";
+import VestingInfo from "../VestingInfo";
 
 const AllocationInfo: React.FC = () => {
   const { address } = useAccount();
@@ -15,6 +16,7 @@ const AllocationInfo: React.FC = () => {
 
   return (
     <Card>
+      <VestingInfo />
       {allocation && (
         <div>
           <dl className={classes.container}>

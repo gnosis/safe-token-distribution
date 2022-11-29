@@ -6,7 +6,7 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 
-import merkleDistroContract from "../../merkleDistroContract";
+import merkleDistroContract from "../../utils/merkleDistroContract";
 import Button from "../Button";
 
 type Props = {
@@ -24,7 +24,6 @@ const ClaimButton: React.FC<Props> = ({
   onSuccess,
   onError,
 }: Props) => {
-  console.log(proof, amount);
   const { config } = usePrepareContractWrite({
     address: merkleDistroContract.address,
     abi: merkleDistroContract.abi,

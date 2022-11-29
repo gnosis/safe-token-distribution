@@ -25,7 +25,7 @@ export function AllocationProvider({
   useEffect(() => {
     setAllocation(null);
     if (merkleRoot && address) {
-      import(`../checkpoints/${merkleRoot}.json`).then((result) => {
+      import(`../../checkpoints/${merkleRoot}.json`).then((result) => {
         const distro = result.default;
         setAllocation(computeProof(distro, address));
       });

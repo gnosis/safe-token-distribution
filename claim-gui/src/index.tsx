@@ -4,16 +4,18 @@ import "./index.css";
 
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { infuraProvider } from "@wagmi/core/providers/infura";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { AllocationProvider } from "./AllocationProvider";
+import { AllocationProvider } from "./utils/AllocationProvider";
 import HomePage from "./Pages/HomePage";
 
 const { chains, provider } = configureChains(
-  [chain.hardhat],
+  [chain.hardhat, chain.mainnet],
   [
     jsonRpcProvider({
       rpc: (chain) => ({ http: "http://127.0.0.1:8545/" }),
     }),
+    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
   ],
 );
 

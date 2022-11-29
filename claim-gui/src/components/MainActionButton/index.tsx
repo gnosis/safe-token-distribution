@@ -1,8 +1,8 @@
 import { useAccount } from "wagmi";
 
-import { useAllocation } from "../../AllocationProvider";
+import { useAllocation } from "../../utils/AllocationProvider";
 import ClaimButton from "./ClaimButton";
-import { useAmountClaimed } from "../../hooks";
+import { useAmountClaimed } from "../../utils/hooks";
 import Card from "../Card";
 import Button from "../Button";
 import ConnectModal from "../ConnectModal";
