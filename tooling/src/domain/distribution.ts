@@ -52,7 +52,7 @@ export async function calculateAmountToBridge(
     const total = amountMainnet.add(amountGC);
 
     if (total.gt(amountToClaim)) {
-      throw new Error("CalculateAmountToBridge: Accounting Overflow Panic");
+      throw new Error("!!!Accounting Overflow Panic!!!");
     }
 
     if (total.eq(amountToClaim)) {
@@ -60,7 +60,7 @@ export async function calculateAmountToBridge(
     }
   }
 
-  throw new Error("CalculateAmountToBridge: Accounting Underflow Panic");
+  throw new Error("!!!Accounting Underflow Panic!!!");
 }
 
 export async function createDistributeTxMainnet(
