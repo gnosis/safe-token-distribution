@@ -22,7 +22,7 @@ const VestingChart: React.FC<Props> = ({
 }) => {
   const width = 640;
   const height = 400;
-  console.log("vested", gnosisDaoVested);
+
   const wedges = [
     {
       allocation: gnosisDaoAllocation - gnosisDaoVested,
