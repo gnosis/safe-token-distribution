@@ -1,9 +1,10 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import { Snapshot, merge, sum } from "../snapshot";
+import { Snapshot, sum } from "../snapshot";
+import { snapshotMerge } from "./snapshotMerge";
 
-export function allocate(
+export default function allocationCalculate(
   balances: Snapshot,
   amountToAllocate: BigNumber,
 ): Snapshot {
@@ -11,23 +12,22 @@ export function allocate(
     return {};
   }
 
-  const { allocations, remainder } = calculate(balances, amountToAllocate);
+  const { allocation, remainder } = divide(balances, amountToAllocate);
 
-  return merge(allocations, allocate(balances, remainder));
+  return snapshotMerge(allocation, allocationCalculate(balances, remainder));
 }
 
-function calculate(balances: Snapshot, amountToAllocate: BigNumber) {
+function divide(balances: Snapshot, amountToAllocate: BigNumber) {
   const holderCount = Object.keys(balances).length;
   const isMicroPeanuts = amountToAllocate.lte(holderCount);
-
   return !isMicroPeanuts
-    ? calculateWeighted(balances, amountToAllocate)
-    : calculatePeanuts(balances, amountToAllocate);
+    ? divideWeighted(balances, amountToAllocate)
+    : dividePeanuts(balances, amountToAllocate);
 }
 
-function calculateWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
+function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
   const totalBalances = sum(balances);
-  const allocations = Object.keys(balances)
+  const allocation = Object.keys(balances)
     .map((address) => ({
       address,
       amount: balances[address].mul(amountToAllocate).div(totalBalances),
@@ -38,22 +38,22 @@ function calculateWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
       {},
     );
 
-  const totalAllocated = sum(allocations);
+  const totalAllocated = sum(allocation);
 
   assert(totalAllocated.gt(0), "Unexpected Standstill");
 
   return {
-    allocations,
+    allocation,
     remainder: amountToAllocate.sub(totalAllocated),
   };
 }
 
-function calculatePeanuts(balances: Snapshot, dust: BigNumber) {
+function dividePeanuts(balances: Snapshot, dust: BigNumber) {
   const holderCount = Object.keys(balances).length;
 
   assert(dust.toNumber() <= holderCount);
 
-  const allocations = Object.keys(balances)
+  const allocation = Object.keys(balances)
     .map((address) => ({ address, amount: balances[address] }))
     .sort((a, b) => (a.amount.gt(b.amount) ? -1 : 1))
     .slice(0, dust.toNumber())
@@ -62,5 +62,5 @@ function calculatePeanuts(balances: Snapshot, dust: BigNumber) {
       {},
     );
 
-  return { allocations, remainder: BigNumber.from(0) };
+  return { allocation, remainder: BigNumber.from(0) };
 }

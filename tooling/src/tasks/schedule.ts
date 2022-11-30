@@ -141,14 +141,20 @@ task(
         throw new Error("More schedule entries than past vesting intervals");
       }
 
-      await scheduleValidate(intervals, schedule, deep, providers, log);
+      await scheduleValidate(
+        intervals,
+        schedule,
+        deep,
+        providers,
+        deep ? log : () => {},
+      );
 
       if (frozen && schedule.length < intervals.length) {
         throw new Error(
           "One or more past vesting intervals don't yet have a matching entry in schedule.json",
         );
       }
-      console.log("schedule:validate Done");
+      console.log("schedule:validate Ok & Done");
     },
   );
 
