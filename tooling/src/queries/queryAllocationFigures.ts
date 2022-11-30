@@ -4,7 +4,7 @@ import assert from "assert";
 import { queryBalancesMainnet, queryBalancesGC } from "./querySubgraph";
 import { queryAmountVested } from "./queryVestingPool";
 
-import allocationCalculate from "../fns/allocationCalculate";
+import calculateAllocation from "../fns/calculateAllocation";
 import snapshotWithout from "../fns/snapshotWithout";
 import snapshotSum from "../fns/snapshotSum";
 
@@ -57,7 +57,7 @@ export async function queryAllocationFigures(
 
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get
-  const result = allocationCalculate(
+  const result = calculateAllocation(
     { mainnet: snapshotSum(balancesMainnet), gc: snapshotSum(balancesGC) },
     amountVestedInInterval,
   );

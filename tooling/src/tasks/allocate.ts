@@ -9,7 +9,7 @@ import { queryAllocationFigures } from "../queries/queryAllocationFigures";
 
 import snapshotSum from "../fns/snapshotSum";
 import scheduleFind from "../fns/scheduleFind";
-import allocationCalculate from "../fns/allocationCalculate";
+import calculate from "../fns/calculateAllocation";
 
 import {
   loadSchedule,
@@ -98,13 +98,10 @@ async function _writeOne(
       log,
     );
 
-  const allocationMainnet = allocationCalculate(
-    balancesMainnet,
-    toAllocateMainnet,
-  );
+  const allocationMainnet = calculate(balancesMainnet, toAllocateMainnet);
   assert(snapshotSum(allocationMainnet).eq(toAllocateMainnet));
 
-  const allocationGC = allocationCalculate(balancesGC, toAllocateGC);
+  const allocationGC = calculate(balancesGC, toAllocateGC);
   assert(snapshotSum(allocationGC).eq(toAllocateGC));
 
   saveAllocation("mainnet", entry.mainnet.blockNumber, allocationMainnet);

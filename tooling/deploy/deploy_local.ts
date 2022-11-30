@@ -10,7 +10,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import { saveCheckpoint } from "../src/persistence";
 
-import merkleTreeCreate from "../src/fns/merkleTreeCreate";
+import createMerkleTree from "../src/fns/createMerkleTree";
 import { ERC20Mock__factory } from "../typechain";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -73,7 +73,7 @@ function createDummyMerkleTree() {
     "0x031487A94a58b6E438A571256C0bD9093B564a86": BigNumber.from("10000"),
   };
 
-  const tree = merkleTreeCreate(checkpoint);
+  const tree = createMerkleTree(checkpoint);
   saveCheckpoint(
     checkpoint,
     tree,
