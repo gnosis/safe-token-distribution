@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 
-import createMerkleTree from "../fns/merkleTreeCreate";
+import createMerkleTree from "../fns/createMerkleTree";
 import snapshotMerge from "../fns/snapshotMerge";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
