@@ -1,26 +1,22 @@
 import assert from "assert";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { task, types } from "hardhat/config";
+import { getUnixTime } from "date-fns";
 
+import { Interval } from "../types";
+
+import queryClosestBlock from "../queries/queryClosestBlock";
+import intervalsToBlocks from "../fns/intervalsToBlocks";
+import intervalsGenerate from "../fns/intervalsGenerate";
+
+import { validateShallow, validateDeep } from "../domain/schedule";
 import { loadSchedule, saveSchedule } from "../persistence";
-
-import {
-  validateShallow,
-  validateDeep,
-  assignRandomBlocks,
-} from "../domain/schedule";
-
-import {
-  generate as generateIntervals,
-  isPast as isPastInterval,
-} from "../intervals";
 
 import {
   VESTING_CREATION_BLOCK,
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   getProviders,
 } from "../config";
-import queryClosestBlock from "../queries/queryClosestBlock";
 
 task(
   "schedule:expand",
@@ -45,7 +41,7 @@ task(
 
       log("Starting...");
 
-      const intervals = generateIntervals(
+      const intervals = intervalsGenerate(
         await providers.mainnet.getBlock(inception),
         frequency,
       ).filter(isPastInterval);
@@ -60,7 +56,7 @@ task(
 
       log(`Inserting ${intervals.length - prevSchedule.length} new entries`);
 
-      const nextMainnetEntries = await assignRandomBlocks(
+      const nextMainnetEntries = await intervalsToBlocks(
         intervals.slice(prevSchedule.length),
         providers.mainnet,
       );
@@ -130,7 +126,7 @@ task(
 
       const providers = getProviders(hre);
 
-      const intervals = generateIntervals(
+      const intervals = intervalsGenerate(
         await providers.mainnet.getBlock(inception),
         frequency,
       ).filter(isPastInterval);
@@ -160,3 +156,6 @@ task(
       console.log("schedule:validate Done");
     },
   );
+
+const isPastInterval = (interval: Interval) =>
+  interval.right < getUnixTime(new Date());
