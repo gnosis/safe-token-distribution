@@ -3,8 +3,6 @@ import fs from "fs-extra";
 import path from "path";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { write as writeSnapshot, load as loadSnapshot } from "./snapshot";
-
 import { Snapshot } from "./types";
 
 export type Schedule = ScheduleEntry[];
@@ -87,4 +85,59 @@ export function loadCheckpoint(treeRoot: string): Snapshot {
 
 function checkpointDirPath() {
   return path.resolve(path.join(__dirname, "..", "harvesting", "checkpoints"));
+}
+
+function loadSnapshot(filePath: string): Snapshot | null {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  return valuesToBigNumber(JSON.parse(fs.readFileSync(filePath, "utf8")));
+}
+
+function writeSnapshot(filePath: string, map: Snapshot) {
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(valuesToString(map), null, 2),
+    "utf8",
+  );
+}
+
+type StringMap = {
+  [key: string]: string;
+};
+
+function valuesToBigNumber(map: StringMap): Snapshot {
+  // !!this is (catastrophically) MUCH slower!!
+  // return Object.keys(map).reduce(
+  //   (prev, key) => ({
+  //     ...prev,
+  //     [key]: BigNumber.from(map[key]),
+  //   }),
+  //   {},
+  // );
+  // this is faster
+  const result: Snapshot = {};
+  for (const key in map) {
+    result[key] = BigNumber.from(map[key]);
+  }
+  return result;
+}
+
+function valuesToString(map: Snapshot): StringMap {
+  // !!this is MUCH slower!!
+  // return Object.keys(map).reduce(
+  //   (prev, key) => ({
+  //     ...prev,
+  //     [key]: map[key].toString(),
+  //   }),
+  //   {},
+  // );
+
+  // this is faster
+  const result: StringMap = {};
+  for (const key in map) {
+    result[key] = map[key].toString();
+  }
+  return result;
 }
