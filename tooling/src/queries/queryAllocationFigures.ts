@@ -6,7 +6,7 @@ import { ScheduleEntry } from "../persistence";
 import { sum, without } from "../snapshot";
 
 import { queryBalancesMainnet, queryBalancesGC } from "./querySubgraph";
-import { queryVestedInInterval } from "./queryVestingPool";
+import { queryAmountVested } from "./queryVestingPool";
 
 import {
   TOKEN_LOCK_OPEN_TIMESTAMP,
@@ -15,6 +15,7 @@ import {
 } from "../config";
 
 export async function queryAllocationFigures(
+  prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
   ignore: { mainnet: string[]; gc: string[] },
   provider: Provider,
@@ -26,21 +27,31 @@ export async function queryAllocationFigures(
 
   log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
 
-  let [balancesMainnet, balancesGC, amountVestedInInterval] = await Promise.all(
-    [
+  let [balancesMainnet, balancesGC, prevAmountVested, amountVested] =
+    await Promise.all([
       queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
       queryBalancesGC(entry.gc.blockNumber, withLGNO),
-      queryVestedInInterval(
+      prevEntry
+        ? queryAmountVested(
+            VESTING_POOL_ADDRESS,
+            VESTING_ID,
+            prevEntry.mainnet.blockNumber,
+            provider,
+          )
+        : 0,
+      queryAmountVested(
         VESTING_POOL_ADDRESS,
         VESTING_ID,
         entry.mainnet.blockNumber,
         provider,
       ),
-    ],
-  );
+    ]);
+
+  assert(amountVested.gte(prevAmountVested));
 
   balancesMainnet = without(balancesMainnet, ignore.mainnet);
   balancesGC = without(balancesGC, ignore.gc);
+  const amountVestedInInterval = amountVested.sub(prevAmountVested);
 
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get
