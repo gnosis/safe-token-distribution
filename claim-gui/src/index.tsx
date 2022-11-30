@@ -10,12 +10,12 @@ import { AllocationProvider } from "./utils/AllocationProvider";
 import HomePage from "./Pages/HomePage";
 
 const { chains, provider } = configureChains(
-  [chain.hardhat, chain.mainnet],
+  [chain.mainnet, chain.hardhat],
   [
+    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
     jsonRpcProvider({
       rpc: (chain) => ({ http: "http://127.0.0.1:8545/" }),
     }),
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
   ],
 );
 

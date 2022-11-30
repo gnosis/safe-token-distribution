@@ -1,0 +1,81 @@
+.vestingInfo {
+  padding: 0.5em;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.vestingInfo h1 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.vestingChart {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid;
+  background-color: #f6eaff;
+  overflow: hidden;
+}
+
+.pieChart {
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+}
+
+.elseAllocation {
+  fill: #e8fff2;
+}
+
+.gnosisAllocation {
+  fill: #cdffe4;
+}
+
+.gnosisVested {
+  fill: #13ff7f;
+}
+
+.connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: ghostwhite;
+  border: 0.5px solid;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.statusContainer {
+  position: absolute;
+  bottom: 20px;
+  right: calc(0.5em + 5px);
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background-color: #13ff7f;
+  animation: blink 2s ease-in-out infinite;
+}
+
+.indicator.error {
+  background-color: #ffc013;
+  animation: blink 1s ease-in-out infinite;
+}
+
+.indicatorLabel {
+  font-size: 0.8em;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
