@@ -5,7 +5,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { DAO_ADDRESS_GC, DAO_ADDRESS_MAINNET, getProviders } from "../config";
 import { allocate } from "../domain/allocation";
-import { findEntry } from "../domain/schedule";
+
 import {
   loadSchedule,
   loadAllocation,
@@ -14,6 +14,8 @@ import {
 } from "../persistence";
 import { queryAllocationFigures } from "../queries/queryAllocationFigures";
 import { sum } from "../snapshot";
+
+import scheduleFind from "../fns/scheduleFind";
 
 task(
   "allocate:write-all",
@@ -42,7 +44,14 @@ task(
         : null;
 
       if (!allocationsMainnet || !allocationsGC) {
-        await _writeOne(entry, providers, log);
+        const { prevEntry } = scheduleFind(schedule, entry.mainnet.blockNumber);
+
+        assert(
+          prevEntry === null ||
+            schedule.indexOf(prevEntry) + 1 == schedule.indexOf(entry),
+        );
+
+        await _writeOne(prevEntry, entry, providers, log);
       }
     }
   });
@@ -59,15 +68,16 @@ task(
     const providers = getProviders(hre);
     log("Starting");
 
-    const entry = findEntry(schedule, block);
+    const { prevEntry, entry } = scheduleFind(schedule, block);
     if (!entry) {
       throw new Error(`Could not find a schedule entry for ${block}`);
     }
 
-    await _writeOne(entry, providers, log);
+    await _writeOne(prevEntry, entry, providers, log);
   });
 
 async function _writeOne(
+  prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
   providers: { mainnet: Provider; gc: Provider },
   log: (text: string) => void,
@@ -80,6 +90,7 @@ async function _writeOne(
   log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
   const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
     await queryAllocationFigures(
+      prevEntry,
       entry,
       ignoreAddresses,
       providers.mainnet,

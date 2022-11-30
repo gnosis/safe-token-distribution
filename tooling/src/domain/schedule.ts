@@ -124,19 +124,3 @@ function randomBlockNumber(floor: number, ceiling: number) {
   assert(result <= ceiling);
   return result;
 }
-
-export function findEntry(schedule: Schedule, blockNumber: number) {
-  let prevEntry: ScheduleEntry | null = null;
-  for (const entry of schedule) {
-    const prevBlockNumber = prevEntry?.mainnet?.blockNumber || 0;
-    const nextBlockNumber = entry.mainnet.blockNumber;
-
-    if (prevBlockNumber < blockNumber && blockNumber <= nextBlockNumber) {
-      return entry;
-    }
-
-    prevEntry = entry;
-  }
-
-  return null;
-}
