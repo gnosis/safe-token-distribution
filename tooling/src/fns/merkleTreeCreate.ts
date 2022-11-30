@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { Snapshot } from "../snapshot";
+import { Snapshot } from "../types";
 
-export function createMerkleTree(
+export default function (
   snapshot: Snapshot,
 ): StandardMerkleTree<(string | BigNumber)[]> {
   const leaves = Object.keys(snapshot).map((address) => [
