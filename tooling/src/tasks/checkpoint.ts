@@ -1,6 +1,6 @@
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import { BigNumber } from "ethers";
 import { task } from "hardhat/config";
+
+import createMerkleTree from "../fns/merkleTreeCreate";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 import { Snapshot, merge } from "../snapshot";
@@ -44,14 +44,3 @@ task("checkpoint:generate", "").setAction(async () => {
 
   return [treeMainnet.root, treeGC.root];
 });
-
-function createMerkleTree(
-  snapshot: Snapshot,
-): StandardMerkleTree<(string | BigNumber)[]> {
-  const leaves = Object.keys(snapshot).map((address) => [
-    address,
-    snapshot[address],
-  ]);
-
-  return StandardMerkleTree.of(leaves, ["address", "uint256"]);
-}

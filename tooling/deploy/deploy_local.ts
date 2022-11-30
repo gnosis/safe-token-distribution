@@ -8,8 +8,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { createMerkleTree } from "../src/domain/checkpoint";
 import { saveCheckpoint } from "../src/persistence";
+
+import merkleTreeCreate from "../src/fns/merkleTreeCreate";
 import { ERC20Mock__factory } from "../typechain";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -72,7 +73,7 @@ function createDummyMerkleTree() {
     "0x031487A94a58b6E438A571256C0bD9093B564a86": BigNumber.from("10000"),
   };
 
-  const tree = createMerkleTree(checkpoint);
+  const tree = merkleTreeCreate(checkpoint);
   saveCheckpoint(
     checkpoint,
     tree,

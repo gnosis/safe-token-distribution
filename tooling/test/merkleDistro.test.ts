@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { BigNumber, Signer } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { createMerkleTree } from "../src/domain/checkpoint";
+import createMerkleTree from "../src/fns/merkleTreeCreate";
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
 import { ERC20Mock__factory } from "../typechain";
 
