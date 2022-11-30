@@ -1,17 +1,14 @@
-import fromUnixTime from "date-fns/fromUnixTime";
-import getUnixTime from "date-fns/getUnixTime";
-import addMinutes from "date-fns/addMinutes";
-import addYears from "date-fns/addYears";
-import isBefore from "date-fns/isBefore";
-
 import { Block } from "@ethersproject/providers";
+import {
+  addMinutes,
+  addYears,
+  fromUnixTime,
+  getUnixTime,
+  isBefore,
+} from "date-fns";
+import { Interval } from "../types";
 
-export type Interval = {
-  left: number;
-  right: number;
-};
-
-export function generate(inceptionBlock: Block, frequency: number): Interval[] {
+export default function (inceptionBlock: Block, frequency: number): Interval[] {
   let result: Interval[] = [];
 
   const start = fromUnixTime(inceptionBlock.timestamp);

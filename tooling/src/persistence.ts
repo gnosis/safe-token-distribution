@@ -10,10 +10,10 @@ import path from "path";
 
 export type Schedule = ScheduleEntry[];
 export type ScheduleEntry = {
-  mainnet: ScheduleNetworkEntry;
-  gc: ScheduleNetworkEntry;
+  mainnet: BlockAndTimestamp;
+  gc: BlockAndTimestamp;
 };
-export type ScheduleNetworkEntry = { blockNumber: number; timestamp: number };
+export type BlockAndTimestamp = { blockNumber: number; timestamp: number };
 
 export function loadSchedule(filePath?: string): Schedule {
   return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));

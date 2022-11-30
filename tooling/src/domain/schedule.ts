@@ -1,56 +1,7 @@
-import assert from "assert";
-
 import { Provider } from "@ethersproject/providers";
-import { Interval } from "../intervals";
-import { Schedule, ScheduleEntry, ScheduleNetworkEntry } from "../persistence";
+import { Schedule } from "../persistence";
 
-export async function assignRandomBlocks(
-  intervals: Interval[],
-  provider: Provider,
-  floor?: number,
-  ceiling?: number,
-): Promise<ScheduleNetworkEntry[]> {
-  if (intervals.length === 0) {
-    return [];
-  }
-
-  floor = floor || 0;
-  ceiling = ceiling || (await provider.getBlockNumber());
-
-  const block = await provider.getBlock(randomBlockNumber(floor, ceiling));
-  const index = intervals.findIndex(
-    (entry) => entry.left <= block.timestamp && block.timestamp < entry.right,
-  );
-
-  if (index === -1) {
-    // narrow down and try again
-    const left = intervals[0].left;
-    const right = intervals[intervals.length - 1].right;
-    return assignRandomBlocks(
-      intervals,
-      provider,
-      block.timestamp < left ? block.number : floor,
-      block.timestamp > right ? block.number : ceiling,
-    );
-  }
-
-  // divide and conquer
-  return [
-    ...(await assignRandomBlocks(
-      intervals.slice(0, index),
-      provider,
-      floor,
-      block.number,
-    )),
-    { blockNumber: block.number, timestamp: block.timestamp },
-    ...(await assignRandomBlocks(
-      intervals.slice(index + 1),
-      provider,
-      block.number,
-      ceiling,
-    )),
-  ];
-}
+import { Interval } from "../types";
 
 export function validateShallow(intervals: Interval[], schedule: Schedule) {
   for (let i = 0; i < schedule.length; i++) {
@@ -115,12 +66,4 @@ export async function validateDeep(
 
     log?.(`${i}: OK`);
   }
-}
-
-function randomBlockNumber(floor: number, ceiling: number) {
-  const result = floor + Math.floor(Math.random() * (ceiling - floor + 1));
-
-  assert(result >= floor);
-  assert(result <= ceiling);
-  return result;
 }
