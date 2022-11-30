@@ -5,17 +5,18 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { DAO_ADDRESS_GC, DAO_ADDRESS_MAINNET, getProviders } from "../config";
 
+import { queryAllocationFigures } from "../queries/queryAllocationFigures";
+
+import snapshotSum from "../fns/snapshotSum";
+import scheduleFind from "../fns/scheduleFind";
+import allocationCalculate from "../fns/allocationCalculate";
+
 import {
   loadSchedule,
   loadAllocation,
   saveAllocation,
   ScheduleEntry,
 } from "../persistence";
-import { queryAllocationFigures } from "../queries/queryAllocationFigures";
-import { sum } from "../snapshot";
-
-import scheduleFind from "../fns/scheduleFind";
-import allocationCalculate from "../fns/allocationCalculate";
 
 task(
   "allocate:write-all",
@@ -101,10 +102,10 @@ async function _writeOne(
     balancesMainnet,
     toAllocateMainnet,
   );
-  assert(sum(allocationMainnet).eq(toAllocateMainnet));
+  assert(snapshotSum(allocationMainnet).eq(toAllocateMainnet));
 
   const allocationGC = allocationCalculate(balancesGC, toAllocateGC);
-  assert(sum(allocationGC).eq(toAllocateGC));
+  assert(snapshotSum(allocationGC).eq(toAllocateGC));
 
   saveAllocation("mainnet", entry.mainnet.blockNumber, allocationMainnet);
   saveAllocation("gc", entry.gc.blockNumber, allocationGC);

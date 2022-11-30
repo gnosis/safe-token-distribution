@@ -5,13 +5,12 @@ import {
   SafeTransaction,
   SafeTransactionDataPartial,
 } from "@gnosis.pm/safe-core-sdk-types";
-
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { loadAllocation, Schedule } from "../persistence";
-import { sum } from "../snapshot";
 
 import { queryAmountToClaim } from "../queries/queryVestingPool";
+import snapshotSum from "../fns/snapshotSum";
 
 import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
 import {
@@ -46,8 +45,8 @@ export async function calculateAmountToBridge(
     const allocationGC = loadAllocation("gc", gc.blockNumber);
     assert(!!allocationGC);
 
-    amountMainnet = amountMainnet.add(sum(allocationMainnet));
-    amountGC = amountGC.add(sum(allocationGC));
+    amountMainnet = amountMainnet.add(snapshotSum(allocationMainnet));
+    amountGC = amountGC.add(snapshotSum(allocationGC));
 
     const total = amountMainnet.add(amountGC);
 

@@ -1,7 +1,7 @@
 import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { request, gql } from "graphql-request";
-import { Snapshot } from "../snapshot";
+import { Snapshot } from "../types";
 
 type User = {
   id: string;

@@ -1,12 +1,11 @@
-import {
-  Snapshot,
-  write as writeSnapshot,
-  load as loadSnapshot,
-} from "./snapshot";
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber } from "ethers";
 import fs from "fs-extra";
 import path from "path";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+
+import { write as writeSnapshot, load as loadSnapshot } from "./snapshot";
+
+import { Snapshot } from "./types";
 
 export type Schedule = ScheduleEntry[];
 export type ScheduleEntry = {

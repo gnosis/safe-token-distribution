@@ -1,6 +1,6 @@
 import { Snapshot } from "../types";
 
-export function snapshotWithout(
+export default function snapshotWithout(
   snapshot: Snapshot,
   toRemove: string[],
 ): Snapshot {
