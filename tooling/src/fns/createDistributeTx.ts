@@ -5,62 +5,13 @@ import {
   SafeTransaction,
   SafeTransactionDataPartial,
 } from "@gnosis.pm/safe-core-sdk-types";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { loadAllocation, Schedule } from "../persistence";
-
-import { queryAmountToClaim } from "../queries/queryVestingPool";
-import snapshotSum from "../fns/snapshotSum";
-
-import { getProviders, VESTING_ID, VESTING_POOL_ADDRESS } from "../config";
 import {
   MerkleDistro__factory,
   VestingPool__factory,
   ERC20__factory,
   OmniMediator__factory,
 } from "../../typechain";
-
-export async function calculateAmountToBridge(
-  schedule: Schedule,
-  hre: HardhatRuntimeEnvironment,
-) {
-  const providers = getProviders(hre);
-
-  const lastEntry = schedule[schedule.length - 1].mainnet;
-  const amountToClaim = await queryAmountToClaim(
-    VESTING_POOL_ADDRESS,
-    VESTING_ID,
-    lastEntry.blockNumber,
-    providers.mainnet,
-  );
-
-  const reversedSchedule = [...schedule].reverse();
-  let amountMainnet = BigNumber.from(0);
-  let amountGC = BigNumber.from(0);
-
-  for (const { mainnet, gc } of reversedSchedule) {
-    const allocationMainnet = loadAllocation("mainnet", mainnet.blockNumber);
-    assert(!!allocationMainnet);
-
-    const allocationGC = loadAllocation("gc", gc.blockNumber);
-    assert(!!allocationGC);
-
-    amountMainnet = amountMainnet.add(snapshotSum(allocationMainnet));
-    amountGC = amountGC.add(snapshotSum(allocationGC));
-
-    const total = amountMainnet.add(amountGC);
-
-    if (total.gt(amountToClaim)) {
-      throw new Error("!!!Accounting Overflow Panic!!!");
-    }
-
-    if (total.eq(amountToClaim)) {
-      return { amountToClaim, amountToBridge: amountGC };
-    }
-  }
-
-  throw new Error("!!!Accounting Underflow Panic!!!");
-}
 
 export async function createDistributeTxMainnet(
   safeSdk: Safe,
