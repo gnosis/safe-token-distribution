@@ -1,9 +1,11 @@
 import { task } from "hardhat/config";
 
 import createMerkleTree from "../fns/merkleTreeCreate";
+import snapshotMerge from "../fns/snapshotMerge";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
-import { Snapshot, merge } from "../snapshot";
+
+import { Snapshot } from "../types";
 
 task("checkpoint:generate", "").setAction(async () => {
   const log = (text: string) => console.info(`checkpoint:generate ${text}`);
@@ -32,8 +34,8 @@ task("checkpoint:generate", "").setAction(async () => {
       throw new Error(`GC Allocation Not Calculated ${entry.gc.blockNumber}`);
     }
 
-    checkpointMainnet = merge(checkpointMainnet, allocationMainnet);
-    checkpointGC = merge(checkpointGC, allocationGC);
+    checkpointMainnet = snapshotMerge(checkpointMainnet, allocationMainnet);
+    checkpointGC = snapshotMerge(checkpointGC, allocationGC);
   }
 
   const treeMainnet = createMerkleTree(checkpointMainnet);

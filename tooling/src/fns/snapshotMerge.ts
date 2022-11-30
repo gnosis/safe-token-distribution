@@ -1,6 +1,6 @@
-import { Snapshot } from "../snapshot";
+import { Snapshot } from "../types";
 
-export function snapshotMerge(s1: Snapshot, s2: Snapshot): Snapshot {
+export default function snapshotMerge(s1: Snapshot, s2: Snapshot): Snapshot {
   // !!this is MUCH slower!!
   // return Object.keys(s1).reduce(
   //   (result, key) => ({

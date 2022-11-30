@@ -1,8 +1,10 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import { Snapshot, sum } from "../snapshot";
-import { snapshotMerge } from "./snapshotMerge";
+import snapshotMerge from "./snapshotMerge";
+import snapshotSum from "./snapshotSum";
+
+import { Snapshot } from "../types";
 
 export default function allocationCalculate(
   balances: Snapshot,
@@ -26,7 +28,7 @@ function divide(balances: Snapshot, amountToAllocate: BigNumber) {
 }
 
 function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
-  const totalBalances = sum(balances);
+  const totalBalances = snapshotSum(balances);
   const allocation = Object.keys(balances)
     .map((address) => ({
       address,
@@ -38,7 +40,7 @@ function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
       {},
     );
 
-  const totalAllocated = sum(allocation);
+  const totalAllocated = snapshotSum(allocation);
 
   assert(totalAllocated.gt(0), "Unexpected Standstill");
 
