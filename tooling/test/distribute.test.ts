@@ -6,11 +6,12 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { SafeToken__factory, VestingPool__factory } from "../typechain";
 
 import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
-import { createDistributeTxMainnet } from "../src/domain/distribution";
 
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
 import safeTokenUnpause from "./helpers/safeTokenUnpause";
+
+import { createDistributeTxMainnet } from "../src/fns/createDistributeTx";
 
 import {
   OMNI_MEDIATOR_ADDRESS_MAINNET,
