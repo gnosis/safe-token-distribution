@@ -8,15 +8,15 @@ import { Interval } from "../types";
 import queryClosestBlock from "../queries/queryClosestBlock";
 import intervalsToBlocks from "../fns/intervalsToBlocks";
 import intervalsGenerate from "../fns/intervalsGenerate";
-
-import { validateShallow, validateDeep } from "../domain/schedule";
-import { loadSchedule, saveSchedule } from "../persistence";
+import scheduleValidate from "../fns/scheduleValidate";
 
 import {
   VESTING_CREATION_BLOCK,
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   getProviders,
 } from "../config";
+
+import { loadSchedule, saveSchedule } from "../persistence";
 
 task(
   "schedule:expand",
@@ -80,10 +80,9 @@ task(
         ];
       }
 
-      validateShallow(intervals, nextSchedule);
       saveSchedule(nextSchedule);
-
       log("Done");
+
       return nextSchedule;
     },
   );
@@ -142,15 +141,11 @@ task(
         throw new Error("More schedule entries than past vesting intervals");
       }
 
-      if (deep) {
-        await validateDeep(intervals, schedule, providers, log);
-      } else {
-        validateShallow(intervals, schedule);
-      }
+      await scheduleValidate(intervals, schedule, deep, providers, log);
 
       if (frozen && schedule.length < intervals.length) {
         throw new Error(
-          "Some past vesting intervals don't yet have a matching entry in schedule",
+          "One or more past vesting intervals don't yet have a matching entry in schedule.json",
         );
       }
       console.log("schedule:validate Done");
