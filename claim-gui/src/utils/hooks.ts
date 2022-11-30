@@ -1,5 +1,8 @@
 import { BigNumber } from "ethers";
+import { useEffect, useRef } from "react";
 import { useContractRead } from "wagmi";
+import { select, Selection } from "d3";
+
 import merkleDistroContract from "./merkleDistroContract";
 
 export function useAmountClaimed(account: string | undefined) {
@@ -25,4 +28,19 @@ export function useMerkleRoot() {
     args: [],
   });
   return result?.data || null;
+}
+
+export function useD3(
+  renderFunc: (
+    svgEl: Selection<SVGSVGElement, unknown, null, undefined>,
+  ) => void,
+  dependencies: any[],
+) {
+  const ref = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    if (ref.current) renderFunc(select(ref.current));
+    return () => {};
+  }, dependencies);
+
+  return ref;
 }
