@@ -4,7 +4,6 @@ import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { DAO_ADDRESS_GC, DAO_ADDRESS_MAINNET, getProviders } from "../config";
-import { allocate } from "../domain/allocation";
 
 import {
   loadSchedule,
@@ -16,6 +15,7 @@ import { queryAllocationFigures } from "../queries/queryAllocationFigures";
 import { sum } from "../snapshot";
 
 import scheduleFind from "../fns/scheduleFind";
+import allocationCalculate from "../fns/allocationCalculate";
 
 task(
   "allocate:write-all",
@@ -97,12 +97,15 @@ async function _writeOne(
       log,
     );
 
-  const allocationsMainnet = allocate(balancesMainnet, toAllocateMainnet);
-  assert(sum(allocationsMainnet).eq(toAllocateMainnet));
+  const allocationMainnet = allocationCalculate(
+    balancesMainnet,
+    toAllocateMainnet,
+  );
+  assert(sum(allocationMainnet).eq(toAllocateMainnet));
 
-  const allocationsGC = allocate(balancesGC, toAllocateGC);
-  assert(sum(allocationsGC).eq(toAllocateGC));
+  const allocationGC = allocationCalculate(balancesGC, toAllocateGC);
+  assert(sum(allocationGC).eq(toAllocateGC));
 
-  saveAllocation("mainnet", entry.mainnet.blockNumber, allocationsMainnet);
-  saveAllocation("gc", entry.gc.blockNumber, allocationsGC);
+  saveAllocation("mainnet", entry.mainnet.blockNumber, allocationMainnet);
+  saveAllocation("gc", entry.gc.blockNumber, allocationGC);
 }

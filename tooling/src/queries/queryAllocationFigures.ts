@@ -1,12 +1,13 @@
 import { Provider } from "@ethersproject/providers";
 import assert from "assert";
 
-import { allocate } from "../domain/allocation";
 import { ScheduleEntry } from "../persistence";
 import { sum, without } from "../snapshot";
 
 import { queryBalancesMainnet, queryBalancesGC } from "./querySubgraph";
 import { queryAmountVested } from "./queryVestingPool";
+
+import allocationCalculate from "../fns/allocationCalculate";
 
 import {
   TOKEN_LOCK_OPEN_TIMESTAMP,
@@ -55,7 +56,7 @@ export async function queryAllocationFigures(
 
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get
-  const result = allocate(
+  const result = allocationCalculate(
     { mainnet: sum(balancesMainnet), gc: sum(balancesGC) },
     amountVestedInInterval,
   );
