@@ -34,13 +34,14 @@ export function useD3(
   renderFunc: (
     svgEl: Selection<SVGSVGElement, unknown, null, undefined>,
   ) => void,
-  dependencies: any[],
+  dependencies: any,
 ) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
     if (ref.current) renderFunc(select(ref.current));
     return () => {};
-  }, dependencies);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dependencies]);
 
   return ref;
 }
