@@ -23,6 +23,28 @@
   stroke-linejoin: round;
 }
 
+.marks {
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.labels {
+  stroke-width: 0;
+  fill: black;
+  font-size: 12px;
+}
+
+.labels text {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.labels tspan {
+  text-anchor: middle;
+}
+
 .elseAllocation {
   fill: #e8fff2;
 }
