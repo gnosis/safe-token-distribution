@@ -1,3 +1,19 @@
+.allocation {
+  position: relative;
+  padding: 0.5em 0;
+}
+
+.obscure {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(5px);
+  background: #e0e9e68e;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .container {
   display: flex;
   flex-wrap: wrap;
@@ -31,7 +47,7 @@
   border: 1px solid;
   border-radius: 4px;
   padding: 1em 0;
-  margin: 0.5em;
+  margin: 0.5em 0.5em 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,4 +67,8 @@
 .status.notAvailable {
   background-color: #ebfcff;
   border-color: #aad4db;
+}
+
+.status p {
+  margin: 0;
 }
