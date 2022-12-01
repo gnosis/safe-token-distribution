@@ -35,14 +35,14 @@ const VestingInfo: React.FC = () => {
   });
 
   // if data from contracts cannot be fetched, chart will show static
-  // allocation diagram, with GnosisDAO having 15% of total supply
+  // unvested allocation diagram,
   const totalSAFESupply = staticRes.data
     ? staticRes.data[1]
-    : BigNumber.from("1000000000");
+    : BigNumber.from("1000000000000000000000000000");
   const gnosisInitial = BigNumber.from("10011026319019003889472853");
   const gnosisDAOTotal = staticRes.data
     ? staticRes.data[0].amount.add(gnosisInitial)
-    : BigNumber.from("150000000");
+    : BigNumber.from("150000000000000000000000000");
   const vestedAmount = vestingRes.data
     ? vestingRes.data.vestedAmount
     : BigNumber.from(0);
