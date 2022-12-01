@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { arc, DefaultArcObject, map, pie, range, select, Selection } from "d3";
+import { arc, DefaultArcObject, map, pie, range, Selection } from "d3";
 import { useState } from "react";
 import { useD3 } from "../../utils/hooks";
 
