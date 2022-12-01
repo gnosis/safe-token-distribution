@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import clsx from "clsx";
 
@@ -32,7 +31,7 @@ const AllocationInfo: React.FC = () => {
           </div>
         </dl>
 
-        {allocation && allocation.amount > amountClaimed && (
+        {allocation && allocation.amount.toNumber() > amountClaimed.toNumber() && (
           <div className={clsx(classes.status, classes.available)}>
             <p>
               You have <SafeTag /> tokens to claim
@@ -40,13 +39,14 @@ const AllocationInfo: React.FC = () => {
           </div>
         )}
 
-        {allocation && allocation.amount === amountClaimed && (
-          <div className={clsx(classes.status, classes.fullClaim)}>
-            <p>
-              You've claimed all available <SafeTag /> tokens
-            </p>
-          </div>
-        )}
+        {allocation &&
+          allocation.amount.toNumber() === amountClaimed.toNumber() && (
+            <div className={clsx(classes.status, classes.fullClaim)}>
+              <p>
+                You've claimed all available <SafeTag /> tokens
+              </p>
+            </div>
+          )}
 
         {!allocation && address && (
           <div className={clsx(classes.status, classes.notAvailable)}>

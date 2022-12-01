@@ -4,8 +4,6 @@ import Footer from "../components/Footer";
 import MainActionButton from "../components/MainActionButton";
 
 import classes from "./HomePage.module.css";
-import GnosisLogo from "../components/GnosisLogo";
-import ConnectButton from "../components/ConnectButton";
 import Header from "../components/Header";
 
 const HomePage = () => {
