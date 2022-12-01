@@ -1,18 +1,10 @@
-import {
-  arc,
-  DefaultArcObject,
-  map,
-  pie,
-  PieArcDatum,
-  range,
-  Selection,
-} from "d3";
+import { arc, DefaultArcObject, map, pie, range, Selection } from "d3";
 import { useD3 } from "../../utils/hooks";
 
 import classes from "./style.module.css";
 
-export interface AllocationData {
-  allocation: number;
+export interface WedgeData {
+  value: number;
   className: string;
 }
 
@@ -32,25 +24,22 @@ const VestingChart: React.FC<Props> = ({
 
   const wedges = [
     {
-      allocation: gnosisDaoAllocation - gnosisDaoVested,
+      value: gnosisDaoAllocation - gnosisDaoVested,
       className: classes.gnosisAllocation,
     },
     {
-      allocation: gnosisDaoVested,
+      value: gnosisDaoVested,
       className: classes.gnosisVested,
     },
     {
-      allocation: safeTokenSupply - gnosisDaoAllocation,
+      value: safeTokenSupply - gnosisDaoAllocation,
       className: classes.elseAllocation,
     },
   ];
 
-  const midAngle = (d: DefaultArcObject) =>
-    d.startAngle + (d.endAngle - d.startAngle) / 2;
-
   const ref = useD3(
     (svg: Selection<SVGSVGElement, unknown, null, undefined>) => {
-      const value = (d: AllocationData) => d.allocation;
+      const value = (d: WedgeData) => d.value;
       const innerRadius = 0;
       const outerRadius = Math.min(width, height) / 2;
       const padAngle = 0;
