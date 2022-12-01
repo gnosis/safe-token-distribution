@@ -141,7 +141,7 @@ const VestingChart: React.FC<Props> = ({
           ] as unknown as number;
         });
     },
-    [gnosisDaoVested],
+    gnosisDaoVested,
   );
   return (
     <div>
