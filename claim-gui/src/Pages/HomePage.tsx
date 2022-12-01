@@ -6,14 +6,12 @@ import MainActionButton from "../components/MainActionButton";
 import classes from "./HomePage.module.css";
 import GnosisLogo from "../components/GnosisLogo";
 import ConnectButton from "../components/ConnectButton";
+import Header from "../components/Header";
 
 const HomePage = () => {
   return (
     <div className={classes.container}>
-      <header className={classes.header}>
-        <GnosisLogo />
-        <ConnectButton />
-      </header>
+      <Header />
       <main className={classes.main}>
         <AllocationInfo />
         <MainActionButton />

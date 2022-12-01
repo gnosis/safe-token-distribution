@@ -23,6 +23,29 @@
     url(../public/fonts/Averta-ExtraBold.woff2) format("woff2");
 }
 
+@font-face {
+  font-family: "DMSans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("DMSans"),
+    url(../public/fonts/DMSans-Regular.woff2) format("woff2");
+}
+@font-face {
+  font-family: "DMSans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local("DMSans"), url(../public/fonts/DMSans-Medium.woff2) format("woff2");
+}
+@font-face {
+  font-family: "DMSans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local("DMSans"), url(../public/fonts/DMSans-Bold.woff2) format("woff2");
+}
+
 :root {
   --navHeight: 66px;
 }

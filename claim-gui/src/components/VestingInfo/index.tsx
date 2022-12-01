@@ -4,6 +4,7 @@ import { useContractReads, useContractRead } from "wagmi";
 import safeTokenContract from "../../utils/SafeTokenContract";
 
 import vestingContract from "../../utils/vestingContract";
+import SafeTag from "../SafeTag";
 import ConnectionStatus from "./ConnectionStatus";
 import classes from "./style.module.css";
 import VestingChart from "./VestingChart";
@@ -53,7 +54,14 @@ const VestingInfo: React.FC = () => {
 
   return (
     <div className={classes.vestingInfo}>
-      <h1>GnosisDAO — SAFE Token</h1>
+      <p>
+        GnosisDAO received 15% of the total <SafeTag /> Token supply, vested
+        over 4 years. This allocation is claimable by GNO holders on a monthly
+        cadence.{" "}
+        <a href="https://forum.gnosis.io/t/gip-64-should-gnosisdao-distribute-safe-tokens-to-incentivize-decentralizing-gnosis-chain/5896">
+          Read more here.
+        </a>
+      </p>
       {!staticRes.isLoading && !vestingRes.isLoading && (
         <VestingChart
           safeTokenSupply={BNtoFloat(totalSAFESupply, 18)}
