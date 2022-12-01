@@ -1,0 +1,57 @@
+.calendar {
+  max-height: 40px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.calendar.open {
+  max-height: 300px;
+}
+
+.showButton {
+  background: none;
+  border: none;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.open .showButton {
+  background: gainsboro;
+}
+
+.showButton:hover {
+  background: gainsboro;
+}
+
+.open .arrow {
+  transform: rotate(180deg);
+}
+
+.calendar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.calendar ul button {
+  border: none;
+  background: gainsboro;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.calendar ul button:hover {
+  background: rgb(205, 204, 204);
+}
