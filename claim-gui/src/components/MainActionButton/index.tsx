@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 const MainActionButton: React.FC = () => {
   const { address } = useAccount();
   const allocation = useAllocation();
-  const { refetch } = useAmountClaimed(address);
+  const { refetch, amountClaimed } = useAmountClaimed(address);
   const [showModal, setShowModal] = useState(false);
   const { disconnect } = useDisconnect();
   useEffect(() => {
@@ -25,15 +25,15 @@ const MainActionButton: React.FC = () => {
       {showModal && <ConnectModal />}
       {address ? (
         <>
-          {allocation ? (
+          {allocation &&
+          allocation.amount.toNumber() > amountClaimed.toNumber() ? (
             <ClaimButton
               {...allocation}
               onSuccess={() => {
-                alert(`Claimed ${allocation.amount}`);
                 refetch?.(address);
               }}
               onError={(err) => {
-                alert(`Error ${err}`);
+                console.log(err);
               }}
             />
           ) : (

@@ -16,7 +16,7 @@ export function useAmountClaimed(account: string | undefined) {
 
   return {
     refetch: result.refetch,
-    amountClaimed: result?.data || BigNumber.from(0),
+    amountClaimed: (result?.data as BigNumber) || BigNumber.from(0),
   };
 }
 
