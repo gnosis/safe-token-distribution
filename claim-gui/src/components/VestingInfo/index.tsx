@@ -1,12 +1,12 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils.js";
-import { useBlockNumber, useContractReads, useContractRead } from "wagmi";
+import { useContractReads, useContractRead } from "wagmi";
 import safeTokenContract from "../../utils/SafeTokenContract";
 
 import vestingContract from "../../utils/vestingContract";
 import ConnectionStatus from "./ConnectionStatus";
 import classes from "./style.module.css";
-import VestingChart, { AllocationData } from "./VestingChart";
+import VestingChart from "./VestingChart";
 
 const VestingInfo: React.FC = () => {
   const staticRes = useContractReads({
