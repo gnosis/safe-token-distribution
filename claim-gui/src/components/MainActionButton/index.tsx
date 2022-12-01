@@ -1,4 +1,4 @@
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 
 import { useAllocation } from "../../utils/AllocationProvider";
 import ClaimButton from "./ClaimButton";
@@ -13,7 +13,7 @@ const MainActionButton: React.FC = () => {
   const allocation = useAllocation();
   const { refetch } = useAmountClaimed(address);
   const [showModal, setShowModal] = useState(false);
-
+  const { disconnect } = useDisconnect();
   useEffect(() => {
     if (address) {
       setShowModal(false);
@@ -25,7 +25,7 @@ const MainActionButton: React.FC = () => {
       {showModal && <ConnectModal />}
       {address ? (
         <>
-          {allocation && (
+          {allocation ? (
             <ClaimButton
               {...allocation}
               onSuccess={() => {
@@ -36,6 +36,10 @@ const MainActionButton: React.FC = () => {
                 alert(`Error ${err}`);
               }}
             />
+          ) : (
+            <Button primary onClick={() => disconnect()}>
+              Disconnect
+            </Button>
           )}
         </>
       ) : (
