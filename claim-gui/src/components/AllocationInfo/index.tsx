@@ -8,6 +8,7 @@ import Card from "../Card";
 
 import classes from "./style.module.css";
 import VestingInfo from "../VestingInfo";
+import SafeTag from "../SafeTag";
 
 const AllocationInfo: React.FC = () => {
   const { address } = useAccount();
@@ -32,19 +33,19 @@ const AllocationInfo: React.FC = () => {
 
           {allocation.amount > amountClaimed && (
             <div className={clsx(classes.status, classes.available)}>
-              You have SAFE tokens to claim
+              You have <SafeTag /> tokens to claim
             </div>
           )}
 
           {allocation.amount === amountClaimed && (
             <div className={clsx(classes.status, classes.fullClaim)}>
-              You've claimed all available SAFE tokens
+              You've claimed all available <SafeTag /> tokens
             </div>
           )}
 
           {allocation.amount === BigNumber.from(0) && (
             <div className={clsx(classes.status, classes.notAvailable)}>
-              You have no SAFE tokens to claim
+              You have no <SafeTag /> tokens to claim
             </div>
           )}
         </div>
