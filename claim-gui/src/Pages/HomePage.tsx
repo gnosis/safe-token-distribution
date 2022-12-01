@@ -5,6 +5,7 @@ import MainActionButton from "../components/MainActionButton";
 
 import classes from "./HomePage.module.css";
 import Header from "../components/Header";
+import CalendarReminder from "../components/CalendarReminder";
 
 const HomePage = () => {
   return (
@@ -13,6 +14,7 @@ const HomePage = () => {
       <main className={classes.main}>
         <AllocationInfo />
         <MainActionButton />
+        <CalendarReminder />
       </main>
       <Footer />
     </div>
