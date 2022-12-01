@@ -1,0 +1,32 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1em;
+  padding: 0.1em 0.2em;
+  background-image: linear-gradient(
+    40deg,
+    hsl(148deg 100% 54%) 0%,
+    hsl(158deg 100% 50%) 39%,
+    hsl(164deg 100% 49%) 60%,
+    hsl(171deg 100% 49%) 74%,
+    hsl(176deg 100% 48%) 84%,
+    hsl(181deg 100% 48%) 90%,
+    hsl(184deg 100% 49%) 94%,
+    hsl(187deg 100% 57%) 98%,
+    hsl(193deg 100% 69%) 100%
+  );
+  border: 1px solid;
+  border-radius: 0.2em;
+  font-size: 0.8em;
+  margin: 0 0.2em;
+}
+
+.tag img {
+  display: inline;
+  width: 1em;
+  height: 1em;
+}
+
+.name {
+  font-family: "DMSans";
+}

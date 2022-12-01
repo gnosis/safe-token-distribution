@@ -1,0 +1,33 @@
+.header {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  height: var(--navHeight, 66px);
+  justify-content: space-between;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+@media screen and (max-width: 650px) {
+  .header {
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  max-height: 100%;
+}
+
+.name h1 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  margin: 0;
+  font-weight: 900;
+}
+.name h1 > span {
+  padding-top: 3px;
+}
