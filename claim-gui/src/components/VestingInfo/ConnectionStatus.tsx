@@ -11,9 +11,9 @@ const ConnectionStatus: React.FC<Props> = ({ isError, className }) => {
   return (
     <div className={clsx(className, classes.connectionStatus)}>
       <div className={clsx(classes.indicator, isError && classes.error)} />
-      <div className={classes.indicatorLabel}>
+      <p className={classes.indicatorLabel}>
         {isError ? "Connecting..." : "Live"}
-      </div>
+      </p>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 .vestingInfo {
-  padding: 0.5em;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   position: relative;
 }
 
@@ -86,12 +85,12 @@ path.gnosisVested.focus {
   background: ghostwhite;
   border: 0.5px solid;
   border-radius: 4px;
-  padding: 2px 4px;
+  padding: 4px 4px;
 }
 
 .hoverLabel {
   position: absolute;
-  bottom: 4px;
+  bottom: -4px;
   left: calc(0.5em + 8px);
   opacity: 0;
 }
@@ -100,9 +99,14 @@ path.gnosisVested.focus {
   opacity: 1;
 }
 
+.hoverLabel p {
+  margin: 0;
+  line-height: 1em;
+}
+
 .statusContainer {
   position: absolute;
-  bottom: 4px;
+  bottom: -4px;
   right: calc(0.5em + 8px);
 }
 
@@ -120,7 +124,9 @@ path.gnosisVested.focus {
 }
 
 .indicatorLabel {
+  margin: 0;
   font-size: 0.8em;
+  line-height: 1em;
 }
 
 @keyframes blink {
