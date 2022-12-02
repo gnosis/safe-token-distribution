@@ -7,7 +7,7 @@ import vestingContract from "../../utils/vestingContract";
 import SafeTag from "../SafeTag";
 import ConnectionStatus from "./ConnectionStatus";
 import classes from "./style.module.css";
-import VestingChart from "./VestingChart";
+import VestingChart from "../VestingChart";
 
 const VestingInfo: React.FC = () => {
   const staticRes = useContractReads({
@@ -57,7 +57,11 @@ const VestingInfo: React.FC = () => {
       <p>
         GnosisDAO received 15% of the total <SafeTag /> Token supply, vesting
         over 4 years. The vested tokens are moved to the claim pool monthly.{" "}
-        <a href="https://forum.gnosis.io/t/gip-64-should-gnosisdao-distribute-safe-tokens-to-incentivize-decentralizing-gnosis-chain/5896">
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://forum.gnosis.io/t/gip-64-should-gnosisdao-distribute-safe-tokens-to-incentivize-decentralizing-gnosis-chain/5896"
+        >
           Read more here.
         </a>
       </p>
