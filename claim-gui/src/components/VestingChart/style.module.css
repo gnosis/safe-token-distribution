@@ -1,0 +1,134 @@
+.container {
+  position: relative;
+}
+
+.vestingChart {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid;
+  background-color: #f0ebde;
+  overflow: hidden;
+}
+
+.pieChart path {
+  filter: brightness(1);
+  transition: all 0.1s;
+  cursor: crosshair;
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+}
+
+.marks {
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.labels {
+  stroke-width: 0;
+  fill: black;
+  font-size: 12px;
+}
+
+.labels text {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.labels tspan {
+  text-anchor: middle;
+}
+
+path.elseAllocation {
+  transform: scale(0.95);
+  fill: #cbffdc;
+}
+
+path.elseAllocation.focus {
+  filter: brightness(0.96);
+}
+
+path.gnosisAllocation {
+  fill: #caefff;
+}
+
+path.gnosisAllocation.focus {
+  filter: brightness(0.92);
+}
+
+path.gnosisVested {
+  fill: #3ea077;
+}
+
+path.gnosisVested.focus {
+  filter: brightness(0.88);
+}
+
+.hoverLabel {
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: ghostwhite;
+  border: 0.5px solid;
+  border-radius: 4px;
+  padding: 4px 4px;
+}
+
+.hoverLabel {
+  position: absolute;
+  bottom: -4px;
+  left: calc(0.5em + 8px);
+  opacity: 0;
+}
+
+.hoverLabel.active {
+  opacity: 1;
+}
+
+.hoverLabel p {
+  margin: 0;
+  line-height: 1em;
+}
+
+.help {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.help .hoverButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  background: #d5cab0;
+  color: #80714e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+  cursor: help;
+  position: relative;
+  z-index: 2000;
+}
+
+.help:hover .hoverButton {
+  color: purple;
+  background: #bdad87;
+}
+
+.help .chartHelp {
+  display: none;
+}
+
+.help:hover .chartHelp {
+  display: block;
+}
+
+@media (max-width: 880px) {
+  .help {
+    display: none;
+  }
+}
