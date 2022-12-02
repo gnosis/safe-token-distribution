@@ -1,17 +1,46 @@
 .allocation {
   position: relative;
-  padding: 0.5em 0;
+  padding: 0.5em 0 0;
+  border: 1px solid black;
+  border-radius: 4px;
 }
 
 .obscure {
   position: absolute;
-  inset: 0;
+  inset: -0.5em;
+  top: -1.5em;
   backdrop-filter: blur(5px);
   background: #e0e9e68e;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0px 1px 8px 1px #cddbdb;
+}
+
+.addressLabel {
+  position: absolute;
+  top: -14px;
+  left: calc(0.5em + 8px);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: ghostwhite;
+  border: 0.5px solid;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.addressLabel img {
+  height: 1em;
+  width: 1em;
+  border-radius: 100px;
+}
+
+.addressLabel p {
+  margin: 0;
+  line-height: 0;
 }
 
 .container {
@@ -22,7 +51,7 @@
 }
 
 .item {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   width: 50%;
 }
 
@@ -44,29 +73,26 @@
 }
 
 .status {
-  border: 1px solid;
-  border-radius: 4px;
+  border-top: 1px solid black;
+  border-radius: 0 0 4px 4px;
   padding: 1em 0;
-  margin: 0.5em 0.5em 0;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 2em;
+  margin-top: 1em;
 }
 
 .status.available {
   background-color: #d6f7df;
-  border-color: #9fddaf;
 }
 
 .status.fullClaim {
   background-color: #d6f7df;
-  border-color: #9fddaf;
 }
 
 .status.notAvailable {
-  background-color: #ebfcff;
-  border-color: #aad4db;
+  background-color: #f1ebde;
 }
 
 .status p {

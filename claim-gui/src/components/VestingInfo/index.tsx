@@ -56,8 +56,7 @@ const VestingInfo: React.FC = () => {
     <div className={classes.vestingInfo}>
       <p>
         GnosisDAO received 15% of the total <SafeTag /> Token supply, vesting
-        over 4 years. This allocation is claimable by GNO holders on a monthly
-        cadence.{" "}
+        over 4 years. The vested tokens are moved to the claim pool monthly.{" "}
         <a href="https://forum.gnosis.io/t/gip-64-should-gnosisdao-distribute-safe-tokens-to-incentivize-decentralizing-gnosis-chain/5896">
           Read more here.
         </a>

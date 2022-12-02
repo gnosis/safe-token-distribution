@@ -8,16 +8,30 @@ import Card from "../Card";
 import classes from "./style.module.css";
 import VestingInfo from "../VestingInfo";
 import SafeTag from "../SafeTag";
+import Identicon from "../Identicon";
+import { shortenAddress } from "../ConnectButton";
+import { useMemo } from "react";
+import makeBlockie from "ethereum-blockies-base64";
 
 const AllocationInfo: React.FC = () => {
   const { address } = useAccount();
   const allocation = useAllocation();
   const { amountClaimed } = useAmountClaimed(address);
 
+  const unloadedAddress = "0x0000000000000000000000000000000000000000";
+  const blockie = useMemo(
+    () => (address ? makeBlockie(address) : makeBlockie(unloadedAddress)),
+    [address],
+  );
+
   return (
     <Card>
       <VestingInfo />
       <div className={classes.allocation}>
+        <div className={classes.addressLabel}>
+          <img src={blockie} alt={address || unloadedAddress} />
+          <p>{shortenAddress(address || unloadedAddress)}</p>
+        </div>
         <dl className={classes.container}>
           <div className={classes.item}>
             <dt className={classes.label}>Claimed</dt>

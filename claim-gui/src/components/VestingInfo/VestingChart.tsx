@@ -17,9 +17,9 @@ interface Props {
 }
 
 const HoverLabels = [
+  "Non-GnosisDAO allocations",
   "Unvested GnosisDAO allocation",
   "Tokens vested to GnosisDAO",
-  "Non-GnosisDAO allocations",
 ];
 
 const VestingChart: React.FC<Props> = ({
@@ -162,7 +162,7 @@ const VestingChart: React.FC<Props> = ({
           hoverLabel.length > 0 && classes.active,
         )}
       >
-        {hoverLabel}
+        <p>{hoverLabel}</p>
       </div>
     </div>
   );
