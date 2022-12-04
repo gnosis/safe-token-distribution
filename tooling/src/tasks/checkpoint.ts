@@ -2,6 +2,7 @@ import { task } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
 import snapshotMerge from "../fns/snapshotMerge";
+import snapshotSort from "../fns/snapshotSort";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
@@ -41,8 +42,8 @@ task("checkpoint:generate", "").setAction(async () => {
   const treeMainnet = createMerkleTree(checkpointMainnet);
   const treeGC = createMerkleTree(checkpointGC);
 
-  saveCheckpoint(checkpointMainnet, treeMainnet);
-  saveCheckpoint(checkpointGC, treeGC);
+  saveCheckpoint(snapshotSort(checkpointMainnet), treeMainnet);
+  saveCheckpoint(snapshotSort(checkpointGC), treeGC);
 
   return [treeMainnet.root, treeGC.root];
 });
