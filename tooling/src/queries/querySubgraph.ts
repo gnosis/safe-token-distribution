@@ -1,17 +1,7 @@
-import { BigNumber, constants } from "ethers";
+import { BigNumber, BigNumberish, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { request, gql } from "graphql-request";
-import { Snapshot } from "../types";
-
-type User = {
-  id: string;
-  deposit: string;
-  gno: string;
-  mgno: string;
-  lgno: string;
-  sgno: string;
-  stakedGnoSgno: string;
-};
+import { Snapshot, UserBalance } from "../types";
 
 export async function queryBalancesMainnet(
   block: number,
@@ -21,38 +11,34 @@ export async function queryBalancesMainnet(
     return {};
   }
 
-  const users = await pagedRequest(async (lastId: string) =>
+  const userBalances = await pagedRequest(async (lastId: string) =>
     request(mainnetEndpoint, mainnetQuery, {
       block,
       lastId,
     }).then((result) => result.users),
   );
 
-  return toSnapshot(users, ["lgno"]);
+  return aggregate(userBalances);
 }
 
 export async function queryBalancesGC(
   block: number,
   withLGNO: boolean,
 ): Promise<Snapshot> {
-  const users = await pagedRequest((lastId: string) =>
+  const userBalances = await pagedRequest((lastId: string) =>
     request(gcEndpoint, gcQuery, {
       block,
       lastId,
     }).then((result) => result.users),
   );
 
-  const keys: (keyof User)[] = withLGNO
-    ? ["lgno", "deposit", "stakedGnoSgno"]
-    : ["deposit", "stakedGnoSgno"];
-
-  return toSnapshot(users, keys);
+  return aggregate(userBalances);
 }
 
 async function pagedRequest(
-  request: (lastId: string) => Promise<User[]>,
+  request: (lastId: string) => Promise<UserBalance[]>,
   lastId?: string,
-): Promise<User[]> {
+): Promise<UserBalance[]> {
   lastId = lastId || constants.AddressZero;
 
   const users = await request(lastId);
@@ -61,33 +47,6 @@ async function pagedRequest(
   return nextLastId
     ? [...users, ...(await pagedRequest(request, nextLastId))]
     : users;
-}
-
-function toSnapshot(users: User[], keys: (keyof User)[]): Snapshot {
-  const idsAndBalances = users
-    .map((user: User) => ({
-      id: getAddress(user.id),
-      balance: keys
-        .map((key) => BigNumber.from(user[key] || 0))
-        .reduce(
-          (accumulation, next) => accumulation.add(next),
-          BigNumber.from(0),
-        ),
-    }))
-    .filter(({ balance }) => balance.gt(0));
-
-  // .reduce((prev: Result, next: any) => {
-  //   return {
-  //     ...prev,
-  //     [next.id]: next.balance,
-  //   };
-  // }, {});
-
-  const result: Snapshot = {};
-  for (const { id, balance } of idsAndBalances) {
-    result[id] = balance;
-  }
-  return result;
 }
 
 const mainnetEndpoint =
@@ -114,3 +73,30 @@ const gcQuery = gql`
     }
   }
 `;
+
+export default function aggregate(users: UserBalance[]): Snapshot {
+  if (users.length === 0) {
+    return {};
+  }
+
+  const zeroOrGreater = (ish?: BigNumberish) => {
+    const bn = BigNumber.from(ish || 0);
+    return bn.gt(0) ? bn : 0;
+  };
+
+  const idsAndBalances = users
+    .map((user: UserBalance) => ({
+      id: getAddress(user.id),
+      balance: BigNumber.from(0)
+        .add(zeroOrGreater(user.deposit))
+        .add(zeroOrGreater(user.lgno))
+        .add(zeroOrGreater(user.stakedGnoSgno)),
+    }))
+    .filter(({ balance }) => balance.gt(0));
+
+  const result: Snapshot = {};
+  for (const { id, balance } of idsAndBalances) {
+    result[id] = balance;
+  }
+  return result;
+}
