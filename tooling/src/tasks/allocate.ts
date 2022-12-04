@@ -7,9 +7,10 @@ import { DAO_ADDRESS_GC, DAO_ADDRESS_MAINNET, getProviders } from "../config";
 
 import { queryAllocationFigures } from "../queries/queryAllocationFigures";
 
+import calculate from "../fns/calculateAllocation";
+import snapshotSort from "../fns/snapshotSort";
 import snapshotSum from "../fns/snapshotSum";
 import scheduleFind from "../fns/scheduleFind";
-import calculate from "../fns/calculateAllocation";
 
 import {
   loadSchedule,
@@ -88,7 +89,10 @@ async function _writeOne(
     gc: [DAO_ADDRESS_GC],
   };
 
-  log(`mainnet ${entry.mainnet.blockNumber} gc ${entry.gc.blockNumber}`);
+  const blockMainnet = entry.mainnet.blockNumber;
+  const blockGC = entry.gc.blockNumber;
+
+  log(`mainnet ${blockMainnet} gc ${blockGC}`);
   const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
     await queryAllocationFigures(
       prevEntry,
@@ -104,6 +108,6 @@ async function _writeOne(
   const allocationGC = calculate(balancesGC, toAllocateGC);
   assert(snapshotSum(allocationGC).eq(toAllocateGC));
 
-  saveAllocation("mainnet", entry.mainnet.blockNumber, allocationMainnet);
-  saveAllocation("gc", entry.gc.blockNumber, allocationGC);
+  saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
+  saveAllocation("gc", blockGC, snapshotSort(allocationGC));
 }

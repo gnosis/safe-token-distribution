@@ -2,7 +2,6 @@ import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { request, gql } from "graphql-request";
 import snapshotMerge from "../fns/snapshotMerge";
-import snapshotSortKeys from "../fns/snapshotSortKeys";
 import { Snapshot, UserBalance } from "../types";
 
 export async function queryBalancesMainnet(
