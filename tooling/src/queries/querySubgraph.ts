@@ -1,6 +1,8 @@
-import { BigNumber, BigNumberish, constants } from "ethers";
+import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { request, gql } from "graphql-request";
+import snapshotMerge from "../fns/snapshotMerge";
+import snapshotSortKeys from "../fns/snapshotSortKeys";
 import { Snapshot, UserBalance } from "../types";
 
 export async function queryBalancesMainnet(
@@ -12,7 +14,7 @@ export async function queryBalancesMainnet(
   }
 
   const userBalances = await pagedRequest(async (lastId: string) =>
-    request(mainnetEndpoint, mainnetQuery, {
+    request(mainnetEndpoint, lgnoQuery, {
       block,
       lastId,
     }).then((result) => result.users),
@@ -25,14 +27,35 @@ export async function queryBalancesGC(
   block: number,
   withLGNO: boolean,
 ): Promise<Snapshot> {
-  const userBalances = await pagedRequest((lastId: string) =>
-    request(gcEndpoint, gcQuery, {
-      block,
-      lastId,
-    }).then((result) => result.users),
-  );
+  const [balancesWithLgno, balancesWithDeposit, balancesWithStaked] =
+    await Promise.all([
+      withLGNO
+        ? pagedRequest((lastId: string) =>
+            request(gcEndpoint, lgnoQuery, {
+              block,
+              lastId,
+            }).then((result) => result.users),
+          )
+        : [],
+      pagedRequest((lastId: string) =>
+        request(gcEndpoint, depositQuery, {
+          block,
+          lastId,
+        }).then((result) => result.users),
+      ),
+      pagedRequest((lastId: string) =>
+        request(gcEndpoint, stakedQuery, {
+          block,
+          lastId,
+        }).then((result) => result.users),
+      ),
+    ]);
 
-  return aggregate(userBalances);
+  const s1 = aggregate(balancesWithLgno);
+  const s2 = aggregate(balancesWithDeposit);
+  const s3 = aggregate(balancesWithStaked);
+
+  return snapshotMerge(s1, snapshotMerge(s2, s3));
 }
 
 async function pagedRequest(
@@ -51,24 +74,44 @@ async function pagedRequest(
 
 const mainnetEndpoint =
   "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip";
-const mainnetQuery = gql`
+
+const gcEndpoint =
+  "https://api.thegraph.com/subgraphs/id/QmbJaRFT59ANkbqXHHCkR6euNyTBD2ypnwek9Gneohx8ha";
+
+const lgnoQuery = gql`
   query ($block: Int, $lastId: String) {
-    users(block: { number: $block }, first: 1000, where: { id_gt: $lastId }) {
+    users(
+      block: { number: $block }
+      first: 1000
+      where: { id_gt: $lastId, lgno_gt: "0" }
+    ) {
       id
       lgno
     }
   }
 `;
 
-const gcEndpoint =
-  "https://api.thegraph.com/subgraphs/id/QmbJaRFT59ANkbqXHHCkR6euNyTBD2ypnwek9Gneohx8ha";
-
-const gcQuery = gql`
+const depositQuery = gql`
   query ($block: Int, $lastId: String) {
-    users(block: { number: $block }, first: 1000, where: { id_gt: $lastId }) {
+    users(
+      block: { number: $block }
+      first: 1000
+      where: { id_gt: $lastId, deposit_gt: "0" }
+    ) {
       id
-      lgno
       deposit
+    }
+  }
+`;
+
+const stakedQuery = gql`
+  query ($block: Int, $lastId: String) {
+    users(
+      block: { number: $block }
+      first: 1000
+      where: { id_gt: $lastId, stakedGnoSgno_gt: "0" }
+    ) {
+      id
       stakedGnoSgno
     }
   }
@@ -79,18 +122,13 @@ export default function aggregate(users: UserBalance[]): Snapshot {
     return {};
   }
 
-  const zeroOrGreater = (ish?: BigNumberish) => {
-    const bn = BigNumber.from(ish || 0);
-    return bn.gt(0) ? bn : 0;
-  };
-
   const idsAndBalances = users
     .map((user: UserBalance) => ({
       id: getAddress(user.id),
       balance: BigNumber.from(0)
-        .add(zeroOrGreater(user.deposit))
-        .add(zeroOrGreater(user.lgno))
-        .add(zeroOrGreater(user.stakedGnoSgno)),
+        .add(user.deposit || 0)
+        .add(user.lgno || 0)
+        .add(user.stakedGnoSgno || 0),
     }))
     .filter(({ balance }) => balance.gt(0));
 
