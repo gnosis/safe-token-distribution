@@ -34,7 +34,6 @@ function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
       address,
       amount: balances[address].mul(amountToAllocate).div(totalBalances),
     }))
-    .filter(({ amount }) => amount.gt(0))
     .reduce(
       (prev, { address, amount }) => ({ ...prev, [address]: amount }),
       {},
