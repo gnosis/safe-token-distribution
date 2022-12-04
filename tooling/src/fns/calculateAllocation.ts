@@ -57,7 +57,7 @@ function dividePeanuts(balances: Snapshot, dust: BigNumber) {
 
   const allocation = Object.keys(balances)
     .map((address) => ({ address, amount: balances[address] }))
-    .sort((a, b) => (a.amount.gt(b.amount) ? -1 : 1))
+    .sort((a, b) => (a.address < b.address ? -1 : 1))
     .slice(0, dust.toNumber())
     .reduce(
       (result, { address }) => ({ ...result, [address]: BigNumber.from(1) }),
