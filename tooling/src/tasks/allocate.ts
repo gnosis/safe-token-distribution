@@ -3,16 +3,6 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import snapshotSort from "../fns/snapshotSort";
-import snapshotSum from "../fns/snapshotSum";
-import scheduleFind from "../fns/scheduleFind";
-
-import {
-  loadSchedule,
-  loadAllocation,
-  saveAllocation,
-  ScheduleEntry,
-} from "../persistence";
 import {
   queryBalancesGC,
   queryBalancesMainnet,
@@ -21,7 +11,17 @@ import { queryAmountVested } from "../queries/queryVestingPool";
 
 import calculateAllocation from "../fns/calculateAddressAllocation";
 import calculateNetworkAllocation from "../fns/calculateNetworkAllocation";
+import scheduleFind from "../fns/scheduleFind";
+import snapshotSort from "../fns/snapshotSort";
+import snapshotSum from "../fns/snapshotSum";
 import snapshotWithout from "../fns/snapshotWithout";
+
+import {
+  loadSchedule,
+  loadAllocation,
+  saveAllocation,
+  ScheduleEntry,
+} from "../persistence";
 
 import {
   DAO_ADDRESS_GC,
