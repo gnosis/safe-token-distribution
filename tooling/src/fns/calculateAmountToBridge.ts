@@ -1,8 +1,6 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
 import { loadAllocation, Schedule } from "../persistence";
 
 import snapshotSum from "../fns/snapshotSum";

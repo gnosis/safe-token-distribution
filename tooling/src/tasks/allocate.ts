@@ -3,11 +3,6 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { DAO_ADDRESS_GC, DAO_ADDRESS_MAINNET, getProviders } from "../config";
-
-import { queryAllocationFigures } from "../queries/queryAllocationFigures";
-
-import calculate from "../fns/calculateAllocation";
 import snapshotSort from "../fns/snapshotSort";
 import snapshotSum from "../fns/snapshotSum";
 import scheduleFind from "../fns/scheduleFind";
@@ -18,6 +13,24 @@ import {
   saveAllocation,
   ScheduleEntry,
 } from "../persistence";
+import {
+  queryBalancesGC,
+  queryBalancesMainnet,
+} from "../queries/querySubgraph";
+import { queryAmountVested } from "../queries/queryVestingPool";
+
+import calculateAllocation from "../fns/calculateAddressAllocation";
+import calculateNetworkAllocation from "../fns/calculateNetworkAllocation";
+import snapshotWithout from "../fns/snapshotWithout";
+
+import {
+  DAO_ADDRESS_GC,
+  DAO_ADDRESS_MAINNET,
+  getProviders,
+  TOKEN_LOCK_OPEN_TIMESTAMP,
+  VESTING_ID,
+  VESTING_POOL_ADDRESS,
+} from "../config";
 
 task(
   "allocate:write-all",
@@ -84,30 +97,74 @@ async function _writeOne(
   providers: { mainnet: Provider; gc: Provider },
   log: (text: string) => void,
 ) {
-  const ignoreAddresses = {
-    mainnet: [DAO_ADDRESS_MAINNET],
-    gc: [DAO_ADDRESS_GC],
-  };
-
   const blockMainnet = entry.mainnet.blockNumber;
   const blockGC = entry.gc.blockNumber;
 
   log(`mainnet ${blockMainnet} gc ${blockGC}`);
-  const { balancesMainnet, balancesGC, toAllocateMainnet, toAllocateGC } =
-    await queryAllocationFigures(
-      prevEntry,
-      entry,
-      ignoreAddresses,
-      providers.mainnet,
-      log,
-    );
+  const { balancesMainnet, balancesGC, amountVested } =
+    await fetchAllocationFigures(prevEntry, entry, providers.mainnet, log);
 
-  const allocationMainnet = calculate(balancesMainnet, toAllocateMainnet);
-  assert(snapshotSum(allocationMainnet).eq(toAllocateMainnet));
+  const { allocatedToMainnet, allocatedToGC } =
+    await calculateNetworkAllocation(balancesMainnet, balancesGC, amountVested);
 
-  const allocationGC = calculate(balancesGC, toAllocateGC);
-  assert(snapshotSum(allocationGC).eq(toAllocateGC));
+  const allocationMainnet = calculateAllocation(
+    balancesMainnet,
+    allocatedToMainnet,
+  );
+  assert(snapshotSum(allocationMainnet).eq(allocatedToMainnet));
+
+  const allocationGC = calculateAllocation(balancesGC, allocatedToGC);
+  assert(snapshotSum(allocationGC).eq(allocatedToGC));
 
   saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
   saveAllocation("gc", blockGC, snapshotSort(allocationGC));
+}
+
+async function fetchAllocationFigures(
+  prevEntry: ScheduleEntry | null,
+  entry: ScheduleEntry,
+  provider: Provider,
+  log?: (text: string) => void,
+) {
+  const ignore = {
+    mainnet: [DAO_ADDRESS_MAINNET],
+    gc: [DAO_ADDRESS_GC],
+  };
+
+  const withLGNO =
+    entry.mainnet.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP &&
+    entry.gc.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP;
+
+  log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
+
+  let [balancesMainnet, balancesGC, prevAmountVested, amountVested] =
+    await Promise.all([
+      queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
+      queryBalancesGC(entry.gc.blockNumber, withLGNO),
+      prevEntry
+        ? queryAmountVested(
+            VESTING_POOL_ADDRESS,
+            VESTING_ID,
+            prevEntry.mainnet.blockNumber,
+            provider,
+          )
+        : 0,
+      queryAmountVested(
+        VESTING_POOL_ADDRESS,
+        VESTING_ID,
+        entry.mainnet.blockNumber,
+        provider,
+      ),
+    ]);
+
+  assert(amountVested.gte(prevAmountVested));
+
+  balancesMainnet = snapshotWithout(balancesMainnet, ignore.mainnet);
+  balancesGC = snapshotWithout(balancesGC, ignore.gc);
+
+  return {
+    balancesMainnet,
+    balancesGC,
+    amountVested,
+  };
 }
