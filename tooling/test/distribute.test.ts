@@ -5,11 +5,10 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { SafeToken__factory, VestingPool__factory } from "../typechain";
 
-import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
-
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
 import safeTokenUnpause from "./helpers/safeTokenUnpause";
+import deployMerkleDistro from "./helpers/deployTestDistro";
 
 import { createDistributeTxMainnet } from "../src/fns/createDistributeTx";
 
