@@ -1,27 +1,7 @@
-import { Signer } from "ethers";
-import Safe from "@gnosis.pm/safe-core-sdk";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import { SafeTransaction } from "@gnosis.pm/safe-core-sdk-types";
-
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { loadSchedule } from "../persistence";
-
-import {
-  createDistributeTxGC,
-  createDistributeTxMainnet,
-} from "../fns/createDistributeTx";
-
-import {
-  getAddressConfig,
-  getSafes,
-  SAFE_ADDRESS_GC,
-  SAFE_ADDRESS_MAINNET,
-  VESTING_ID,
-  VESTING_POOL_ADDRESS,
-} from "../config";
-import { queryAmountToClaim } from "../queries/queryVestingPool";
+import { SAFE_ADDRESS_GC, SAFE_ADDRESS_MAINNET, VESTING_ID } from "../config";
 
 task("distribute", "")
   .addOptionalParam(
