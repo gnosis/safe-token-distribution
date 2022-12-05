@@ -4,7 +4,7 @@ import { BigNumber, Signer } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import createMerkleTree from "../src/fns/createMerkleTree";
-import { deployMerkleDistro } from "../src/tasks/deploy/merkleDistro";
+import deployMerkleDistro from "./helpers/deployTestDistro";
 import { ERC20Mock__factory } from "../typechain";
 
 describe("MerkleDistro", function () {

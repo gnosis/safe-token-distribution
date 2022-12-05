@@ -1,5 +1,3 @@
-import "./src/tasks/deploy";
-
 import "./src/tasks/schedule";
 import "./src/tasks/allocate";
 import "./src/tasks/checkpoint";

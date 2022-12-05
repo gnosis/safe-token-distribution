@@ -1,8 +1,9 @@
-import type { MerkleDistro, MerkleDistro__factory } from "../../../typechain";
 import { Signer } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-export async function deployMerkleDistro(
+import { MerkleDistro, MerkleDistro__factory } from "../../typechain";
+
+export default async function deployMerkleDistro(
   hre: HardhatRuntimeEnvironment,
   args: { token: string; merkleRoot: string; owner: string },
   deployer: Signer,
