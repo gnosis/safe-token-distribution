@@ -1,11 +1,11 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
+import snapshotSum from "./snapshotSum";
+
 import { loadAllocation, Schedule } from "../persistence";
 
-import snapshotSum from "../fns/snapshotSum";
-
-export default async function calculateAmountToBridge(
+export default async function calculateClaimBreakdown(
   schedule: Schedule,
   amountToClaim: BigNumber,
 ) {
@@ -24,8 +24,10 @@ export default async function calculateAmountToBridge(
     const total = totalMainnet.add(totalGC);
 
     if (total.eq(amountToClaim)) {
-      const amountToBridge = totalGC;
-      return amountToBridge;
+      return {
+        amountForMainnet: totalMainnet,
+        amountForGC: totalGC,
+      };
     }
 
     if (total.gt(amountToClaim)) {

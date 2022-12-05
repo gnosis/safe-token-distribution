@@ -9,7 +9,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { loadSchedule } from "../persistence";
 
 import { queryAmountToClaim } from "../queries/queryVestingPool";
-import calculateAmountToBridge from "../fns/calculateAmountToBridge";
+import calculateClaimBreakdown from "../fns/calculateClaimBreakdown";
 import {
   createDistributeTxGC,
   createDistributeTxMainnet,
@@ -24,6 +24,7 @@ import {
   VESTING_ID,
   VESTING_POOL_ADDRESS,
 } from "../config";
+import { assert } from "console";
 
 task("propose", "")
   .addOptionalParam(
@@ -58,10 +59,12 @@ task("propose", "")
       providers.mainnet,
     );
 
-    const amountToBridge = await calculateAmountToBridge(
+    const { amountForMainnet, amountForGC } = await calculateClaimBreakdown(
       schedule,
       amountToClaim,
     );
+
+    assert(amountForMainnet.add(amountForGC).eq(amountToClaim));
 
     const {
       safeToken: safeTokenAddress,
@@ -87,7 +90,7 @@ task("propose", "")
       distroGCAddress,
       vestingId: taskArgs.vestingId,
       amountToClaim,
-      amountToBridge,
+      amountToBridge: amountForGC,
       nextMerkleRoot: taskArgs.merkleRootMainnet,
     });
 
@@ -98,9 +101,10 @@ task("propose", "")
 
     await sanityCheck();
 
-    // Post To Safes
-    await propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet);
-    await propose(safeSdkGC, serviceClientGC, delegate, txGC);
+    await Promise.all([
+      propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet),
+      propose(safeSdkGC, serviceClientGC, delegate, txGC),
+    ]);
   });
 
 async function sanityCheck() {
