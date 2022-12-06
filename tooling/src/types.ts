@@ -15,3 +15,19 @@ export type UserBalance = {
   lgno?: string;
   stakedGnoSgno?: string;
 };
+
+export type AddressConfig = {
+  mainnet: {
+    merkleDistro: string;
+    token: string;
+    omniMediator: string;
+    treasurySafe: string;
+    vestingPool: string;
+  };
+  gnosis: {
+    merkleDistro: string;
+    token: string;
+    omniMediator: string;
+    treasurySafe: string;
+  };
+};

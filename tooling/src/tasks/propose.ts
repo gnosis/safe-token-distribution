@@ -19,41 +19,22 @@ import {
   getAddressConfig,
   getProviders,
   getSafes,
-  SAFE_ADDRESS_GC,
-  SAFE_ADDRESS_MAINNET,
   VESTING_ID,
-  VESTING_POOL_ADDRESS,
 } from "../config";
 import { assert } from "console";
 
 task("propose", "")
-  .addOptionalParam(
-    "safeMainnet",
-    "Safe Address in Mainnet",
-    SAFE_ADDRESS_MAINNET,
-    types.string,
-  )
-  .addOptionalParam(
-    "safeGC",
-    "Safe Address in Gnosis Chain",
-    SAFE_ADDRESS_GC,
-    types.string,
-  )
-  .addOptionalParam(
-    "vestingId",
-    "The vestingId on the VestingPool contract",
-    VESTING_ID,
-    types.string,
-  )
   .addParam("merkleRootMainnet", "", undefined, types.string)
   .addParam("merkleRootGC", "", undefined, types.string)
   .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
+    const addresses = await getAddressConfig(hre);
     const providers = getProviders(hre);
     const schedule = loadSchedule();
+
     const lastEntry = schedule[schedule.length - 1];
 
     const amountToClaim = await queryAmountToClaim(
-      VESTING_POOL_ADDRESS,
+      addresses.mainnet.vestingPool,
       VESTING_ID,
       lastEntry.mainnet.blockNumber,
       providers.mainnet,
@@ -67,14 +48,6 @@ task("propose", "")
     assert(amountForMainnet.add(amountForGC).eq(amountToClaim));
 
     const {
-      safeToken: safeTokenAddress,
-      vestingPool: vestingPoolAddress,
-      omniMediatorMainnet: omniMediatorAddress,
-      distroMainnet: distroMainnetAddress,
-      distroGC: distroGCAddress,
-    } = await getAddressConfig(hre);
-
-    const {
       delegate,
       safeSdkMainnet,
       safeSdkGC,
@@ -82,22 +55,20 @@ task("propose", "")
       serviceClientGC,
     } = await getSafes(taskArgs.safeMainnet, taskArgs.safeGC, hre);
 
-    const txMainnet = await createDistributeTxMainnet(safeSdkMainnet, {
-      safeTokenAddress,
-      vestingPoolAddress,
-      omniMediatorAddress,
-      distroMainnetAddress,
-      distroGCAddress,
-      vestingId: taskArgs.vestingId,
+    const txMainnet = await createDistributeTxMainnet(
+      safeSdkMainnet,
+      addresses,
+      taskArgs.vestingId,
       amountToClaim,
-      amountToBridge: amountForGC,
-      nextMerkleRoot: taskArgs.merkleRootMainnet,
-    });
+      amountForGC,
+      taskArgs.merkleRootMainnet,
+    );
 
-    const txGC = await createDistributeTxGC(safeSdkGC, {
-      distroAddress: distroGCAddress,
-      nextMerkleRoot: taskArgs.merkleRootGC,
-    });
+    const txGC = await createDistributeTxGC(
+      safeSdkGC,
+      addresses,
+      taskArgs.merkleRootGC,
+    );
 
     await sanityCheck();
 

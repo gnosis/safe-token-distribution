@@ -24,13 +24,12 @@ import {
 } from "../persistence";
 
 import {
-  DAO_ADDRESS_GC,
-  DAO_ADDRESS_MAINNET,
+  getAddressConfig,
   getProviders,
   TOKEN_LOCK_OPEN_TIMESTAMP,
   VESTING_ID,
-  VESTING_POOL_ADDRESS,
 } from "../config";
+import { AddressConfig } from "../types";
 
 task(
   "allocate:write-all",
@@ -45,8 +44,10 @@ task(
   .setAction(async ({ lazy }, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) => console.info(`allocate:write-all ${text}`);
 
-    const schedule = loadSchedule();
     const providers = getProviders(hre);
+    const addresses = await getAddressConfig(hre);
+
+    const schedule = loadSchedule();
 
     log("Starting");
 
@@ -66,7 +67,7 @@ task(
             schedule.indexOf(prevEntry) + 1 == schedule.indexOf(entry),
         );
 
-        await _writeOne(prevEntry, entry, providers, log);
+        await _writeOne(prevEntry, entry, addresses, providers, log);
       }
     }
   });
@@ -79,8 +80,11 @@ task(
   .setAction(async ({ block }, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) => console.info(`allocate:write-one ${text}`);
 
-    const schedule = loadSchedule();
+    const addresses = await getAddressConfig(hre);
     const providers = getProviders(hre);
+
+    const schedule = loadSchedule();
+
     log("Starting");
 
     const { prevEntry, entry } = scheduleFind(schedule, block);
@@ -88,12 +92,13 @@ task(
       throw new Error(`Could not find a schedule entry for ${block}`);
     }
 
-    await _writeOne(prevEntry, entry, providers, log);
+    await _writeOne(prevEntry, entry, addresses, providers, log);
   });
 
 async function _writeOne(
   prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
+  addresses: AddressConfig,
   providers: { mainnet: Provider; gc: Provider },
   log: (text: string) => void,
 ) {
@@ -102,7 +107,13 @@ async function _writeOne(
 
   log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
-    await fetchAllocationFigures(prevEntry, entry, providers.mainnet, log);
+    await fetchAllocationFigures(
+      prevEntry,
+      entry,
+      addresses,
+      providers.mainnet,
+      log,
+    );
 
   const { allocatedToMainnet, allocatedToGC } =
     await calculateNetworkAllocation(balancesMainnet, balancesGC, amountVested);
@@ -123,12 +134,13 @@ async function _writeOne(
 async function fetchAllocationFigures(
   prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
+  addresses: AddressConfig,
   provider: Provider,
   log?: (text: string) => void,
 ) {
   const ignore = {
-    mainnet: [DAO_ADDRESS_MAINNET],
-    gnosis: [DAO_ADDRESS_GC],
+    mainnet: [addresses.mainnet.treasurySafe],
+    gc: [addresses.gnosis.treasurySafe],
   };
 
   const withLGNO =
@@ -143,14 +155,14 @@ async function fetchAllocationFigures(
       queryBalancesGC(entry.gnosis.blockNumber, withLGNO),
       prevEntry
         ? queryAmountVested(
-            VESTING_POOL_ADDRESS,
+            addresses.mainnet.vestingPool,
             VESTING_ID,
             prevEntry.mainnet.blockNumber,
             provider,
           )
         : 0,
       queryAmountVested(
-        VESTING_POOL_ADDRESS,
+        addresses.mainnet.vestingPool,
         VESTING_ID,
         entry.mainnet.blockNumber,
         provider,
