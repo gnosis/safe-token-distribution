@@ -88,7 +88,7 @@ const AllocationInfo: React.FC<{ paused: boolean }> = ({ paused }) => {
         {paused && (
           <div className={classes.obscure}>
             <p>
-              <SafeTag /> tokens cannot be transfered yet.
+              <SafeTag /> tokens cannot be transferred yet.
             </p>
           </div>
         )}
