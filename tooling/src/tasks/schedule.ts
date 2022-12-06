@@ -11,8 +11,8 @@ import intervalsGenerate from "../fns/intervalsGenerate";
 import scheduleValidate from "../fns/scheduleValidate";
 
 import {
-  VESTING_CREATION_BLOCK,
   SNAPSHOT_FREQUENCY_IN_MINUTES,
+  VESTING_CREATION_BLOCK,
   getProviders,
 } from "../config";
 

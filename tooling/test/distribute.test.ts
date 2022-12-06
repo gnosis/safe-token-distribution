@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { SafeToken__factory, VestingPool__factory } from "../typechain";
+import { SafeToken__factory } from "../typechain";
 
 import fork from "./helpers/fork";
 import safeSetOwner from "./helpers/safeSetOwner";
@@ -12,55 +12,45 @@ import deployMerkleDistro from "./helpers/deployTestDistro";
 
 import { createDistributeTxMainnet } from "../src/fns/createDistributeTx";
 
-import {
-  OMNI_MEDIATOR_ADDRESS_MAINNET,
-  SAFE_TOKEN_ADDRESS,
-  VESTING_BENEFICIARY,
-  VESTING_ID,
-  VESTING_POOL_ADDRESS,
-} from "../src/config";
+import { getAddressConfig, VESTING_ID } from "../src/config";
 
 describe("createDistributeTxMainnet", function () {
   beforeEach(async () => {
     await loadFixture(setup);
   });
-  it("correctly executes the encoded multisend tx", async () => {
-    const { safeSdk, safeToken, vestingPool, merkleDistro } = await loadFixture(
+  it.only("correctly executes the encoded multisend tx", async () => {
+    const { addresses, safeSdk, safeToken, merkleDistro } = await loadFixture(
       setup,
     );
 
     // PRE-CLAIM checks
-
     expect(await merkleDistro.merkleRoot()).to.equal(ethers.constants.HashZero);
     expect(await safeToken.balanceOf(merkleDistro.address)).to.equal(0);
-    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS_MAINNET)).to.equal(
+    expect(await safeToken.balanceOf(addresses.mainnet.omniMediator)).to.equal(
       0,
     );
 
     const amountToClaim = BigNumber.from("10000000");
     const amountToBridge = BigNumber.from("500000");
-    const bytes32Value =
+    const nextMerkleRoot =
       "0xaaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999";
 
-    const tx = await createDistributeTxMainnet(safeSdk, {
-      safeTokenAddress: safeToken.address,
-      vestingPoolAddress: vestingPool.address,
-      omniMediatorAddress: OMNI_MEDIATOR_ADDRESS_MAINNET,
-      distroMainnetAddress: merkleDistro.address,
-      distroGCAddress: merkleDistro.address,
-      vestingId: VESTING_ID,
+    const tx = await createDistributeTxMainnet(
+      safeSdk,
+      addresses,
+      VESTING_ID,
       amountToClaim,
       amountToBridge,
-      nextMerkleRoot: bytes32Value,
-    });
+      nextMerkleRoot,
+    );
     await safeSdk.executeTransaction(tx);
 
     // POST-CLAIM checks
-    expect(await merkleDistro.merkleRoot()).to.equal(bytes32Value);
+    expect(await merkleDistro.merkleRoot()).to.equal(nextMerkleRoot);
     expect(await safeToken.balanceOf(merkleDistro.address)).to.equal(
       amountToClaim,
     );
-    expect(await safeToken.balanceOf(OMNI_MEDIATOR_ADDRESS_MAINNET)).to.equal(
+    expect(await safeToken.balanceOf(addresses.mainnet.omniMediator)).to.equal(
       amountToBridge,
     );
   });
@@ -69,22 +59,20 @@ describe("createDistributeTxMainnet", function () {
 async function setup() {
   await fork(15914301);
 
+  const addresses = await getAddressConfig(hre);
+
   const [deployer] = await ethers.getSigners();
 
-  const safeAddress = VESTING_BENEFICIARY;
+  const safeAddress = addresses.mainnet.treasurySafe;
+
   const safeSdk = await safeSetOwner(safeAddress, deployer);
 
   const safeToken = SafeToken__factory.connect(
-    SAFE_TOKEN_ADDRESS,
+    addresses.mainnet.token,
     ethers.provider,
   );
 
   await safeTokenUnpause(safeToken);
-
-  const vestingPool = VestingPool__factory.connect(
-    VESTING_POOL_ADDRESS as string,
-    ethers.provider,
-  );
 
   const merkleDistro = await deployMerkleDistro(
     hre,
@@ -96,5 +84,12 @@ async function setup() {
     deployer,
   );
 
-  return { safeSdk, safeToken, vestingPool, merkleDistro };
+  addresses.mainnet.merkleDistro = merkleDistro.address;
+
+  return {
+    addresses,
+    safeSdk,
+    safeToken,
+    merkleDistro,
+  };
 }

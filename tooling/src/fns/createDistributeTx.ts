@@ -12,66 +12,53 @@ import {
   ERC20__factory,
   OmniMediator__factory,
 } from "../../typechain";
+import { AddressConfig } from "../types";
 
 export async function createDistributeTxMainnet(
   safeSdk: Safe,
-  config: {
-    safeTokenAddress: string;
-    vestingPoolAddress: string;
-    omniMediatorAddress: string;
-    distroMainnetAddress: string;
-    distroGCAddress: string;
-    vestingId: string;
-    amountToClaim: BigNumber;
-    amountToBridge: BigNumber;
-    nextMerkleRoot: string;
-  },
+  addresses: AddressConfig,
+  vestingId: string,
+  amountToClaim: BigNumber,
+  amountToBridge: BigNumber,
+  nextMerkleRoot: string,
 ): Promise<SafeTransaction> {
-  const {
-    safeTokenAddress,
-    vestingPoolAddress,
-    omniMediatorAddress,
-    distroMainnetAddress,
-    distroGCAddress,
-    vestingId,
-    amountToClaim,
-    amountToBridge,
-    nextMerkleRoot,
-  } = config;
-
   const safeAddress = await safeSdk.getAddress();
 
   // encode as multisend
   return safeSdk.createTransaction({
     safeTransactionData: [
-      encodeClaim(vestingPoolAddress, vestingId, safeAddress, amountToClaim),
+      encodeClaim(
+        addresses.mainnet.vestingPool,
+        vestingId,
+        safeAddress,
+        amountToClaim,
+      ),
       encodeFundDistroMainnet(
-        safeTokenAddress,
-        distroMainnetAddress,
+        addresses.mainnet.token,
+        addresses.mainnet.merkleDistro,
         amountToClaim,
       ),
       ...encodeFundDistroGC(
-        safeTokenAddress,
-        omniMediatorAddress,
-        distroGCAddress,
+        addresses.mainnet.token,
+        addresses.mainnet.omniMediator,
+        addresses.gnosis.merkleDistro,
         amountToBridge,
       ),
-      encodeSetMerkleRoot(distroMainnetAddress, nextMerkleRoot),
+      encodeSetMerkleRoot(addresses.mainnet.merkleDistro, nextMerkleRoot),
     ],
   });
 }
 
 export async function createDistributeTxGC(
   safeSdk: Safe,
-  config: {
-    distroAddress: string;
-    nextMerkleRoot: string;
-  },
+  addresses: AddressConfig,
+  nextMerkleRoot: string,
 ): Promise<SafeTransaction> {
-  const { distroAddress, nextMerkleRoot } = config;
-
   return safeSdk.createTransaction({
-    safeTransactionData: encodeSetMerkleRoot(distroAddress, nextMerkleRoot),
+    safeTransactionData: encodeSetMerkleRoot(
+      addresses.gnosis.merkleDistro,
+      nextMerkleRoot,
+    ),
   });
 }
 
@@ -83,15 +70,13 @@ function encodeClaim(
 ): SafeTransactionDataPartial {
   const iface = VestingPool__factory.createInterface();
 
-  const data = iface.encodeFunctionData("claimVestedTokens", [
-    vestingId,
-    safeAddress,
-    amountToClaim,
-  ]);
-
   return {
     to: vestingPoolAddress,
-    data,
+    data: iface.encodeFunctionData("claimVestedTokens", [
+      vestingId,
+      safeAddress,
+      amountToClaim,
+    ]),
     value: "0",
   };
 }
@@ -103,14 +88,9 @@ function encodeFundDistroMainnet(
 ): SafeTransactionDataPartial {
   const iface = ERC20__factory.createInterface();
 
-  const data = iface.encodeFunctionData("transfer", [
-    merkleDistroAddress,
-    amount,
-  ]);
-
   return {
     to: safeTokenAddress,
-    data,
+    data: iface.encodeFunctionData("transfer", [merkleDistroAddress, amount]),
     value: "0",
   };
 }
@@ -120,12 +100,9 @@ function encodeSetMerkleRoot(
   nextMerkleRoot: string,
 ): SafeTransactionDataPartial {
   const iface = MerkleDistro__factory.createInterface();
-
-  const data = iface.encodeFunctionData("setMerkleRoot", [nextMerkleRoot]);
-
   return {
     to: merkleDistroAddress,
-    data,
+    data: iface.encodeFunctionData("setMerkleRoot", [nextMerkleRoot]),
     value: "0",
   };
 }
@@ -133,7 +110,7 @@ function encodeSetMerkleRoot(
 function encodeFundDistroGC(
   safeTokenAddress: string,
   omniMediatorAddress: string,
-  merkleDistroGCAddress: string,
+  merkleDistroAddress: string,
   amount: BigNumberish,
 ): SafeTransactionDataPartial[] {
   const ifaceToken = ERC20__factory.createInterface();
@@ -152,7 +129,7 @@ function encodeFundDistroGC(
       to: omniMediatorAddress,
       data: ifaceMediator.encodeFunctionData("relayTokens", [
         safeTokenAddress,
-        merkleDistroGCAddress,
+        merkleDistroAddress,
         amount,
       ]),
       value: "0",
