@@ -13,7 +13,7 @@ import { shortenAddress } from "../ConnectButton";
 import { useMemo } from "react";
 import makeBlockie from "ethereum-blockies-base64";
 
-const AllocationInfo: React.FC = () => {
+const AllocationInfo: React.FC<{ paused: boolean }> = ({ paused }) => {
   const { address } = useAccount();
   const allocation = useAllocation();
   const { amountClaimed } = useAmountClaimed(address);
@@ -45,13 +45,14 @@ const AllocationInfo: React.FC = () => {
           </div>
         </dl>
 
-        {allocation && allocation.amount.toNumber() > amountClaimed.toNumber() && (
-          <div className={clsx(classes.status, classes.available)}>
-            <p>
-              You have <SafeTag /> tokens to claim
-            </p>
-          </div>
-        )}
+        {allocation &&
+          allocation.amount.toNumber() > amountClaimed.toNumber() && (
+            <div className={clsx(classes.status, classes.available)}>
+              <p>
+                You have <SafeTag /> tokens to claim
+              </p>
+            </div>
+          )}
 
         {allocation &&
           allocation.amount.toNumber() === amountClaimed.toNumber() && (
@@ -78,9 +79,17 @@ const AllocationInfo: React.FC = () => {
           </div>
         )}
 
-        {!address && (
+        {!address && !paused && (
           <div className={classes.obscure}>
             <p>Connect a wallet to view your claim.</p>
+          </div>
+        )}
+
+        {paused && (
+          <div className={classes.obscure}>
+            <p>
+              <SafeTag /> tokens cannot be transfered yet.
+            </p>
           </div>
         )}
       </div>
