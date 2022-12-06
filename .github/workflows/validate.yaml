@@ -24,4 +24,4 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn clean
       - run: yarn compile
-      - run: yarn schedule:validate --deep true
+      - run: yarn hardhat schedule:validate --deep true

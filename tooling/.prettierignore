@@ -12,6 +12,9 @@
 **/types
 **/typechain
 **/harvesting
+**/_harvest
+
+
 
 # files
 *.env

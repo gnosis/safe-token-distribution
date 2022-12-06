@@ -25,9 +25,7 @@ export function saveSchedule(schedule: Schedule, filePath?: string) {
 }
 
 function scheduleFilePath() {
-  return path.resolve(
-    path.join(__dirname, "..", "harvesting", "schedule.json"),
-  );
+  return path.resolve(path.join(__dirname, "..", "_harvest", "schedule.json"));
 }
 
 export function loadAllocation(
@@ -53,7 +51,7 @@ export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
     path.join(
       __dirname,
       "..",
-      "harvesting",
+      "_harvest",
       "allocations",
       `${chain}.${block}.json`,
     ),
@@ -84,7 +82,7 @@ export function loadCheckpoint(treeRoot: string): Snapshot {
 }
 
 function checkpointDirPath() {
-  return path.resolve(path.join(__dirname, "..", "harvesting", "checkpoints"));
+  return path.resolve(path.join(__dirname, "..", "_harvest", "checkpoints"));
 }
 
 function loadSnapshot(filePath: string): Snapshot | null {
