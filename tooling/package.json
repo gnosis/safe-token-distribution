@@ -62,6 +62,8 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
+    "deploy-distros": "yarn hardhat deploy --network mainnet && yarn hardhat deploy --network gnosischain",
+    "verify-distros": "yarn hardhat verify --network mainnet && yarn hardhat verify --network gnosischain",
     "schedule": "yarn hardhat schedule:expand",
     "allocate": "yarn hardhat allocate:write-all",
     "clean": "shx rm -rf ./artifacts ./cache ./build ./coverage ./typechain ./coverage.json",
