@@ -1,13 +1,12 @@
-import { Provider } from "@ethersproject/providers";
 import { Schedule } from "../persistence";
 
-import { Interval } from "../types";
+import { Interval, ProviderConfig } from "../types";
 
 export default async function (
   intervals: Interval[],
   schedule: Schedule,
   deep: boolean,
-  providers: { mainnet: Provider; gc: Provider },
+  providers: ProviderConfig,
   log?: (l: string) => void,
 ) {
   for (let i = 0; i < schedule.length; i++) {
@@ -19,7 +18,7 @@ export default async function (
           providers.mainnet
             .getBlock(entry.mainnet.blockNumber)
             .then(({ timestamp }) => timestamp),
-          providers.gc
+          providers.gnosis
             .getBlock(entry.gnosis.blockNumber)
             .then(({ timestamp }) => timestamp),
         ])

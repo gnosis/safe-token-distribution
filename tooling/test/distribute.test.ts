@@ -12,16 +12,14 @@ import deployMerkleDistro from "./helpers/deployTestDistro";
 
 import { createDistributeTxMainnet } from "../src/fns/createDistributeTx";
 
-import { getAddressConfig, VESTING_ID } from "../src/config";
+import { addresses, VESTING_ID } from "../src/config";
 
 describe("createDistributeTxMainnet", function () {
   beforeEach(async () => {
     await loadFixture(setup);
   });
-  it.only("correctly executes the encoded multisend tx", async () => {
-    const { addresses, safeSdk, safeToken, merkleDistro } = await loadFixture(
-      setup,
-    );
+  it("correctly executes the encoded multisend tx", async () => {
+    const { safeSdk, safeToken, merkleDistro } = await loadFixture(setup);
 
     // PRE-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(ethers.constants.HashZero);
@@ -38,6 +36,9 @@ describe("createDistributeTxMainnet", function () {
     const tx = await createDistributeTxMainnet(
       safeSdk,
       addresses,
+      merkleDistro.address,
+      // doesnt matter
+      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe",
       VESTING_ID,
       amountToClaim,
       amountToBridge,
@@ -58,8 +59,6 @@ describe("createDistributeTxMainnet", function () {
 
 async function setup() {
   await fork(15914301);
-
-  const addresses = await getAddressConfig(hre);
 
   const [deployer] = await ethers.getSigners();
 
@@ -84,10 +83,7 @@ async function setup() {
     deployer,
   );
 
-  addresses.mainnet.merkleDistro = merkleDistro.address;
-
   return {
-    addresses,
     safeSdk,
     safeToken,
     merkleDistro,

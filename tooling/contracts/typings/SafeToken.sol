@@ -6,4 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 abstract contract SafeToken is ERC20, Ownable {
   function unpause() public virtual;
+
+  function paused() public view virtual returns (bool);
 }

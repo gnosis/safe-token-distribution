@@ -11,9 +11,9 @@ import intervalsGenerate from "../fns/intervalsGenerate";
 import scheduleValidate from "../fns/scheduleValidate";
 
 import {
+  getProviders,
   SNAPSHOT_FREQUENCY_IN_MINUTES,
   VESTING_CREATION_BLOCK,
-  getProviders,
 } from "../config";
 
 import { loadSchedule, saveSchedule } from "../persistence";
@@ -69,7 +69,7 @@ task(
 
         const blockGC = await queryClosestBlock(
           mainnetEntry.timestamp,
-          providers.gc,
+          providers.gnosis,
         );
         nextSchedule = [
           ...nextSchedule,

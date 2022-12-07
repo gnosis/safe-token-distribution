@@ -12,5 +12,10 @@ export default async function unpauseSafeToken(safeToken: SafeToken) {
     safeToken.address,
     impersonatedOwner,
   );
-  await safeTokenPatched.unpause();
+
+  const isPaused = await safeTokenPatched.paused();
+
+  if (isPaused) {
+    await safeTokenPatched.unpause();
+  }
 }
