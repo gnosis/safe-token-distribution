@@ -47,7 +47,7 @@ export function getProviders(hre: HardhatRuntimeEnvironment) {
   return { mainnet, gc };
 }
 
-export async function getSafes(
+export async function getSafeClients(
   safeAddressMainnet: string,
   safeAddressGC: string,
   hre: HardhatRuntimeEnvironment,

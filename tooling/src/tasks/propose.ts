@@ -1,12 +1,12 @@
-import { Signer } from "ethers";
+import assert from "assert";
+import { utils, Signer } from "ethers";
+
 import Safe from "@gnosis.pm/safe-core-sdk";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import { SafeTransaction } from "@gnosis.pm/safe-core-sdk-types";
 
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-
-import { loadSchedule } from "../persistence";
 
 import { queryAmountToClaim } from "../queries/queryVestingPool";
 import calculateClaimBreakdown from "../fns/calculateClaimBreakdown";
@@ -15,20 +15,32 @@ import {
   createDistributeTxMainnet,
 } from "../fns/createDistributeTx";
 
+import { loadSchedule } from "../persistence";
+
 import {
   getAddressConfig,
   getProviders,
-  getSafes,
+  getSafeClients,
   VESTING_ID,
 } from "../config";
-import { assert } from "console";
 
 task("propose", "")
   .addParam("merkleRootMainnet", "", undefined, types.string)
   .addParam("merkleRootGC", "", undefined, types.string)
   .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
-    const addresses = await getAddressConfig(hre);
+    const { merkleRootMainnet, merkleRootGC } = taskArgs;
+
+    if (!isHexBytes32(merkleRootMainnet)) {
+      throw new Error("Arg MerkleRootMainnet is not 32 bytes hex");
+    }
+
+    if (!isHexBytes32(merkleRootGC)) {
+      throw new Error("Arg MerkleRootGC is not 32 bytes hex");
+    }
+
     const providers = getProviders(hre);
+    const addresses = await getAddressConfig(hre);
+
     const schedule = loadSchedule();
 
     const lastEntry = schedule[schedule.length - 1];
@@ -53,22 +65,22 @@ task("propose", "")
       safeSdkGC,
       serviceClientMainnet,
       serviceClientGC,
-    } = await getSafes(taskArgs.safeMainnet, taskArgs.safeGC, hre);
+    } = await getSafeClients(
+      addresses.mainnet.treasurySafe,
+      addresses.gnosis.treasurySafe,
+      hre,
+    );
 
     const txMainnet = await createDistributeTxMainnet(
       safeSdkMainnet,
       addresses,
-      taskArgs.vestingId,
+      VESTING_ID,
       amountToClaim,
       amountForGC,
-      taskArgs.merkleRootMainnet,
+      merkleRootMainnet,
     );
 
-    const txGC = await createDistributeTxGC(
-      safeSdkGC,
-      addresses,
-      taskArgs.merkleRootGC,
-    );
+    const txGC = await createDistributeTxGC(safeSdkGC, addresses, merkleRootGC);
 
     await sanityCheck();
 
@@ -100,4 +112,8 @@ async function propose(
     senderAddress,
     senderSignature: senderSignature.data,
   });
+}
+
+function isHexBytes32(s: string) {
+  return utils.isHexString(s) && s.length === 68;
 }
