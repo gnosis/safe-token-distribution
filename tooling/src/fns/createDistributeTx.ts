@@ -1,4 +1,3 @@
-import assert from "assert";
 import { BigNumber, BigNumberish } from "ethers";
 import Safe from "@gnosis.pm/safe-core-sdk";
 import {
@@ -17,6 +16,8 @@ import { AddressConfig } from "../types";
 export async function createDistributeTxMainnet(
   safeSdk: Safe,
   addresses: AddressConfig,
+  merkleDistroAddressMainnet: string,
+  merkleDistroAddressGC: string,
   vestingId: string,
   amountToClaim: BigNumber,
   amountToBridge: BigNumber,
@@ -35,28 +36,28 @@ export async function createDistributeTxMainnet(
       ),
       encodeFundDistroMainnet(
         addresses.mainnet.token,
-        addresses.mainnet.merkleDistro,
+        merkleDistroAddressMainnet,
         amountToClaim,
       ),
       ...encodeFundDistroGC(
         addresses.mainnet.token,
         addresses.mainnet.omniMediator,
-        addresses.gnosis.merkleDistro,
+        merkleDistroAddressGC,
         amountToBridge,
       ),
-      encodeSetMerkleRoot(addresses.mainnet.merkleDistro, nextMerkleRoot),
+      encodeSetMerkleRoot(merkleDistroAddressMainnet, nextMerkleRoot),
     ],
   });
 }
 
 export async function createDistributeTxGC(
   safeSdk: Safe,
-  addresses: AddressConfig,
+  merkleDistroAddress: string,
   nextMerkleRoot: string,
 ): Promise<SafeTransaction> {
   return safeSdk.createTransaction({
     safeTransactionData: encodeSetMerkleRoot(
-      addresses.gnosis.merkleDistro,
+      merkleDistroAddress,
       nextMerkleRoot,
     ),
   });

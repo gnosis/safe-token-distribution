@@ -24,12 +24,12 @@ import {
 } from "../persistence";
 
 import {
-  getAddressConfig,
+  addresses,
   getProviders,
   TOKEN_LOCK_OPEN_TIMESTAMP,
   VESTING_ID,
 } from "../config";
-import { AddressConfig } from "../types";
+import { ProviderConfig } from "../types";
 
 task(
   "allocate:write-all",
@@ -45,8 +45,6 @@ task(
     const log = (text: string) => console.info(`allocate:write-all ${text}`);
 
     const providers = getProviders(hre);
-    const addresses = await getAddressConfig(hre);
-
     const schedule = loadSchedule();
 
     log("Starting");
@@ -67,7 +65,7 @@ task(
             schedule.indexOf(prevEntry) + 1 == schedule.indexOf(entry),
         );
 
-        await _writeOne(prevEntry, entry, addresses, providers, log);
+        await _writeOne(prevEntry, entry, providers, log);
       }
     }
   });
@@ -80,7 +78,6 @@ task(
   .setAction(async ({ block }, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) => console.info(`allocate:write-one ${text}`);
 
-    const addresses = await getAddressConfig(hre);
     const providers = getProviders(hre);
 
     const schedule = loadSchedule();
@@ -92,14 +89,13 @@ task(
       throw new Error(`Could not find a schedule entry for ${block}`);
     }
 
-    await _writeOne(prevEntry, entry, addresses, providers, log);
+    await _writeOne(prevEntry, entry, providers, log);
   });
 
 async function _writeOne(
   prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
-  addresses: AddressConfig,
-  providers: { mainnet: Provider; gc: Provider },
+  providers: ProviderConfig,
   log: (text: string) => void,
 ) {
   const blockMainnet = entry.mainnet.blockNumber;
@@ -107,13 +103,7 @@ async function _writeOne(
 
   log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
-    await fetchAllocationFigures(
-      prevEntry,
-      entry,
-      addresses,
-      providers.mainnet,
-      log,
-    );
+    await fetchAllocationFigures(prevEntry, entry, providers.mainnet, log);
 
   const { allocatedToMainnet, allocatedToGC } =
     await calculateNetworkAllocation(balancesMainnet, balancesGC, amountVested);
@@ -134,7 +124,6 @@ async function _writeOne(
 async function fetchAllocationFigures(
   prevEntry: ScheduleEntry | null,
   entry: ScheduleEntry,
-  addresses: AddressConfig,
   provider: Provider,
   log?: (text: string) => void,
 ) {

@@ -1,3 +1,4 @@
+import { Provider } from "@ethersproject/providers";
 import { BigNumber } from "ethers";
 
 export type Interval = {
@@ -18,16 +19,18 @@ export type UserBalance = {
 
 export type AddressConfig = {
   mainnet: {
-    merkleDistro: string;
     token: string;
     omniMediator: string;
     treasurySafe: string;
     vestingPool: string;
   };
   gnosis: {
-    merkleDistro: string;
-    token: string;
     omniMediator: string;
     treasurySafe: string;
   };
+};
+
+export type ProviderConfig = {
+  mainnet: Provider;
+  gnosis: Provider;
 };

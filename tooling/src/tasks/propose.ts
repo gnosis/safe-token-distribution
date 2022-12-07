@@ -1,5 +1,6 @@
 import assert from "assert";
-import { utils, Signer } from "ethers";
+import { Signer } from "ethers";
+import { isAddress, isHexString } from "ethers/lib/utils";
 
 import Safe from "@gnosis.pm/safe-core-sdk";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
@@ -17,18 +18,28 @@ import {
 
 import { loadSchedule } from "../persistence";
 
-import {
-  getAddressConfig,
-  getProviders,
-  getSafeClients,
-  VESTING_ID,
-} from "../config";
+import { addresses, getProviders, getSafeClients, VESTING_ID } from "../config";
 
 task("propose", "")
+  .addParam("distroAddressMainnet", "", undefined, types.string)
+  .addParam("distroAddressGC", "", undefined, types.string)
   .addParam("merkleRootMainnet", "", undefined, types.string)
   .addParam("merkleRootGC", "", undefined, types.string)
   .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
-    const { merkleRootMainnet, merkleRootGC } = taskArgs;
+    const {
+      distroAddressMainnet,
+      distroAddressGC,
+      merkleRootMainnet,
+      merkleRootGC,
+    } = taskArgs;
+
+    if (!isAddress(distroAddressMainnet)) {
+      throw new Error("Arg distroAddressMainnet is not an address");
+    }
+
+    if (!isAddress(distroAddressGC)) {
+      throw new Error("Arg distroAddressMainnet is not an address");
+    }
 
     if (!isHexBytes32(merkleRootMainnet)) {
       throw new Error("Arg MerkleRootMainnet is not 32 bytes hex");
@@ -39,8 +50,6 @@ task("propose", "")
     }
 
     const providers = getProviders(hre);
-    const addresses = await getAddressConfig(hre);
-
     const schedule = loadSchedule();
 
     const lastEntry = schedule[schedule.length - 1];
@@ -74,26 +83,25 @@ task("propose", "")
     const txMainnet = await createDistributeTxMainnet(
       safeSdkMainnet,
       addresses,
+      distroAddressMainnet,
+      distroAddressGC,
       VESTING_ID,
       amountToClaim,
       amountForGC,
       merkleRootMainnet,
     );
 
-    const txGC = await createDistributeTxGC(safeSdkGC, addresses, merkleRootGC);
-
-    await sanityCheck();
+    const txGC = await createDistributeTxGC(
+      safeSdkGC,
+      distroAddressGC,
+      merkleRootGC,
+    );
 
     await Promise.all([
       propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet),
       propose(safeSdkGC, serviceClientGC, delegate, txGC),
     ]);
   });
-
-async function sanityCheck() {
-  // check MerkleDistros are deployed
-  // check delegate is enabled in both safes
-}
 
 async function propose(
   safeSdk: Safe,
@@ -115,5 +123,5 @@ async function propose(
 }
 
 function isHexBytes32(s: string) {
-  return utils.isHexString(s) && s.length === 66;
+  return isHexString(s) && s.length === 66;
 }
