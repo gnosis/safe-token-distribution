@@ -115,5 +115,5 @@ async function propose(
 }
 
 function isHexBytes32(s: string) {
-  return utils.isHexString(s) && s.length === 68;
+  return utils.isHexString(s) && s.length === 66;
 }

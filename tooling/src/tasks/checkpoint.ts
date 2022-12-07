@@ -8,8 +8,8 @@ import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
 import { Snapshot } from "../types";
 
-task("checkpoint:generate", "").setAction(async () => {
-  const log = (text: string) => console.info(`checkpoint:generate ${text}`);
+task("checkpoint", "").setAction(async () => {
+  const log = (text: string) => console.info(`checkpoint ${text}`);
 
   const schedule = loadSchedule();
 
