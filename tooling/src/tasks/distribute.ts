@@ -27,7 +27,7 @@ task("distribute", "")
 
     await hre.run("schedule:expand");
 
-    await hre.run("allocation:write-all");
+    await hre.run("allocate:write-all");
 
     const [merkleRootMainnet, merkleRootGC] = await hre.run(
       "checkpoint:generate",

@@ -14,12 +14,12 @@ export default async function calculateNetworkAllocation(
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get
   const result = calculateAllocation(
-    { mainnet: snapshotSum(balancesMainnet), gc: snapshotSum(balancesGC) },
+    { mainnet: snapshotSum(balancesMainnet), gnosis: snapshotSum(balancesGC) },
     amountVested,
   );
 
   const allocatedToMainnet = BigNumber.from(result.mainnet || 0);
-  const allocatedToGC = BigNumber.from(result.gc || 0);
+  const allocatedToGC = BigNumber.from(result.gnosis || 0);
   // sanity check
   assert(allocatedToMainnet.add(allocatedToGC).eq(amountVested));
 

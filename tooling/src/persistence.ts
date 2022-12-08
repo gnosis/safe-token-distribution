@@ -8,7 +8,7 @@ import { Snapshot } from "./types";
 export type Schedule = ScheduleEntry[];
 export type ScheduleEntry = {
   mainnet: BlockAndTimestamp;
-  gc: BlockAndTimestamp;
+  gnosis: BlockAndTimestamp;
 };
 export type BlockAndTimestamp = { blockNumber: number; timestamp: number };
 
@@ -29,7 +29,7 @@ function scheduleFilePath() {
 }
 
 export function loadAllocation(
-  chain: "mainnet" | "gc",
+  chain: "mainnet" | "gnosis",
   block: number,
 ): Snapshot | null {
   const filePath = allocationFilePath(chain, block);
@@ -37,7 +37,7 @@ export function loadAllocation(
 }
 
 export function saveAllocation(
-  chain: "mainnet" | "gc",
+  chain: "mainnet" | "gnosis",
   block: number,
   allocation: Snapshot,
 ) {
@@ -46,7 +46,7 @@ export function saveAllocation(
   writeSnapshot(filePath, allocation);
 }
 
-export function allocationFilePath(chain: "mainnet" | "gc", block: number) {
+export function allocationFilePath(chain: "mainnet" | "gnosis", block: number) {
   return path.resolve(
     path.join(
       __dirname,

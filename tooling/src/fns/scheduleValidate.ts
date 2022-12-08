@@ -20,10 +20,10 @@ export default async function (
             .getBlock(entry.mainnet.blockNumber)
             .then(({ timestamp }) => timestamp),
           providers.gc
-            .getBlock(entry.gc.blockNumber)
+            .getBlock(entry.gnosis.blockNumber)
             .then(({ timestamp }) => timestamp),
         ])
-      : [entry.mainnet.timestamp, entry.gc.timestamp];
+      : [entry.mainnet.timestamp, entry.gnosis.timestamp];
 
     if (
       !(interval.left <= timestampMainnet && timestampMainnet <= interval.right)
@@ -35,7 +35,7 @@ export default async function (
 
     if (!(interval.left <= timestampGC && timestampGC <= interval.right)) {
       throw new Error(
-        `GC block ${entry.gc.blockNumber} in schedule at position ${i} does not match interval`,
+        `GC block ${entry.gnosis.blockNumber} in schedule at position ${i} does not match interval`,
       );
     }
 
