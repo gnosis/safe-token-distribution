@@ -75,7 +75,10 @@ task(
           ...nextSchedule,
           {
             mainnet: mainnetEntry,
-            gc: { timestamp: blockGC.timestamp, blockNumber: blockGC.number },
+            gnosis: {
+              timestamp: blockGC.timestamp,
+              blockNumber: blockGC.number,
+            },
           },
         ];
       }

@@ -43,7 +43,7 @@ const schedule = [
       timestamp: 1669585787,
       blockNumber: 16064111,
     },
-    gc: {
+    gnosis: {
       timestamp: 1669585785,
       blockNumber: 25189669,
     },
@@ -53,7 +53,7 @@ const schedule = [
       blockNumber: 16073062,
       timestamp: 1669693703,
     },
-    gc: {
+    gnosis: {
       timestamp: 1669693700,
       blockNumber: 25209530,
     },
@@ -63,7 +63,7 @@ const schedule = [
       blockNumber: 16081212,
       timestamp: 1669792067,
     },
-    gc: {
+    gnosis: {
       timestamp: 1669792065,
       blockNumber: 25227679,
     },

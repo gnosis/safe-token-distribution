@@ -11,13 +11,13 @@ const request = withPaging(withRetry(gqlRequest));
 
 export async function queryBalancesMainnet(
   block: number,
-  withLGNO: boolean,
+  withLgno: boolean,
 ): Promise<Snapshot> {
-  if (!withLGNO) {
+  if (!withLgno) {
     return {};
   }
 
-  const userBalances = await request(mainnetEndpoint, lgnoQuery, {
+  const userBalances = await request(urlMainnet, queryLgno, {
     block,
   });
 
@@ -26,13 +26,13 @@ export async function queryBalancesMainnet(
 
 export async function queryBalancesGC(
   block: number,
-  withLGNO: boolean,
+  withLgno: boolean,
 ): Promise<Snapshot> {
   const [balancesWithLgno, balancesWithDeposit, balancesWithStaked] =
     await Promise.all([
-      withLGNO ? request(gcEndpoint, lgnoQuery, { block }) : [],
-      request(gcEndpoint, depositQuery, { block }),
-      request(gcEndpoint, stakedQuery, { block }),
+      withLgno ? request(urlGnosis, queryLgno, { block }) : [],
+      request(urlGnosis, queryDeposit, { block }),
+      request(urlGnosis, queryStaked, { block }),
     ]);
 
   const s1 = aggregate(balancesWithLgno);
@@ -87,13 +87,13 @@ function withRetry(
   };
 }
 
-const mainnetEndpoint =
+const urlMainnet =
   "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip";
 
-const gcEndpoint =
+const urlGnosis =
   "https://api.thegraph.com/subgraphs/id/QmbJaRFT59ANkbqXHHCkR6euNyTBD2ypnwek9Gneohx8ha";
 
-const lgnoQuery = gql`
+const queryLgno = gql`
   query ($block: Int, $lastId: String) {
     users(
       block: { number: $block }
@@ -106,7 +106,7 @@ const lgnoQuery = gql`
   }
 `;
 
-const depositQuery = gql`
+const queryDeposit = gql`
   query ($block: Int, $lastId: String) {
     users(
       block: { number: $block }
@@ -119,7 +119,7 @@ const depositQuery = gql`
   }
 `;
 
-const stakedQuery = gql`
+const queryStaked = gql`
   query ($block: Int, $lastId: String) {
     users(
       block: { number: $block }
@@ -132,7 +132,7 @@ const stakedQuery = gql`
   }
 `;
 
-export default function aggregate(users: UserBalance[]): Snapshot {
+function aggregate(users: UserBalance[]): Snapshot {
   if (users.length === 0) {
     return {};
   }

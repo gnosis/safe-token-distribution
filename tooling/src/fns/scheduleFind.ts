@@ -1,4 +1,4 @@
-import { Schedule, ScheduleEntry } from "../persistence";
+import { Schedule } from "../persistence";
 
 export default function findEntry(schedule: Schedule, blockNumber: number) {
   const index = schedule.findIndex(

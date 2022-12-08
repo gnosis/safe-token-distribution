@@ -55,7 +55,7 @@ task(
         ? loadAllocation("mainnet", entry.mainnet.blockNumber)
         : null;
       const allocationsGC = lazy
-        ? loadAllocation("gc", entry.gc.blockNumber)
+        ? loadAllocation("gnosis", entry.gnosis.blockNumber)
         : null;
 
       if (!allocationsMainnet || !allocationsGC) {
@@ -98,9 +98,9 @@ async function _writeOne(
   log: (text: string) => void,
 ) {
   const blockMainnet = entry.mainnet.blockNumber;
-  const blockGC = entry.gc.blockNumber;
+  const blockGC = entry.gnosis.blockNumber;
 
-  log(`mainnet ${blockMainnet} gc ${blockGC}`);
+  log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
     await fetchAllocationFigures(prevEntry, entry, providers.mainnet, log);
 
@@ -117,7 +117,7 @@ async function _writeOne(
   assert(snapshotSum(allocationGC).eq(allocatedToGC));
 
   saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
-  saveAllocation("gc", blockGC, snapshotSort(allocationGC));
+  saveAllocation("gnosis", blockGC, snapshotSort(allocationGC));
 }
 
 async function fetchAllocationFigures(
@@ -128,19 +128,19 @@ async function fetchAllocationFigures(
 ) {
   const ignore = {
     mainnet: [DAO_ADDRESS_MAINNET],
-    gc: [DAO_ADDRESS_GC],
+    gnosis: [DAO_ADDRESS_GC],
   };
 
   const withLGNO =
     entry.mainnet.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP &&
-    entry.gc.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP;
+    entry.gnosis.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP;
 
   log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
 
   let [balancesMainnet, balancesGC, prevAmountVested, amountVested] =
     await Promise.all([
       queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
-      queryBalancesGC(entry.gc.blockNumber, withLGNO),
+      queryBalancesGC(entry.gnosis.blockNumber, withLGNO),
       prevEntry
         ? queryAmountVested(
             VESTING_POOL_ADDRESS,
@@ -160,7 +160,7 @@ async function fetchAllocationFigures(
   assert(amountVested.gte(prevAmountVested));
 
   balancesMainnet = snapshotWithout(balancesMainnet, ignore.mainnet);
-  balancesGC = snapshotWithout(balancesGC, ignore.gc);
+  balancesGC = snapshotWithout(balancesGC, ignore.gnosis);
 
   return {
     balancesMainnet,

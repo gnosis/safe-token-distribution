@@ -13,10 +13,10 @@ export default async function calculateAmountToBridge(
   let totalMainnet = BigNumber.from(0);
   let totalGC = BigNumber.from(0);
 
-  for (const { mainnet, gc } of reversedSchedule) {
+  for (const { mainnet, gnosis } of reversedSchedule) {
     const allocationMainnet = loadAllocation("mainnet", mainnet.blockNumber);
     assert(!!allocationMainnet);
-    const allocationGC = loadAllocation("gc", gc.blockNumber);
+    const allocationGC = loadAllocation("gnosis", gnosis.blockNumber);
     assert(!!allocationGC);
 
     totalMainnet = totalMainnet.add(snapshotSum(allocationMainnet));

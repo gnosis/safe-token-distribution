@@ -23,7 +23,7 @@ task("checkpoint:generate", "").setAction(async () => {
       "mainnet",
       entry.mainnet.blockNumber,
     );
-    const allocationGC = loadAllocation("gc", entry.gc.blockNumber);
+    const allocationGC = loadAllocation("gnosis", entry.gnosis.blockNumber);
 
     if (!allocationMainnet) {
       throw new Error(
@@ -32,7 +32,9 @@ task("checkpoint:generate", "").setAction(async () => {
     }
 
     if (!allocationGC) {
-      throw new Error(`GC Allocation Not Calculated ${entry.gc.blockNumber}`);
+      throw new Error(
+        `Gnosis Allocation Not Calculated ${entry.gnosis.blockNumber}`,
+      );
     }
 
     checkpointMainnet = snapshotMerge(checkpointMainnet, allocationMainnet);
