@@ -1,8 +1,13 @@
+import asyncRetry from "async-retry";
+import { request as gqlRequest, gql } from "graphql-request";
+
 import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
-import { request, gql } from "graphql-request";
+
 import snapshotMerge from "../fns/snapshotMerge";
 import { Snapshot, UserBalance } from "../types";
+
+const request = withPaging(withRetry(gqlRequest));
 
 export async function queryBalancesMainnet(
   block: number,
@@ -12,12 +17,9 @@ export async function queryBalancesMainnet(
     return {};
   }
 
-  const userBalances = await pagedRequest(async (lastId: string) =>
-    request(mainnetEndpoint, lgnoQuery, {
-      block,
-      lastId,
-    }).then((result) => result.users),
-  );
+  const userBalances = await request(mainnetEndpoint, lgnoQuery, {
+    block,
+  });
 
   return aggregate(userBalances);
 }
@@ -28,26 +30,9 @@ export async function queryBalancesGC(
 ): Promise<Snapshot> {
   const [balancesWithLgno, balancesWithDeposit, balancesWithStaked] =
     await Promise.all([
-      withLGNO
-        ? pagedRequest((lastId: string) =>
-            request(gcEndpoint, lgnoQuery, {
-              block,
-              lastId,
-            }).then((result) => result.users),
-          )
-        : [],
-      pagedRequest((lastId: string) =>
-        request(gcEndpoint, depositQuery, {
-          block,
-          lastId,
-        }).then((result) => result.users),
-      ),
-      pagedRequest((lastId: string) =>
-        request(gcEndpoint, stakedQuery, {
-          block,
-          lastId,
-        }).then((result) => result.users),
-      ),
+      withLGNO ? request(gcEndpoint, lgnoQuery, { block }) : [],
+      request(gcEndpoint, depositQuery, { block }),
+      request(gcEndpoint, stakedQuery, { block }),
     ]);
 
   const s1 = aggregate(balancesWithLgno);
@@ -57,18 +42,49 @@ export async function queryBalancesGC(
   return snapshotMerge(s1, snapshotMerge(s2, s3));
 }
 
-async function pagedRequest(
-  request: (lastId: string) => Promise<UserBalance[]>,
-  lastId?: string,
-): Promise<UserBalance[]> {
-  lastId = lastId || constants.AddressZero;
+function withPaging(
+  request: (url: string, query: string, options: any) => Promise<UserBalance[]>,
+) {
+  return async function pagedRequest(
+    url: string,
+    query: string,
+    options: any,
+    lastId: string = constants.AddressZero,
+  ): Promise<UserBalance[]> {
+    const users = await request(url, query, { ...options, lastId });
+    if (users.length === 0) {
+      return [];
+    }
 
-  const users = await request(lastId);
-  const nextLastId = users.length > 0 ? users[users.length - 1].id : null;
+    return [
+      ...users,
+      ...(await pagedRequest(url, query, options, users[users.length - 1].id)),
+    ];
+  };
+}
 
-  return nextLastId
-    ? [...users, ...(await pagedRequest(request, nextLastId))]
-    : users;
+function withRetry(
+  request: (
+    url: string,
+    query: string,
+    options: any,
+  ) => Promise<{ users: UserBalance[] }>,
+) {
+  return (url: string, query: string, options: any) => {
+    return asyncRetry(
+      () => request(url, query, options).then(({ users }) => users),
+      {
+        retries: 3,
+        onRetry: () => {
+          console.info(
+            `retying request:\nURL: ${url}\nQUERY: ${query}\nOPTIONS: ${JSON.stringify(
+              options,
+            )}`,
+          );
+        },
+      },
+    );
+  };
 }
 
 const mainnetEndpoint =
