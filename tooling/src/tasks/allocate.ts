@@ -1,35 +1,22 @@
-import { Provider } from "@ethersproject/providers";
 import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import {
-  queryBalancesGC,
-  queryBalancesMainnet,
-} from "../queries/querySubgraph";
-import { queryAmountVested } from "../queries/queryVestingPool";
-
-import calculateAllocation from "../fns/calculateAddressAllocation";
-import calculateNetworkAllocation from "../fns/calculateNetworkAllocation";
+import { queryAllocationSetup } from "../queries/queryAllocationSetup";
+import calculateAllocation from "../fns/calculateAllocation";
+import calculateAllocationPerNetwork from "../fns/calculateAllocationPerNetwork";
 import scheduleFind from "../fns/scheduleFind";
 import snapshotSort from "../fns/snapshotSort";
 import snapshotSum from "../fns/snapshotSum";
-import snapshotWithout from "../fns/snapshotWithout";
 
-import {
-  loadSchedule,
-  loadAllocation,
-  saveAllocation,
-  ScheduleEntry,
-} from "../persistence";
-
+import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
 import {
   addresses,
   getProviders,
   TOKEN_LOCK_OPEN_TIMESTAMP,
   VESTING_ID,
 } from "../config";
-import { ProviderConfig } from "../types";
+import { ProviderConfig, ScheduleEntry } from "../types";
 
 task(
   "allocate:write-all",
@@ -103,10 +90,21 @@ async function _writeOne(
 
   log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
-    await fetchAllocationFigures(prevEntry, entry, providers.mainnet, log);
+    await queryAllocationSetup(
+      prevEntry,
+      entry,
+      addresses,
+      VESTING_ID,
+      TOKEN_LOCK_OPEN_TIMESTAMP,
+      providers.mainnet,
+      log,
+    );
 
-  const { allocatedToMainnet, allocatedToGC } =
-    await calculateNetworkAllocation(balancesMainnet, balancesGC, amountVested);
+  const { allocatedToMainnet, allocatedToGC } = calculateAllocationPerNetwork(
+    balancesMainnet,
+    balancesGC,
+    amountVested,
+  );
 
   const allocationMainnet = calculateAllocation(
     balancesMainnet,
@@ -119,53 +117,4 @@ async function _writeOne(
 
   saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
   saveAllocation("gnosis", blockGC, snapshotSort(allocationGC));
-}
-
-async function fetchAllocationFigures(
-  prevEntry: ScheduleEntry | null,
-  entry: ScheduleEntry,
-  provider: Provider,
-  log?: (text: string) => void,
-) {
-  const ignore = {
-    mainnet: [addresses.mainnet.treasurySafe],
-    gc: [addresses.gnosis.treasurySafe],
-  };
-
-  const withLGNO =
-    entry.mainnet.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP &&
-    entry.gnosis.timestamp < TOKEN_LOCK_OPEN_TIMESTAMP;
-
-  log?.(`Considering LGNO: ${withLGNO ? "yes" : "no"}`);
-
-  let [balancesMainnet, balancesGC, prevAmountVested, amountVested] =
-    await Promise.all([
-      queryBalancesMainnet(entry.mainnet.blockNumber, withLGNO),
-      queryBalancesGC(entry.gnosis.blockNumber, withLGNO),
-      prevEntry
-        ? queryAmountVested(
-            addresses.mainnet.vestingPool,
-            VESTING_ID,
-            prevEntry.mainnet.blockNumber,
-            provider,
-          )
-        : 0,
-      queryAmountVested(
-        addresses.mainnet.vestingPool,
-        VESTING_ID,
-        entry.mainnet.blockNumber,
-        provider,
-      ),
-    ]);
-
-  assert(amountVested.gte(prevAmountVested));
-
-  balancesMainnet = snapshotWithout(balancesMainnet, ignore.mainnet);
-  balancesGC = snapshotWithout(balancesGC, ignore.gnosis);
-
-  return {
-    balancesMainnet,
-    balancesGC,
-    amountVested,
-  };
 }

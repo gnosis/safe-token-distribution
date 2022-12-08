@@ -6,7 +6,7 @@ import snapshotSum from "./snapshotSum";
 
 import { Snapshot } from "../types";
 
-export default function calculate(
+export default function calculateAllocation(
   balances: Snapshot,
   amountToAllocate: BigNumber,
 ): Snapshot {
@@ -16,7 +16,7 @@ export default function calculate(
 
   const { allocation, remainder } = divide(balances, amountToAllocate);
 
-  return snapshotMerge(allocation, calculate(balances, remainder));
+  return snapshotMerge(allocation, calculateAllocation(balances, remainder));
 }
 
 function divide(balances: Snapshot, amountToAllocate: BigNumber) {

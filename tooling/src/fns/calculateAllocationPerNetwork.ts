@@ -1,12 +1,12 @@
 import assert from "assert";
+import { BigNumber } from "ethers";
 
-import calculateAllocation from "./calculateAddressAllocation";
+import calculateAllocation from "./calculateAllocation";
 import snapshotSum from "./snapshotSum";
 
 import { Snapshot } from "../types";
-import { BigNumber } from "ethers";
 
-export default async function calculateNetworkAllocation(
+export default function calculateAllocationPerNetwork(
   balancesMainnet: Snapshot,
   balancesGC: Snapshot,
   amountVested: BigNumber,

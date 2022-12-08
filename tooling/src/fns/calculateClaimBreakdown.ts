@@ -3,7 +3,8 @@ import { BigNumber } from "ethers";
 
 import snapshotSum from "./snapshotSum";
 
-import { loadAllocation, Schedule } from "../persistence";
+import { loadAllocation } from "../persistence";
+import { Schedule } from "../types";
 
 export default async function calculateClaimBreakdown(
   schedule: Schedule,
