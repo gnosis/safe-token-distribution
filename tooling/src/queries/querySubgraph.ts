@@ -77,7 +77,7 @@ function withRetry(
         retries: 3,
         onRetry: () => {
           console.info(
-            `retying request:\nURL: ${url}\nQUERY: ${query}\nOPTIONS: ${JSON.stringify(
+            `retrying request:\nURL: ${url}\nQUERY: ${query}\nOPTIONS: ${JSON.stringify(
               options,
             )}`,
           );
