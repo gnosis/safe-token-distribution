@@ -64,8 +64,6 @@
   "scripts": {
     "deploy-distros": "yarn hardhat deploy --network mainnet && yarn hardhat deploy --network gnosischain",
     "verify-distros": "yarn hardhat verify --network mainnet && yarn hardhat verify --network gnosischain",
-    "schedule": "yarn hardhat schedule:expand",
-    "allocate": "yarn hardhat allocate:write-all",
     "clean": "shx rm -rf ./artifacts ./cache ./build ./coverage ./typechain ./coverage.json",
     "compile": "yarn clean && hardhat compile --config hardhat.base.config.ts",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" && yarn typechain",
