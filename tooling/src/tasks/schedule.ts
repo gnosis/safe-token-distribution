@@ -36,7 +36,8 @@ task(
   )
   .setAction(
     async ({ inception, frequency }, hre: HardhatRuntimeEnvironment) => {
-      const log = (text: string) => console.info(`schedule:expand ${text}`);
+      const log = (text: string) =>
+        console.info(`Task schedule:expand -> ${text}`);
       const providers = getProviders(hre);
 
       log("Starting...");
@@ -123,7 +124,8 @@ task(
       { inception, frequency, deep, frozen },
       hre: HardhatRuntimeEnvironment,
     ) => {
-      const log = (text: string) => console.info(`schedule:validate ${text}`);
+      const log = (text: string) =>
+        console.info(`Task schedule:validate -> ${text}`);
       log("Starting...");
 
       const providers = getProviders(hre);

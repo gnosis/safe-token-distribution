@@ -10,53 +10,71 @@ import {
   getProviders,
   MERKLE_DISTRO_DEPLOYMENT_SALT,
 } from "../config";
+import { ProviderConfig } from "../types";
 
 task("distribute", "").setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  const log = (text: string) => console.info(`distribute ${text}`);
+  const providers = getProviders(hre);
+  const log = (text: string) => console.info(`Task distribute -> ${text}`);
 
-  const { proceed, distroAddressMainnet, distroAddressGC } =
-    await tokenAndDistrosStatus(hre, log);
-
-  if (proceed) {
-    await hre.run("harvest");
-
-    const [merkleRootMainnet, merkleRootGC] = await hre.run("checkpoint");
-
-    await hre.run("propose", {
-      distroAddressMainnet,
-      distroAddressGC,
-      merkleRootMainnet,
-      merkleRootGC,
-    });
+  const { isTokenReady, tokenAddressGnosis } = await safeTokenStatus(
+    providers,
+    log,
+  );
+  if (!isTokenReady) {
+    return;
   }
+
+  const { isDistroReady, distroAddressMainnet, distroAddressGnosis } =
+    await distroStatus(tokenAddressGnosis, providers, log);
+  if (!isDistroReady) {
+    return;
+  }
+
+  await hre.run("harvest");
+
+  const { merkleRootMainnet, merkleRootGnosis } = await hre.run("checkpoint");
+
+  await hre.run("propose", {
+    distroAddressMainnet,
+    distroAddressGnosis,
+    merkleRootMainnet,
+    merkleRootGnosis,
+  });
 });
 
-async function tokenAndDistrosStatus(
-  hre: HardhatRuntimeEnvironment,
+async function safeTokenStatus(
+  providers: ProviderConfig,
   log: (text: string) => void,
 ) {
-  const providers = getProviders(hre);
-
   const isPaused = await queryIsPaused(addresses, providers);
   if (isPaused) {
     log("SafeToken is still paused. Skipping Execution...");
     return {
-      proceed: false,
-      distroAddressMainnet: constants.AddressZero,
-      distroAddressGC: constants.AddressZero,
+      isTokenReady: false,
+      tokenAddressGnosis: constants.AddressZero,
     };
   }
 
-  const tokenAddressGC = await queryBridgedAddress(addresses, providers);
-  if (!tokenAddressGC) {
+  const tokenAddressGnosis = await queryBridgedAddress(addresses, providers);
+  if (tokenAddressGnosis) {
+    return {
+      isTokenReady: true,
+      tokenAddressGnosis,
+    };
+  } else {
     log("SafeToken not yet bridged. Skipping Execution...");
     return {
-      proceed: false,
-      distroAddressMainnet: constants.AddressZero,
-      distroAddressGC: constants.AddressZero,
+      isTokenReady: false,
+      tokenAddressGnosis: constants.AddressZero,
     };
   }
+}
 
+async function distroStatus(
+  tokenAddressGnosis: string,
+  providers: ProviderConfig,
+  log: (text: string) => void,
+) {
   const distroAddressMainnet = calculateDistroAddress(
     "1",
     addresses.mainnet.token,
@@ -65,9 +83,9 @@ async function tokenAndDistrosStatus(
     MERKLE_DISTRO_DEPLOYMENT_SALT,
   );
 
-  const distroAddressGC = calculateDistroAddress(
+  const distroAddressGnosis = calculateDistroAddress(
     "100",
-    tokenAddressGC,
+    tokenAddressGnosis,
     constants.HashZero,
     addresses.gnosis.treasurySafe,
     MERKLE_DISTRO_DEPLOYMENT_SALT,
@@ -75,27 +93,27 @@ async function tokenAndDistrosStatus(
 
   let code = await providers.mainnet.getCode(distroAddressMainnet);
   if (code === "0x") {
-    log("Mainnet MerkleDistro is not yet deployed. Skipping Execution...");
+    log("mainnet MerkleDistro is not yet deployed. Skipping Execution...");
     return {
-      proceed: false,
+      isDistroReady: false,
       distroAddressMainnet,
-      distroAddressGC,
+      distroAddressGnosis,
     };
   }
 
-  code = await providers.mainnet.getCode(distroAddressGC);
+  code = await providers.gnosis.getCode(distroAddressGnosis);
   if (code === "0x") {
-    log("Gnosis-chain MerkleDistro is not yet deployed. Skipping Execution...");
+    log("gnosis MerkleDistro is not yet deployed. Skipping Execution...");
     return {
-      proceed: false,
+      isDistroReady: false,
       distroAddressMainnet,
-      distroAddressGC,
+      distroAddressGnosis,
     };
   }
 
   return {
-    proceed: true,
+    isDistroReady: true,
     distroAddressMainnet,
-    distroAddressGC,
+    distroAddressGnosis,
   };
 }

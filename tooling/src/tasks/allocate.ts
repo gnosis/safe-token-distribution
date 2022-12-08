@@ -19,7 +19,7 @@ import {
 import { ProviderConfig, ScheduleEntry } from "../types";
 
 task(
-  "allocate:write-all",
+  "allocate:all",
   "Goes through the schedule, and writes an allocation file each entry",
 )
   .addOptionalParam(
@@ -29,7 +29,7 @@ task(
     types.boolean,
   )
   .setAction(async ({ lazy }, hre: HardhatRuntimeEnvironment) => {
-    const log = (text: string) => console.info(`allocate:write-all ${text}`);
+    const log = (text: string) => console.info(`Task allocate:all -> ${text}`);
 
     const providers = getProviders(hre);
     const schedule = loadSchedule();
@@ -58,12 +58,12 @@ task(
   });
 
 task(
-  "allocate:write-one",
+  "allocate:one",
   "Gets a schedule entry from a block number, and writes one allocation file",
 )
   .addPositionalParam("block", "A block number", undefined, types.int)
   .setAction(async ({ block }, hre: HardhatRuntimeEnvironment) => {
-    const log = (text: string) => console.info(`allocate:write-one ${text}`);
+    const log = (text: string) => console.info(`Task allocate:one -> ${text}`);
 
     const providers = getProviders(hre);
 

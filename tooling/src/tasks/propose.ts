@@ -20,33 +20,40 @@ import { loadSchedule } from "../persistence";
 
 import { addresses, getProviders, getSafeClients, VESTING_ID } from "../config";
 
+type TaskArgs = {
+  distroAddressMainnet: string;
+  distroAddressGnosis: string;
+  merkleRootMainnet: string;
+  merkleRootGnosis: string;
+};
+
 task("propose", "")
   .addParam("distroAddressMainnet", "", undefined, types.string)
-  .addParam("distroAddressGC", "", undefined, types.string)
+  .addParam("distroAddressGnosis", "", undefined, types.string)
   .addParam("merkleRootMainnet", "", undefined, types.string)
-  .addParam("merkleRootGC", "", undefined, types.string)
-  .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
+  .addParam("merkleRootGnosis", "", undefined, types.string)
+  .setAction(async (taskArgs: TaskArgs, hre: HardhatRuntimeEnvironment) => {
     const {
       distroAddressMainnet,
-      distroAddressGC,
+      distroAddressGnosis,
       merkleRootMainnet,
-      merkleRootGC,
+      merkleRootGnosis,
     } = taskArgs;
 
     if (!isAddress(distroAddressMainnet)) {
       throw new Error("Arg distroAddressMainnet is not an address");
     }
 
-    if (!isAddress(distroAddressGC)) {
-      throw new Error("Arg distroAddressMainnet is not an address");
+    if (!isAddress(distroAddressGnosis)) {
+      throw new Error("Arg distroAddressGnosis is not an address");
     }
 
     if (!isHexBytes32(merkleRootMainnet)) {
       throw new Error("Arg MerkleRootMainnet is not 32 bytes hex");
     }
 
-    if (!isHexBytes32(merkleRootGC)) {
-      throw new Error("Arg MerkleRootGC is not 32 bytes hex");
+    if (!isHexBytes32(merkleRootGnosis)) {
+      throw new Error("Arg MerkleRootGnosis is not 32 bytes hex");
     }
 
     const providers = getProviders(hre);
@@ -84,7 +91,7 @@ task("propose", "")
       safeSdkMainnet,
       addresses,
       distroAddressMainnet,
-      distroAddressGC,
+      distroAddressGnosis,
       VESTING_ID,
       amountToClaim,
       amountForGC,
@@ -93,8 +100,8 @@ task("propose", "")
 
     const txGC = await createDistributeTxGC(
       safeSdkGC,
-      distroAddressGC,
-      merkleRootGC,
+      distroAddressGnosis,
+      merkleRootGnosis,
     );
 
     await Promise.all([
