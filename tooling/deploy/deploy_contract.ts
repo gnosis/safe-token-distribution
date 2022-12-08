@@ -13,7 +13,7 @@ import {
 } from "../src/config";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  if (hre.network.name === "mainnet" || hre.network.name === "gnosischain") {
+  if (hre.network.name === "mainnet" || hre.network.name === "gnosis") {
     const [deployer] = await hre.ethers.getSigners();
     const { deterministic } = hre.deployments;
 

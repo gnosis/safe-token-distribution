@@ -30,7 +30,7 @@ if (!infuraApiKey) {
 const chainIds = {
   mainnet: 1,
   goerli: 5,
-  gnosischain: 100,
+  gnosis: 100,
   hardhat: 31337,
   local: 31337,
 };
@@ -38,7 +38,7 @@ const chainIds = {
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
   let jsonRpcUrl: string;
   switch (chain) {
-    case "gnosischain":
+    case "gnosis":
       jsonRpcUrl = "https://rpc.gnosischain.com";
       break;
     default:
@@ -73,8 +73,8 @@ const config: HardhatUserConfig = {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
       goerli: process.env.ETHERSCAN_API_KEY || "",
-      gnosischain:
-        process.env.GNOSISCHAIN_ETHERSCAN_API_KEY ||
+      gnosis:
+        process.env.GNOSIS_ETHERSCAN_API_KEY ||
         process.env.ETHERSCAN_API_KEY ||
         "",
     },
@@ -94,7 +94,7 @@ const config: HardhatUserConfig = {
     },
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),
-    gnosischain: getChainConfig("gnosischain"),
+    gnosis: getChainConfig("gnosis"),
   },
   deterministicDeployment,
   namedAccounts: {

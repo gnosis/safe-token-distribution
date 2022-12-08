@@ -100,7 +100,7 @@ export function getProviders(hre: HardhatRuntimeEnvironment): ProviderConfig {
   );
 
   const gnosis = new hre.ethers.providers.JsonRpcProvider(
-    `https://rpc.gnosischain.com `,
+    `https://rpc.gnosischain.com`,
   );
 
   return { mainnet, gnosis };
