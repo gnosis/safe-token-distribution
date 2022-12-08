@@ -8,10 +8,10 @@ import {
 } from "date-fns";
 import { Interval } from "../types";
 
-export default function (inceptionBlock: Block, frequency: number): Interval[] {
+export default function (timestamp: number, frequency: number): Interval[] {
   let result: Interval[] = [];
 
-  const start = fromUnixTime(inceptionBlock.timestamp);
+  const start = fromUnixTime(timestamp);
   const end = addYears(start, 4);
 
   let curr = start;
@@ -28,8 +28,4 @@ export default function (inceptionBlock: Block, frequency: number): Interval[] {
   }
 
   return result;
-}
-
-export function isPast(interval: Interval) {
-  return interval.right < getUnixTime(new Date());
 }
