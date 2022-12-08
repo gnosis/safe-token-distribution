@@ -3,14 +3,7 @@ import fs from "fs-extra";
 import path from "path";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { Snapshot } from "./types";
-
-export type Schedule = ScheduleEntry[];
-export type ScheduleEntry = {
-  mainnet: BlockAndTimestamp;
-  gnosis: BlockAndTimestamp;
-};
-export type BlockAndTimestamp = { blockNumber: number; timestamp: number };
+import { Schedule, Snapshot } from "./types";
 
 export function loadSchedule(filePath?: string): Schedule {
   return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));

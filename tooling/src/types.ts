@@ -6,6 +6,13 @@ export type Interval = {
   right: number;
 };
 
+export type Schedule = ScheduleEntry[];
+export type ScheduleEntry = {
+  mainnet: BlockAndTimestamp;
+  gnosis: BlockAndTimestamp;
+};
+export type BlockAndTimestamp = { blockNumber: number; timestamp: number };
+
 export type Snapshot = {
   [key: string]: BigNumber;
 };
