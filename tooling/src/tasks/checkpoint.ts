@@ -9,7 +9,7 @@ import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 import { Snapshot } from "../types";
 
 task("checkpoint", "").setAction(async () => {
-  const log = (text: string) => console.info(`checkpoint ${text}`);
+  const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
 
   const schedule = loadSchedule();
 
@@ -42,10 +42,13 @@ task("checkpoint", "").setAction(async () => {
   }
 
   const treeMainnet = createMerkleTree(checkpointMainnet);
-  const treeGC = createMerkleTree(checkpointGC);
+  const treeGnosis = createMerkleTree(checkpointGC);
 
   saveCheckpoint(snapshotSort(checkpointMainnet), treeMainnet);
-  saveCheckpoint(snapshotSort(checkpointGC), treeGC);
+  saveCheckpoint(snapshotSort(checkpointGC), treeGnosis);
 
-  return [treeMainnet.root, treeGC.root];
+  return {
+    merkleRootMainnet: treeMainnet.root,
+    merkleRootGnosis: treeGnosis.root,
+  };
 });

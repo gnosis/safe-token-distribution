@@ -11,5 +11,5 @@ task(
 
   await hre.run("schedule:validate", { deep: false, frozen: true });
 
-  await hre.run("allocate:write-all");
+  await hre.run("allocate:all");
 });
