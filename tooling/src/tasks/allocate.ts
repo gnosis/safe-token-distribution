@@ -13,7 +13,7 @@ import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
 import {
   addresses,
   getProviders,
-  TOKEN_LOCK_OPEN_TIMESTAMP,
+  GNO_LOCK_OPEN_TIMESTAMP,
   VESTING_ID,
 } from "../config";
 import { ProviderConfig, ScheduleEntry } from "../types";
@@ -95,7 +95,7 @@ async function _writeOne(
       entry,
       addresses,
       VESTING_ID,
-      TOKEN_LOCK_OPEN_TIMESTAMP,
+      GNO_LOCK_OPEN_TIMESTAMP,
       providers.mainnet,
       log,
     );

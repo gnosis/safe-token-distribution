@@ -12,8 +12,8 @@ import scheduleValidate from "../fns/scheduleValidate";
 
 import {
   getProviders,
-  SNAPSHOT_FREQUENCY_IN_MINUTES,
-  VESTING_CREATION_BLOCK,
+  ALLOCATION_FREQUENCY_IN_MINUTES,
+  VESTING_CREATION_TIMESTAMP,
 } from "../config";
 
 import { loadSchedule, saveSchedule } from "../persistence";
@@ -27,11 +27,7 @@ task(
 
   log("Starting...");
 
-  const intervals = intervalsGenerate(
-    await providers.mainnet.getBlock(VESTING_CREATION_BLOCK),
-    SNAPSHOT_FREQUENCY_IN_MINUTES,
-  ).filter(isPastInterval);
-
+  const intervals = pastIntervals();
   const prevSchedule = loadSchedule();
   assert(prevSchedule.length <= intervals.length);
 
@@ -47,7 +43,7 @@ task(
     providers.mainnet,
   );
 
-  let nextSchedule = [...prevSchedule];
+  let nextSchedule = prevSchedule;
   for (const mainnetEntry of nextMainnetEntries) {
     log(
       `Finding a block in GC that matches mainnet ${mainnetEntry.blockNumber}`,
@@ -97,12 +93,7 @@ task(
     log("Starting...");
 
     const providers = getProviders(hre);
-
-    const intervals = intervalsGenerate(
-      await providers.mainnet.getBlock(VESTING_CREATION_BLOCK),
-      SNAPSHOT_FREQUENCY_IN_MINUTES,
-    ).filter(isPastInterval);
-
+    const intervals = pastIntervals();
     const schedule = loadSchedule();
     log(
       `Validating ${schedule.length} entries ${
@@ -130,5 +121,12 @@ task(
     console.log("schedule:validate Ok & Done");
   });
 
-const isPastInterval = (interval: Interval) =>
-  interval.right < getUnixTime(new Date());
+function pastIntervals() {
+  const isPast = (interval: Interval) =>
+    interval.right < getUnixTime(new Date());
+
+  return intervalsGenerate(
+    VESTING_CREATION_TIMESTAMP,
+    ALLOCATION_FREQUENCY_IN_MINUTES,
+  ).filter(isPast);
+}
