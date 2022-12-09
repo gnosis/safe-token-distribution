@@ -17,10 +17,8 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const [deployer] = await hre.ethers.getSigners();
     const { deterministic } = hre.deployments;
 
-    const [tokenAddress, merkleRoot, ownerAddress] = await deploymentArgs(
-      await ensureTokenUnpausedAndBridged(hre),
-      hre,
-    );
+    await ensureTokenUnpausedAndBridged(hre);
+    const [tokenAddress, merkleRoot, ownerAddress] = await deploymentArgs(hre);
 
     const deploymentConfig = await deterministic("MerkleDistro", {
       from: deployer.address,
@@ -29,7 +27,18 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       salt: MERKLE_DISTRO_DEPLOYMENT_SALT,
     });
 
-    await sanityCheck(deploymentConfig.address, hre);
+    const distroAddress = calculateDistroAddress(
+      await hre.getChainId(),
+      tokenAddress,
+      merkleRoot,
+      ownerAddress,
+      MERKLE_DISTRO_DEPLOYMENT_SALT,
+    );
+
+    assert(
+      distroAddress === deploymentConfig.address,
+      "Calculated MerkleDistro address does not match hardhat-deploy's create2 address",
+    );
 
     console.info("Deployer", deployer.address);
     console.info("Address ", deploymentConfig.address);
@@ -52,15 +61,17 @@ async function ensureTokenUnpausedAndBridged(hre: HardhatRuntimeEnvironment) {
   if (!tokenAddressGC) {
     throw new Error("SafeToken not yet Bridged");
   }
-  return tokenAddressGC;
 }
 
-function deploymentArgs(
-  tokenAddressGC: string,
-  hre: HardhatRuntimeEnvironment,
-) {
+async function deploymentArgs(hre: HardhatRuntimeEnvironment) {
+  const providers = getProviders(hre);
+
   const tokenAddress =
-    hre.network.name === "mainnet" ? addresses.mainnet.token : tokenAddressGC;
+    hre.network.name === "mainnet"
+      ? addresses.mainnet.token
+      : await queryBridgedAddress(addresses, providers);
+
+  assert(!!tokenAddress && tokenAddress !== hre.ethers.constants.AddressZero);
 
   const merkleRoot = hre.ethers.constants.HashZero;
 
@@ -70,32 +81,6 @@ function deploymentArgs(
       : addresses.gnosis.treasurySafe;
 
   return [tokenAddress, merkleRoot, ownerAddress];
-}
-
-async function sanityCheck(
-  deployedAtAddress: string,
-  hre: HardhatRuntimeEnvironment,
-) {
-  const tokenAddressGC = await ensureTokenUnpausedAndBridged(hre);
-
-  const chainId = await hre.getChainId();
-  const [tokenAddress, merkleRoot, ownerAddress] = deploymentArgs(
-    tokenAddressGC,
-    hre,
-  );
-
-  const distroAddress = calculateDistroAddress(
-    chainId,
-    tokenAddress,
-    merkleRoot,
-    ownerAddress,
-    MERKLE_DISTRO_DEPLOYMENT_SALT,
-  );
-
-  assert(
-    distroAddress === deployedAtAddress,
-    "Calculated MerkleDistro address does not match hardhat-deploy's predicted address",
-  );
 }
 
 export default deploy;

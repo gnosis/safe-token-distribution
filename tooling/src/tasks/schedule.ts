@@ -118,7 +118,7 @@ task(
         "One or more past vesting intervals don't yet have a matching entry in schedule.json",
       );
     }
-    console.log("schedule:validate Ok & Done");
+    log("Ok & Done");
   });
 
 function pastIntervals() {
