@@ -1,1 +1,792 @@
-[]
+[
+  {
+    "mainnet": {
+      "blockNumber": 15587558,
+      "timestamp": 1663833731
+    },
+    "gnosis": {
+      "timestamp": 1663833730,
+      "blockNumber": 24290249
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15595423,
+      "timestamp": 1663928567
+    },
+    "gnosis": {
+      "timestamp": 1663928565,
+      "blockNumber": 24305653
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15596919,
+      "timestamp": 1663946651
+    },
+    "gnosis": {
+      "timestamp": 1663946650,
+      "blockNumber": 24308590
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15607014,
+      "timestamp": 1664068283
+    },
+    "gnosis": {
+      "timestamp": 1664068275,
+      "blockNumber": 24328337
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15613489,
+      "timestamp": 1664146319
+    },
+    "gnosis": {
+      "timestamp": 1664146315,
+      "blockNumber": 24341009
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15619390,
+      "timestamp": 1664217647
+    },
+    "gnosis": {
+      "timestamp": 1664217645,
+      "blockNumber": 24352594
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15627651,
+      "timestamp": 1664317595
+    },
+    "gnosis": {
+      "timestamp": 1664317595,
+      "blockNumber": 24368826
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15636904,
+      "timestamp": 1664429159
+    },
+    "gnosis": {
+      "timestamp": 1664429155,
+      "blockNumber": 24386949
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15642553,
+      "timestamp": 1664497451
+    },
+    "gnosis": {
+      "timestamp": 1664497450,
+      "blockNumber": 24398041
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15652553,
+      "timestamp": 1664618147
+    },
+    "gnosis": {
+      "timestamp": 1664618140,
+      "blockNumber": 24417652
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15658618,
+      "timestamp": 1664691503
+    },
+    "gnosis": {
+      "timestamp": 1664691500,
+      "blockNumber": 24429572
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15662242,
+      "timestamp": 1664735147
+    },
+    "gnosis": {
+      "timestamp": 1664735145,
+      "blockNumber": 24436658
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15673797,
+      "timestamp": 1664874683
+    },
+    "gnosis": {
+      "timestamp": 1664874675,
+      "blockNumber": 24459326
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15679722,
+      "timestamp": 1664946563
+    },
+    "gnosis": {
+      "timestamp": 1664946555,
+      "blockNumber": 24470969
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15682360,
+      "timestamp": 1664978447
+    },
+    "gnosis": {
+      "timestamp": 1664978435,
+      "blockNumber": 24476000
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15690616,
+      "timestamp": 1665078107
+    },
+    "gnosis": {
+      "timestamp": 1665078105,
+      "blockNumber": 24490921
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15698925,
+      "timestamp": 1665178535
+    },
+    "gnosis": {
+      "timestamp": 1665178535,
+      "blockNumber": 24505944
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15707583,
+      "timestamp": 1665282851
+    },
+    "gnosis": {
+      "timestamp": 1665282850,
+      "blockNumber": 24521502
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15715921,
+      "timestamp": 1665383375
+    },
+    "gnosis": {
+      "timestamp": 1665383375,
+      "blockNumber": 24536238
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15720217,
+      "timestamp": 1665435275
+    },
+    "gnosis": {
+      "timestamp": 1665435275,
+      "blockNumber": 24543910
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15725306,
+      "timestamp": 1665496595
+    },
+    "gnosis": {
+      "timestamp": 1665496595,
+      "blockNumber": 24552891
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15736304,
+      "timestamp": 1665629243
+    },
+    "gnosis": {
+      "timestamp": 1665629240,
+      "blockNumber": 24573229
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15744389,
+      "timestamp": 1665726851
+    },
+    "gnosis": {
+      "timestamp": 1665726850,
+      "blockNumber": 24587951
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15749456,
+      "timestamp": 1665787967
+    },
+    "gnosis": {
+      "timestamp": 1665787965,
+      "blockNumber": 24597190
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15759594,
+      "timestamp": 1665910247
+    },
+    "gnosis": {
+      "timestamp": 1665910235,
+      "blockNumber": 24615552
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15765067,
+      "timestamp": 1665976307
+    },
+    "gnosis": {
+      "timestamp": 1665976305,
+      "blockNumber": 24625479
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15774532,
+      "timestamp": 1666090571
+    },
+    "gnosis": {
+      "timestamp": 1666090570,
+      "blockNumber": 24642721
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15781088,
+      "timestamp": 1666169687
+    },
+    "gnosis": {
+      "timestamp": 1666169685,
+      "blockNumber": 24654506
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15786296,
+      "timestamp": 1666232555
+    },
+    "gnosis": {
+      "timestamp": 1666232555,
+      "blockNumber": 24663773
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15795569,
+      "timestamp": 1666344299
+    },
+    "gnosis": {
+      "timestamp": 1666344295,
+      "blockNumber": 24680144
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15799884,
+      "timestamp": 1666396367
+    },
+    "gnosis": {
+      "timestamp": 1666396365,
+      "blockNumber": 24687755
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15804851,
+      "timestamp": 1666456223
+    },
+    "gnosis": {
+      "timestamp": 1666456220,
+      "blockNumber": 24696481
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15812122,
+      "timestamp": 1666543943
+    },
+    "gnosis": {
+      "timestamp": 1666543940,
+      "blockNumber": 24709164
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15821938,
+      "timestamp": 1666662851
+    },
+    "gnosis": {
+      "timestamp": 1666662850,
+      "blockNumber": 24726261
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15828786,
+      "timestamp": 1666745603
+    },
+    "gnosis": {
+      "timestamp": 1666745600,
+      "blockNumber": 24738038
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15833483,
+      "timestamp": 1666802183
+    },
+    "gnosis": {
+      "timestamp": 1666802180,
+      "blockNumber": 24746066
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15846443,
+      "timestamp": 1666958711
+    },
+    "gnosis": {
+      "timestamp": 1666958705,
+      "blockNumber": 24768115
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15849364,
+      "timestamp": 1666993895
+    },
+    "gnosis": {
+      "timestamp": 1666993895,
+      "blockNumber": 24773079
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15855108,
+      "timestamp": 1667063375
+    },
+    "gnosis": {
+      "timestamp": 1667063360,
+      "blockNumber": 24782862
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15866032,
+      "timestamp": 1667195135
+    },
+    "gnosis": {
+      "timestamp": 1667195135,
+      "blockNumber": 24801978
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15872305,
+      "timestamp": 1667270771
+    },
+    "gnosis": {
+      "timestamp": 1667270770,
+      "blockNumber": 24813067
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15880960,
+      "timestamp": 1667375507
+    },
+    "gnosis": {
+      "timestamp": 1667375505,
+      "blockNumber": 24828425
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15889556,
+      "timestamp": 1667479211
+    },
+    "gnosis": {
+      "timestamp": 1667479205,
+      "blockNumber": 24843633
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15896096,
+      "timestamp": 1667558231
+    },
+    "gnosis": {
+      "timestamp": 1667558230,
+      "blockNumber": 24855222
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15899731,
+      "timestamp": 1667602007
+    },
+    "gnosis": {
+      "timestamp": 1667602005,
+      "blockNumber": 24861633
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15908503,
+      "timestamp": 1667707859
+    },
+    "gnosis": {
+      "timestamp": 1667707855,
+      "blockNumber": 24875407
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15918466,
+      "timestamp": 1667827943
+    },
+    "gnosis": {
+      "timestamp": 1667827935,
+      "blockNumber": 24891418
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15925476,
+      "timestamp": 1667912459
+    },
+    "gnosis": {
+      "timestamp": 1667912455,
+      "blockNumber": 24902685
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15926472,
+      "timestamp": 1667924447
+    },
+    "gnosis": {
+      "timestamp": 1667924435,
+      "blockNumber": 24904277
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15937515,
+      "timestamp": 1668057911
+    },
+    "gnosis": {
+      "timestamp": 1668057905,
+      "blockNumber": 24922063
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15946663,
+      "timestamp": 1668168347
+    },
+    "gnosis": {
+      "timestamp": 1668168340,
+      "blockNumber": 24937402
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15950332,
+      "timestamp": 1668212651
+    },
+    "gnosis": {
+      "timestamp": 1668212650,
+      "blockNumber": 24943896
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15961276,
+      "timestamp": 1668344603
+    },
+    "gnosis": {
+      "timestamp": 1668344600,
+      "blockNumber": 24963946
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15961527,
+      "timestamp": 1668347651
+    },
+    "gnosis": {
+      "timestamp": 1668347650,
+      "blockNumber": 24964433
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15973388,
+      "timestamp": 1668490595
+    },
+    "gnosis": {
+      "timestamp": 1668490595,
+      "blockNumber": 24988806
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15979921,
+      "timestamp": 1668569495
+    },
+    "gnosis": {
+      "timestamp": 1668569495,
+      "blockNumber": 25003277
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15988343,
+      "timestamp": 1668671207
+    },
+    "gnosis": {
+      "timestamp": 1668671205,
+      "blockNumber": 25021768
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 15992918,
+      "timestamp": 1668726467
+    },
+    "gnosis": {
+      "timestamp": 1668726465,
+      "blockNumber": 25031765
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16002855,
+      "timestamp": 1668846359
+    },
+    "gnosis": {
+      "timestamp": 1668846355,
+      "blockNumber": 25053455
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16006042,
+      "timestamp": 1668884795
+    },
+    "gnosis": {
+      "timestamp": 1668884795,
+      "blockNumber": 25060398
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16014444,
+      "timestamp": 1668986135
+    },
+    "gnosis": {
+      "timestamp": 1668986135,
+      "blockNumber": 25078572
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16023387,
+      "timestamp": 1669094003
+    },
+    "gnosis": {
+      "timestamp": 1669094000,
+      "blockNumber": 25098182
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16028922,
+      "timestamp": 1669160927
+    },
+    "gnosis": {
+      "timestamp": 1669160925,
+      "blockNumber": 25110671
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16034045,
+      "timestamp": 1669222763
+    },
+    "gnosis": {
+      "timestamp": 1669222760,
+      "blockNumber": 25122184
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16043864,
+      "timestamp": 1669341431
+    },
+    "gnosis": {
+      "timestamp": 1669341430,
+      "blockNumber": 25144321
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16047623,
+      "timestamp": 1669386815
+    },
+    "gnosis": {
+      "timestamp": 1669386815,
+      "blockNumber": 25152729
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16057131,
+      "timestamp": 1669501595
+    },
+    "gnosis": {
+      "timestamp": 1669501595,
+      "blockNumber": 25174046
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16067743,
+      "timestamp": 1669629575
+    },
+    "gnosis": {
+      "timestamp": 1669629570,
+      "blockNumber": 25197768
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16074030,
+      "timestamp": 1669705391
+    },
+    "gnosis": {
+      "timestamp": 1669705390,
+      "blockNumber": 25211701
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16077052,
+      "timestamp": 1669741871
+    },
+    "gnosis": {
+      "timestamp": 1669741870,
+      "blockNumber": 25218470
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16090292,
+      "timestamp": 1669901747
+    },
+    "gnosis": {
+      "timestamp": 1669901740,
+      "blockNumber": 25243307
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16094085,
+      "timestamp": 1669947491
+    },
+    "gnosis": {
+      "timestamp": 1669947480,
+      "blockNumber": 25250757
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16101316,
+      "timestamp": 1670034683
+    },
+    "gnosis": {
+      "timestamp": 1670034680,
+      "blockNumber": 25265651
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16106101,
+      "timestamp": 1670092415
+    },
+    "gnosis": {
+      "timestamp": 1670092415,
+      "blockNumber": 25275548
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16112808,
+      "timestamp": 1670173403
+    },
+    "gnosis": {
+      "timestamp": 1670173400,
+      "blockNumber": 25289430
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16121549,
+      "timestamp": 1670279063
+    },
+    "gnosis": {
+      "timestamp": 1670279060,
+      "blockNumber": 25307479
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16133145,
+      "timestamp": 1670419967
+    },
+    "gnosis": {
+      "timestamp": 1670419965,
+      "blockNumber": 25331564
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16135514,
+      "timestamp": 1670448503
+    },
+    "gnosis": {
+      "timestamp": 1670448500,
+      "blockNumber": 25336455
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16146822,
+      "timestamp": 1670585039
+    },
+    "gnosis": {
+      "timestamp": 1670585035,
+      "blockNumber": 25360882
+    }
+  }
+]
