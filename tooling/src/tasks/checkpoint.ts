@@ -8,7 +8,10 @@ import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
 import { Snapshot } from "../types";
 
-task("checkpoint", "").setAction(async () => {
+task(
+  "checkpoint",
+  "Reduces through past allocation files, and consolidates it in a Snapshot, and persists it as a MerkleTree",
+).setAction(async () => {
   const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
 
   const schedule = loadSchedule();

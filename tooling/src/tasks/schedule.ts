@@ -20,7 +20,7 @@ import { loadSchedule, saveSchedule } from "../persistence";
 
 task(
   "schedule:expand",
-  "For any past vesting interval not yet persisted, finds random blocks writes to schedule.json",
+  "For all past vesting intervals not yet in disk, finds a random blocks and inserts into schedule.json",
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   const log = (text: string) => console.info(`Task schedule:expand -> ${text}`);
   const providers = getProviders(hre);
@@ -73,17 +73,17 @@ task(
 
 task(
   "schedule:validate",
-  "Validates the schedule written to disk, and ensures it matches interval guidelines",
+  "Validates that every entry in the schedule is correct",
 )
   .addOptionalParam(
     "deep",
-    "refetch block info, and do exhaustive checks",
+    "refetch block info - don't rely on timestamps in disk",
     false,
     types.boolean,
   )
   .addOptionalParam(
     "frozen",
-    "ensures every past entry is in disk",
+    "validates that no schedule entry is missing",
     false,
     types.boolean,
   )

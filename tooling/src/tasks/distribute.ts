@@ -12,7 +12,10 @@ import {
 } from "../config";
 import { ProviderConfig } from "../types";
 
-task("distribute", "").setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+task(
+  "distribute",
+  "Creates a new checkpoint, calculates claim amounts, and updates distro setup enabling new claimers on both networks",
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   const providers = getProviders(hre);
   const log = (text: string) => console.info(`Task distribute -> ${text}`);
 

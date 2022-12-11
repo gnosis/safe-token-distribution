@@ -20,11 +20,11 @@ import { ProviderConfig, ScheduleEntry } from "../types";
 
 task(
   "allocate:all",
-  "Goes through the schedule, and writes an allocation file each entry",
+  "Calculates and persists one allocation file for every entry in the schedule",
 )
   .addOptionalParam(
     "lazy",
-    "Don't recalculate if already in disk",
+    "Don't recalculate an allocation entry if already in disk",
     true,
     types.boolean,
   )
@@ -59,7 +59,7 @@ task(
 
 task(
   "allocate:one",
-  "Gets a schedule entry from a block number, and writes one allocation file",
+  "Calculates and persists one allocation file for a given block number",
 )
   .addPositionalParam("block", "A block number", undefined, types.int)
   .setAction(async ({ block }, hre: HardhatRuntimeEnvironment) => {
