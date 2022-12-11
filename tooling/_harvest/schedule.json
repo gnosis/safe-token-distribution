@@ -788,5 +788,15 @@
       "timestamp": 1670585035,
       "blockNumber": 25360882
     }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16153263,
+      "timestamp": 1670662775
+    },
+    "gnosis": {
+      "timestamp": 1670662775,
+      "blockNumber": 25375727
+    }
   }
 ]
