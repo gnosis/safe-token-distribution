@@ -27,7 +27,10 @@ type TaskArgs = {
   merkleRootGnosis: string;
 };
 
-task("propose", "")
+task(
+  "propose",
+  "It updates the distribution setup, by unlocking tokens and uploading new proofs to the distribution contracts",
+)
   .addParam("distroAddressMainnet", "", undefined, types.string)
   .addParam("distroAddressGnosis", "", undefined, types.string)
   .addParam("merkleRootMainnet", "", undefined, types.string)

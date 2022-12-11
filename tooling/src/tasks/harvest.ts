@@ -3,7 +3,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 task(
   "harvest",
-  "Expands the current schedule, and calculates and persists any missing allocations",
+  "Tries to expand the schedule and calculates any missing allocations",
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   await hre.run("schedule:validate", { deep: false, frozen: false });
 
