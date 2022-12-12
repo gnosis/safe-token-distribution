@@ -61,6 +61,7 @@
     "solhint/@solidity-parser/parser": "^0.14.5"
   },
   "scripts": {
+    "dev:bump-distro": "yarn hardhat run scripts/bump-goerli-distro.ts --network goerli",
     "deploy-distros": "yarn hardhat deploy --network mainnet && yarn hardhat deploy --network gnosis",
     "verify-distros": "yarn hardhat verify --network mainnet && yarn hardhat verify --network gnosis",
     "clean": "shx rm -rf ./artifacts ./cache ./build ./coverage ./typechain ./coverage.json",
