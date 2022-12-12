@@ -1,33 +1,40 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils.js";
 import { useContractReads, useContractRead } from "wagmi";
-import safeTokenContract from "../../utils/SafeTokenContract";
 
-import vestingContract from "../../utils/vestingContract";
 import SafeTag from "../SafeTag";
 import ConnectionStatus from "./ConnectionStatus";
 import classes from "./style.module.css";
 import VestingChart from "../VestingChart";
 
+import { safeTokenAddress, vestingId, vestingPoolAddress } from "../../config";
+
+import VestingPoolABI from "../../abis/VestingPool";
+import SafeTokenABI from "../../abis/SafeToken";
+
 const VestingInfo: React.FC = () => {
   const staticRes = useContractReads({
     contracts: [
       {
-        ...vestingContract,
+        chainId: 1,
+        address: vestingPoolAddress,
+        abi: VestingPoolABI,
         functionName: "vestings",
-        args: [
-          "0x12c1ee9f9b122fa7a0e7a6a733f6e07d30affb7fac1ca061325b11d9ba677382",
-        ],
+        args: [vestingId],
       },
       {
-        ...safeTokenContract,
+        chainId: 1,
+        address: safeTokenAddress,
+        abi: SafeTokenABI,
         functionName: "totalSupply",
       },
     ],
   });
 
   const vestingRes = useContractRead({
-    ...vestingContract,
+    chainId: 1,
+    address: vestingPoolAddress,
+    abi: VestingPoolABI,
     functionName: "calculateVestedAmount",
     args: [
       "0x12c1ee9f9b122fa7a0e7a6a733f6e07d30affb7fac1ca061325b11d9ba677382",

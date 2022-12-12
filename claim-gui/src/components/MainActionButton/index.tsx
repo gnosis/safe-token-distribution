@@ -1,17 +1,18 @@
+import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
-import { useAllocation } from "../../utils/AllocationProvider";
+import { useAllocation } from "../../hooks/AllocationProvider";
+
+import useAmountClaimed from "../../hooks/useAmountClaimed";
 import ClaimButton from "./ClaimButton";
-import { useAmountClaimed } from "../../utils/hooks";
 import Card from "../Card";
 import Button from "../Button";
 import ConnectModal from "../ConnectModal";
-import { useEffect, useState } from "react";
 
 const MainActionButton: React.FC = () => {
   const { address } = useAccount();
   const allocation = useAllocation();
-  const { refetch, amountClaimed } = useAmountClaimed(address);
+  const amountClaimed = useAmountClaimed(address);
   const [showModal, setShowModal] = useState(false);
   const { disconnect } = useDisconnect();
   useEffect(() => {
@@ -25,12 +26,11 @@ const MainActionButton: React.FC = () => {
       {showModal && <ConnectModal />}
       {address ? (
         <>
-          {allocation &&
-          allocation.amount.toNumber() > amountClaimed.toNumber() ? (
+          {allocation && allocation.amount.gt(amountClaimed) ? (
             <ClaimButton
               {...allocation}
               onSuccess={() => {
-                refetch?.(address);
+                console.info("success");
               }}
               onError={(err) => {
                 console.log(err);

@@ -1,4 +1,4 @@
-const abi = [
+export default [
   {
     inputs: [{ internalType: "address", name: "owner", type: "address" }],
     stateMutability: "nonpayable",
@@ -64,8 +64,18 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "address", name: "from", type: "address" },
-      { indexed: true, internalType: "address", name: "to", type: "address" },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
       {
         indexed: false,
         internalType: "uint256",
@@ -126,7 +136,11 @@ const abi = [
   {
     inputs: [
       { internalType: "address", name: "spender", type: "address" },
-      { internalType: "uint256", name: "subtractedValue", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "subtractedValue",
+        type: "uint256",
+      },
     ],
     name: "decreaseAllowance",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -231,11 +245,3 @@ const abi = [
     type: "function",
   },
 ] as const;
-
-const safeTokenContract = {
-  chainId: 1,
-  address: "0x5aFE3855358E112B5647B952709E6165e1c1eEEe",
-  abi,
-};
-
-export default safeTokenContract;

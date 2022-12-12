@@ -6,23 +6,20 @@ import MainActionButton from "../components/MainActionButton";
 import classes from "./HomePage.module.css";
 import Header from "../components/Header";
 import CalendarReminder from "../components/CalendarReminder";
-import { useContractRead } from "wagmi";
-import safeTokenContract from "../utils/SafeTokenContract";
+import { useNetwork } from "wagmi";
+import { distroSetup } from "../config";
 
 const HomePage = () => {
-  const { data } = useContractRead({
-    ...safeTokenContract,
-    functionName: "paused",
-  });
+  const network = useNetwork();
+  const { isDistroEnabled } = distroSetup(network);
 
-  const tokenPaused = data ? data : true;
   return (
     <div className={classes.container}>
       <Header />
       <main className={classes.main}>
-        <AllocationInfo paused={tokenPaused} />
+        <AllocationInfo isDistroEnabled={isDistroEnabled} />
 
-        {!tokenPaused && (
+        {isDistroEnabled && (
           <>
             <MainActionButton />
             <CalendarReminder />

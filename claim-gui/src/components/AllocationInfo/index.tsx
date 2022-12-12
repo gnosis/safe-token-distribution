@@ -1,27 +1,30 @@
-import { useAccount } from "wagmi";
+import { useMemo } from "react";
 import clsx from "clsx";
+import { constants } from "ethers";
+import { useAccount } from "wagmi";
+import makeBlockie from "ethereum-blockies-base64";
 
-import { useAllocation } from "../../utils/AllocationProvider";
-import { useAmountClaimed } from "../../utils/hooks";
+import { useAllocation } from "../../hooks/AllocationProvider";
+import useAmountClaimed from "../../hooks/useAmountClaimed";
 import Card from "../Card";
 
 import classes from "./style.module.css";
 import VestingInfo from "../VestingInfo";
 import SafeTag from "../SafeTag";
-import Identicon from "../Identicon";
 import { shortenAddress } from "../ConnectButton";
-import { useMemo } from "react";
-import makeBlockie from "ethereum-blockies-base64";
 
-const AllocationInfo: React.FC<{ paused: boolean }> = ({ paused }) => {
+const AllocationInfo: React.FC<{ isDistroEnabled: boolean }> = ({
+  isDistroEnabled,
+}) => {
   const { address } = useAccount();
-  const allocation = useAllocation();
-  const { amountClaimed } = useAmountClaimed(address);
 
-  const unloadedAddress = "0x0000000000000000000000000000000000000000";
+  const allocation = useAllocation();
+  const amountClaimed = useAmountClaimed(address);
+
+  const unloadedAddress = constants.AddressZero;
   const blockie = useMemo(
     () => (address ? makeBlockie(address) : makeBlockie(unloadedAddress)),
-    [address],
+    [address, unloadedAddress],
   );
 
   return (
@@ -45,23 +48,21 @@ const AllocationInfo: React.FC<{ paused: boolean }> = ({ paused }) => {
           </div>
         </dl>
 
-        {allocation &&
-          allocation.amount.toNumber() > amountClaimed.toNumber() && (
-            <div className={clsx(classes.status, classes.available)}>
-              <p>
-                You have <SafeTag /> tokens to claim
-              </p>
-            </div>
-          )}
+        {allocation && allocation.amount.gt(amountClaimed) && (
+          <div className={clsx(classes.status, classes.available)}>
+            <p>
+              You have <SafeTag /> tokens to claim
+            </p>
+          </div>
+        )}
 
-        {allocation &&
-          allocation.amount.toNumber() === amountClaimed.toNumber() && (
-            <div className={clsx(classes.status, classes.fullClaim)}>
-              <p>
-                You've claimed all available <SafeTag /> tokens
-              </p>
-            </div>
-          )}
+        {allocation && allocation.amount.eq(amountClaimed) && (
+          <div className={clsx(classes.status, classes.fullClaim)}>
+            <p>
+              You've claimed all available <SafeTag /> tokens
+            </p>
+          </div>
+        )}
 
         {!allocation && address && (
           <div className={clsx(classes.status, classes.notAvailable)}>
@@ -79,13 +80,13 @@ const AllocationInfo: React.FC<{ paused: boolean }> = ({ paused }) => {
           </div>
         )}
 
-        {!address && !paused && (
+        {!address && isDistroEnabled && (
           <div className={classes.obscure}>
             <p>Connect a wallet to view your claim.</p>
           </div>
         )}
 
-        {paused && (
+        {!isDistroEnabled && (
           <div className={classes.obscure}>
             <p>
               <SafeTag /> tokens cannot be transferred yet.
