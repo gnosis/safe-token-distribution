@@ -1,6 +1,5 @@
 import { constants } from "ethers";
 import { Chain } from "wagmi";
-import { GetNetworkResult } from "@wagmi/core";
 
 export const gnosis: Chain = {
   id: 100,
@@ -28,7 +27,7 @@ export const distroSetupByNetwork = {
     tokenAddress: "0x5aFE3855358E112B5647B952709E6165e1c1eEEe",
   },
   5: {
-    isDistroEnabled: true,
+    isDistroEnabled: false,
     distroAddress: "0x6714Ce481312B5179Ad1Fc4904E6F723280470A3",
     tokenAddress: "0x4448ce2eE8B543ee8c18478380cA1fa747bA12AB",
   },
@@ -40,17 +39,3 @@ export const distroSetupByNetwork = {
     tokenAddress: constants.AddressZero,
   },
 } as const;
-
-const defaultDistroSetup = {
-  isDistroEnabled: false,
-  distroAddress: constants.AddressZero,
-  tokenAddress: constants.AddressZero,
-};
-
-export function distroSetup(network: GetNetworkResult) {
-  const id = network.chain?.id;
-  if (id === 1 || id === 5 || id === 100) {
-    return distroSetupByNetwork[id];
-  }
-  return defaultDistroSetup;
-}

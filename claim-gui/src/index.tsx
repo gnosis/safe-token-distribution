@@ -8,10 +8,11 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { infuraProvider } from "@wagmi/core/providers/infura";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
-import { gnosis } from "./config";
-
-import { AllocationProvider } from "./hooks/AllocationProvider";
 import HomePage from "./Pages/HomePage";
+import { DistroSetupProvider } from "./hooks/useDistroSetup";
+import { AllocationProvider } from "./hooks/useAllocation";
+
+import { gnosis } from "./config";
 
 const { chains, provider } = configureChains(
   [mainnet, gnosis, goerli],
@@ -37,9 +38,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <WagmiConfig client={wagmiClient}>
-      <AllocationProvider>
-        <HomePage />
-      </AllocationProvider>
+      <DistroSetupProvider>
+        <AllocationProvider>
+          <HomePage />
+        </AllocationProvider>
+      </DistroSetupProvider>
     </WagmiConfig>
   </React.StrictMode>,
 );

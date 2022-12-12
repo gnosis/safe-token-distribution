@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
-import { useAllocation } from "../../hooks/AllocationProvider";
-
+import useAllocation from "../../hooks/useAllocation";
 import useAmountClaimed from "../../hooks/useAmountClaimed";
-import ClaimButton from "./ClaimButton";
-import Card from "../Card";
+
 import Button from "../Button";
 import ConnectModal from "../ConnectModal";
+import Card from "../Card";
+import ClaimButton from "./ClaimButton";
 
 const MainActionButton: React.FC = () => {
   const { address } = useAccount();
