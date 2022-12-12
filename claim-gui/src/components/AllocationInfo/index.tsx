@@ -12,6 +12,7 @@ import classes from "./style.module.css";
 import VestingInfo from "../VestingInfo";
 import SafeTag from "../SafeTag";
 import { shortenAddress } from "../ConnectButton";
+import { BNtoFloat } from "../../utils";
 
 const AllocationInfo: React.FC<{ isDistroEnabled: boolean }> = ({
   isDistroEnabled,
@@ -38,12 +39,16 @@ const AllocationInfo: React.FC<{ isDistroEnabled: boolean }> = ({
         <dl className={classes.container}>
           <div className={classes.item}>
             <dt className={classes.label}>Claimed</dt>
-            <dd className={classes.data}>{amountClaimed.toString()}</dd>
+            <dd className={classes.data}>
+              {BNtoFloat(amountClaimed, 18).toLocaleString()}
+            </dd>
           </div>
           <div className={classes.item}>
             <dt className={classes.label}>Allocated</dt>
             <dd className={classes.data}>
-              {allocation ? allocation.amount.toString() : "0"}
+              {allocation
+                ? BNtoFloat(allocation.amount, 18).toLocaleString()
+                : "0"}
             </dd>
           </div>
         </dl>

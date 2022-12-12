@@ -1,5 +1,4 @@
 import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
 import { useContractReads, useContractRead } from "wagmi";
 
 import SafeTag from "../SafeTag";
@@ -11,6 +10,7 @@ import { safeTokenAddress, vestingId, vestingPoolAddress } from "../../config";
 
 import VestingPoolABI from "../../abis/VestingPool";
 import SafeTokenABI from "../../abis/SafeToken";
+import { BNtoFloat } from "../../utils";
 
 const VestingInfo: React.FC = () => {
   const staticRes = useContractReads({
@@ -54,10 +54,6 @@ const VestingInfo: React.FC = () => {
   const vestedAmount = vestingRes.data
     ? vestingRes.data.vestedAmount
     : BigNumber.from(0);
-
-  const BNtoFloat = (BN: BigNumber, decimals: number): number => {
-    return parseFloat(formatUnits(BN, decimals));
-  };
 
   return (
     <div className={classes.vestingInfo}>
