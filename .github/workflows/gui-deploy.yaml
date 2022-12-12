@@ -1,0 +1,32 @@
+name: Claim Gui Deployment
+
+on:
+  push:
+    branches: master
+    paths:
+      - claim-gui/**
+      - tooling/_harvest/checkpoints/**
+
+env:
+  REACT_APP_INFURA_KEY: ${{ secrets.INFURA_API_KEY  }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Site
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: npm install -g yarn
+      - run: yarn install --frozen-lockfile
+        working-directory: ./claim-gui
+      - run: yarn build
+        working-directory: ./claim-gui
+
+      - name: Deploy to Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages
+          folder: ./claim-gui/build
