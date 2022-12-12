@@ -13,6 +13,7 @@ import useDistroSetup from "../../hooks/useDistroSetup";
 import MerkleDistroABI from "../../abis/MerkleDistro";
 
 import classes from "./style.module.css";
+import clsx from "clsx";
 
 type Props = {
   proof: readonly `0x${string}`[];
@@ -27,6 +28,15 @@ export enum ClaimStage {
   UserRejected,
   Error,
 }
+
+const ClaimStageMessages = [
+  "",
+  "Waiting for signature...",
+  "Waiting for transaction...",
+  "Tokens Claimed",
+  "Transaction Rejected",
+  "Transaction Error",
+];
 
 const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
   const { isDistroEnabled, distroAddress } = useDistroSetup();
@@ -96,8 +106,13 @@ const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
         Claim
       </Button>
       {claimStage !== ClaimStage.Idle && (
-        <div className={classes.statusContainer}>
-          <p>{claimStage}</p>
+        <div
+          className={clsx(
+            classes.statusContainer,
+            classes[ClaimStage[claimStage]],
+          )}
+        >
+          <p>{ClaimStageMessages[claimStage]}</p>
         </div>
       )}
     </div>
