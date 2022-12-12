@@ -40,15 +40,13 @@ const ClaimStageMessages = [
 
 const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
   const { isDistroEnabled, distroAddress } = useDistroSetup();
-  const [isSigning, setIsSigning] = useState<boolean>(false);
   const [claimStage, setClaimStage] = useState<ClaimStage>(ClaimStage.Idle);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | undefined;
     if (
       claimStage === ClaimStage.Error ||
-      claimStage === ClaimStage.UserRejected ||
-      claimStage === ClaimStage.Success
+      claimStage === ClaimStage.UserRejected
     ) {
       timeoutId = setTimeout(() => setClaimStage(ClaimStage.Idle), 3000);
     }
@@ -87,20 +85,20 @@ const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
   });
 
   useEffect(() => {
-    if (isSigning && !!data?.hash) {
-      setIsSigning(false);
+    if (claimStage === ClaimStage.Signing && !!data?.hash) {
       setClaimStage(ClaimStage.Transacting);
     }
-  }, [isSigning, data?.hash]);
+  }, [claimStage, data?.hash]);
 
   return (
     <div className={classes.claimContainer}>
       <Button
         primary
         onClick={() => {
-          setIsSigning(true);
-          write?.();
-          setClaimStage(ClaimStage.Signing);
+          if (claimStage === ClaimStage.Idle) {
+            write?.();
+            setClaimStage(ClaimStage.Signing);
+          }
         }}
       >
         Claim
