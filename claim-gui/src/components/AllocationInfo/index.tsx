@@ -4,14 +4,15 @@ import { constants } from "ethers";
 import { useAccount } from "wagmi";
 import makeBlockie from "ethereum-blockies-base64";
 
-import { useAllocation } from "../../hooks/AllocationProvider";
-import useAmountClaimed from "../../hooks/useAmountClaimed";
 import Card from "../Card";
-
 import classes from "./style.module.css";
 import VestingInfo from "../VestingInfo";
 import SafeTag from "../SafeTag";
 import { shortenAddress } from "../ConnectButton";
+
+import useAllocation from "../../hooks/useAllocation";
+import useAmountClaimed from "../../hooks/useAmountClaimed";
+
 import { BNtoFloat } from "../../utils";
 
 const AllocationInfo: React.FC<{ isDistroEnabled: boolean }> = ({

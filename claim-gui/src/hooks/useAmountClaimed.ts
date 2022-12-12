@@ -1,13 +1,12 @@
 import { BigNumber, constants } from "ethers";
-import { useContractRead, useNetwork } from "wagmi";
+import { useContractRead } from "wagmi";
 
-import { distroSetup } from "../config";
+import useDistroSetup from "./useDistroSetup";
 
 import MerkleDistroABI from "../abis/MerkleDistro";
 
 export default function useAmountClaimed(account: `0x${string}` | undefined) {
-  const network = useNetwork();
-  const { isDistroEnabled, distroAddress } = distroSetup(network);
+  const { isDistroEnabled, distroAddress } = useDistroSetup();
 
   const isEnabled = isDistroEnabled && !!account;
   account = account || constants.AddressZero;

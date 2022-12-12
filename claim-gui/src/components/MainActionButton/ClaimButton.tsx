@@ -1,16 +1,16 @@
-import { BigNumber, errors, ethers } from "ethers";
+import { BigNumber } from "ethers";
+import { useEffect, useState } from "react";
+
 import {
   useContractWrite,
-  useNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
 
 import Button from "../Button";
 
+import useDistroSetup from "../../hooks/useDistroSetup";
 import MerkleDistroABI from "../../abis/MerkleDistro";
-import { distroSetup } from "../../config";
-import { useEffect, useState } from "react";
 
 import classes from "./style.module.css";
 
@@ -29,8 +29,7 @@ export enum ClaimStage {
 }
 
 const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
-  const network = useNetwork();
-  const { isDistroEnabled, distroAddress } = distroSetup(network);
+  const { isDistroEnabled, distroAddress } = useDistroSetup();
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [claimStage, setClaimStage] = useState<ClaimStage>(ClaimStage.Idle);
 

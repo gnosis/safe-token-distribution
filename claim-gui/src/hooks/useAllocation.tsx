@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BigNumber, constants } from "ethers";
-import { useAccount, useContractRead, useNetwork } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { distroSetup } from "../config";
+import useDistroSetup from "./useDistroSetup";
 
 import MerkleDistroABI from "../abis/MerkleDistro";
 
@@ -21,9 +21,8 @@ export function AllocationProvider({
 }) {
   const [allocation, setAllocation] = useState<AllocationEntry | null>(null);
 
-  const network = useNetwork();
   const { address } = useAccount();
-  const { isDistroEnabled, distroAddress } = distroSetup(network);
+  const { isDistroEnabled, distroAddress } = useDistroSetup();
 
   const result = useContractRead({
     address: distroAddress,
@@ -51,7 +50,7 @@ export function AllocationProvider({
   );
 }
 
-export function useAllocation() {
+export default function useAllocation() {
   return useContext(AllocationContext);
 }
 

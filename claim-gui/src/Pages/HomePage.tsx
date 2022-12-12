@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useNetwork } from "wagmi";
+import React from "react";
 
 import AllocationInfo from "../components/AllocationInfo";
 import CalendarReminder from "../components/CalendarReminder";
 import MainActionButton from "../components/MainActionButton";
-import { ClaimStage } from "../components/MainActionButton/ClaimButton";
+
 import classes from "./HomePage.module.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-import { distroSetup } from "../config";
+import useDistroSetup from "../hooks/useDistroSetup";
 
 const HomePage = () => {
-  const network = useNetwork();
-  const { isDistroEnabled } = distroSetup(network);
+  const { isDistroEnabled } = useDistroSetup();
 
   return (
     <div className={classes.container}>
