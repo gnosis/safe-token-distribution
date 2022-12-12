@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { arc, DefaultArcObject, map, pie, range } from "d3";
 import { useState } from "react";
-import { useD3 } from "../../../utils/hooks";
+import useD3 from "../../../hooks/useD3";
 import Card from "../../Card";
 import SafeTag from "../../SafeTag";
 import classes from "./style.module.css";

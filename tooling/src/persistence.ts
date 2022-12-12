@@ -54,24 +54,15 @@ export function allocationFilePath(chain: "mainnet" | "gnosis", block: number) {
 export function saveCheckpoint(
   checkpoint: Snapshot,
   tree: StandardMerkleTree<(string | BigNumber)[]>,
-  dirPath?: string,
 ) {
-  dirPath = dirPath || checkpointDirPath();
+  const dirPath = checkpointDirPath();
   fs.ensureDirSync(dirPath);
 
   const checkpointPath = path.join(dirPath, `${tree.root}.json`);
   const treePath = path.join(dirPath, `${tree.root}.tree.json`);
 
-  fs.writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2), "utf8");
+  writeSnapshot(checkpointPath, checkpoint);
   fs.writeFileSync(treePath, JSON.stringify(tree.dump(), null, 2), "utf8");
-}
-
-export function loadCheckpoint(treeRoot: string): Snapshot {
-  const dirPath = checkpointDirPath();
-
-  const filePath = path.join(dirPath, `${treeRoot}.json`);
-
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function checkpointDirPath() {

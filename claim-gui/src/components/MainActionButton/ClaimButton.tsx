@@ -1,16 +1,18 @@
 import { BigNumber } from "ethers";
-
 import {
   useContractWrite,
+  useNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
 
-import merkleDistroContract from "../../utils/merkleDistroContract";
 import Button from "../Button";
 
+import MerkleDistroABI from "../../abis/MerkleDistro";
+import { distroSetup } from "../../config";
+
 type Props = {
-  proof: string[];
+  proof: readonly `0x${string}`[];
   amount: BigNumber;
   onStart?: () => void;
   onSuccess?: () => void;
@@ -24,11 +26,15 @@ const ClaimButton: React.FC<Props> = ({
   onSuccess,
   onError,
 }: Props) => {
+  const network = useNetwork();
+  const { isDistroEnabled, distroAddress } = distroSetup(network);
+
   const { config } = usePrepareContractWrite({
-    address: merkleDistroContract.address,
-    abi: merkleDistroContract.abi,
+    address: distroAddress,
+    abi: MerkleDistroABI,
     functionName: "claim",
     args: [proof, amount],
+    enabled: isDistroEnabled,
   });
 
   const { data, write } = useContractWrite({
@@ -41,7 +47,7 @@ const ClaimButton: React.FC<Props> = ({
   useWaitForTransaction({
     hash: data?.hash,
     // should wait when connected to a testnet
-    confirmations: process.env.NODE_ENV === "development" ? 0 : 1,
+    confirmations: 1,
     onSuccess(data) {
       onSuccess?.();
     },

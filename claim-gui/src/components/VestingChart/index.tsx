@@ -1,7 +1,8 @@
 import clsx from "clsx";
-import { arc, DefaultArcObject, map, pie, range, Selection } from "d3";
 import { useState } from "react";
-import { useD3 } from "../../utils/hooks";
+import { arc, DefaultArcObject, map, pie, range } from "d3";
+
+import useD3 from "../../hooks/useD3";
 import ChartHelp from "./ChartHelp";
 
 import classes from "./style.module.css";

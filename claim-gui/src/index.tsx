@@ -2,20 +2,25 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { mainnet, goerli } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { infuraProvider } from "@wagmi/core/providers/infura";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { AllocationProvider } from "./utils/AllocationProvider";
+
+import { gnosis } from "./config";
+
+import { AllocationProvider } from "./hooks/AllocationProvider";
 import HomePage from "./Pages/HomePage";
 
 const { chains, provider } = configureChains(
-  [chain.mainnet, chain.hardhat],
+  [mainnet, gnosis, goerli],
   [
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
     jsonRpcProvider({
-      rpc: (chain) => ({ http: "http://127.0.0.1:8545/" }),
+      rpc: (chain) =>
+        chain.id === 100 ? { http: "https://rpc.gnosischain.com" } : null,
     }),
+    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
   ],
 );
 

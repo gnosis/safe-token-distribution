@@ -1,4 +1,4 @@
-const abi = [
+export default [
   {
     inputs: [
       { internalType: "address", name: "_token", type: "address" },
@@ -10,7 +10,12 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "bytes32", name: "id", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
       {
         indexed: true,
         internalType: "address",
@@ -24,7 +29,12 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "bytes32", name: "id", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
     ],
     name: "CancelledVesting",
     type: "event",
@@ -32,7 +42,12 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "bytes32", name: "id", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
       {
         indexed: true,
         internalType: "address",
@@ -52,7 +67,12 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "bytes32", name: "id", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
     ],
     name: "PausedVesting",
     type: "event",
@@ -60,7 +80,12 @@ const abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "bytes32", name: "id", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
     ],
     name: "UnpausedVesting",
     type: "event",
@@ -181,11 +206,3 @@ const abi = [
     type: "function",
   },
 ] as const;
-
-const vestingContract = {
-  chainId: 1,
-  address: "0x96b71e2551915d98d22c448b040a3bc4801ea4ff",
-  abi,
-};
-
-export default vestingContract;
