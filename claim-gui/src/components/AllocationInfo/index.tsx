@@ -44,10 +44,13 @@ const AllocationInfo: React.FC<{ isDistroEnabled: boolean }> = ({
             </dd>
           </div>
           <div className={classes.item}>
-            <dt className={classes.label}>Allocated</dt>
+            <dt className={classes.label}>Available</dt>
             <dd className={classes.data}>
               {allocation
-                ? BNtoFloat(allocation.amount, 18).toLocaleString()
+                ? BNtoFloat(
+                    allocation.amount.sub(amountClaimed),
+                    18,
+                  ).toLocaleString()
                 : "0"}
             </dd>
           </div>
