@@ -3,7 +3,7 @@ import "hardhat-deploy";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { queryBridgedAddress, queryIsPaused } from "../src/queries/queryToken";
+import { queryBridgedAddress } from "../src/queries/queryToken";
 import calculateDistroAddress from "../src/fns/calculateDistroAdress";
 
 import {
@@ -17,7 +17,13 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const [deployer] = await hre.ethers.getSigners();
     const { deterministic } = hre.deployments;
 
-    await ensureTokenUnpausedAndBridged(hre);
+    const { isTokenReady, isPaused, isBridged } = await hre.run("status");
+
+    if (isPaused || !isBridged) {
+      throw new Error("SafeToken still paused, or not yet bridged");
+    }
+    assert(isTokenReady === true);
+
     const [tokenAddress, merkleRoot, ownerAddress] = await deploymentArgs(hre);
 
     const deploymentConfig = await deterministic("MerkleDistro", {
@@ -37,7 +43,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     assert(
       distroAddress === deploymentConfig.address,
-      "Calculated MerkleDistro address does not match hardhat-deploy's create2 address",
+      "Calculated MerkleDistro address does not match hardhat-deploy's address",
     );
 
     console.info("Deployer", deployer.address);
@@ -50,18 +56,6 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.info("Token deployed to", deployment.address);
   }
 };
-
-async function ensureTokenUnpausedAndBridged(hre: HardhatRuntimeEnvironment) {
-  const providers = getProviders(hre);
-  const isPaused = await queryIsPaused(addresses, providers);
-  if (isPaused) {
-    throw new Error("SafeToken is still paused");
-  }
-  const tokenAddressGC = await queryBridgedAddress(addresses, providers);
-  if (!tokenAddressGC) {
-    throw new Error("SafeToken not yet Bridged");
-  }
-}
 
 async function deploymentArgs(hre: HardhatRuntimeEnvironment) {
   const providers = getProviders(hre);
