@@ -14,17 +14,6 @@ import { distroSetup } from "../config";
 const HomePage = () => {
   const network = useNetwork();
   const { isDistroEnabled } = distroSetup(network);
-  const [claimStage, setClaimStage] = useState<ClaimStage>(ClaimStage.Idle);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | undefined;
-    if (claimStage === ClaimStage.Error || claimStage === ClaimStage.Success) {
-      timeoutId = setTimeout(() => setClaimStage(ClaimStage.Idle), 3000);
-    }
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [claimStage]);
 
   return (
     <div className={classes.container}>
@@ -34,9 +23,8 @@ const HomePage = () => {
 
         {isDistroEnabled && (
           <>
-            <MainActionButton onProgress={setClaimStage} />
+            <MainActionButton />
             <CalendarReminder />
-            {claimStage !== ClaimStage.Idle && <p>{claimStage}</p>}
           </>
         )}
       </main>

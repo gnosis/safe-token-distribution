@@ -4,19 +4,18 @@ import { useAccount, useDisconnect } from "wagmi";
 import { useAllocation } from "../../hooks/AllocationProvider";
 
 import useAmountClaimed from "../../hooks/useAmountClaimed";
-import ClaimButton, { ClaimStage } from "./ClaimButton";
+import ClaimButton from "./ClaimButton";
 import Card from "../Card";
 import Button from "../Button";
 import ConnectModal from "../ConnectModal";
 
-const MainActionButton: React.FC<{
-  onProgress: (nextStage: ClaimStage) => void;
-}> = ({ onProgress }) => {
+const MainActionButton: React.FC = () => {
   const { address } = useAccount();
   const allocation = useAllocation();
   const amountClaimed = useAmountClaimed(address);
   const [showModal, setShowModal] = useState(false);
   const { disconnect } = useDisconnect();
+
   useEffect(() => {
     if (address) {
       setShowModal(false);
@@ -29,11 +28,7 @@ const MainActionButton: React.FC<{
       {address ? (
         <>
           {allocation && allocation.amount.gt(amountClaimed) ? (
-            <ClaimButton
-              proof={allocation.proof}
-              amount={allocation.amount}
-              onProgress={onProgress}
-            />
+            <ClaimButton proof={allocation.proof} amount={allocation.amount} />
           ) : (
             <Button primary onClick={() => disconnect()}>
               Disconnect
