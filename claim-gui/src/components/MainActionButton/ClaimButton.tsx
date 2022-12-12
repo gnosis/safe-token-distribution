@@ -10,24 +10,26 @@ import Button from "../Button";
 
 import MerkleDistroABI from "../../abis/MerkleDistro";
 import { distroSetup } from "../../config";
+import { useEffect, useState } from "react";
 
 type Props = {
   proof: readonly `0x${string}`[];
   amount: BigNumber;
-  onStart?: () => void;
-  onSuccess?: () => void;
-  onError?: (e: Error) => void;
+  onProgress?: (next: ClaimStage) => void;
 };
 
-const ClaimButton: React.FC<Props> = ({
-  proof,
-  amount,
-  onStart,
-  onSuccess,
-  onError,
-}: Props) => {
+export enum ClaimStage {
+  Idle,
+  Signing,
+  Transacting,
+  Success,
+  Error,
+}
+
+const ClaimButton: React.FC<Props> = ({ proof, amount, onProgress }: Props) => {
   const network = useNetwork();
   const { isDistroEnabled, distroAddress } = distroSetup(network);
+  const [isSigning, setIsSigning] = useState<boolean>(false);
 
   const { config } = usePrepareContractWrite({
     address: distroAddress,
@@ -40,28 +42,35 @@ const ClaimButton: React.FC<Props> = ({
   const { data, write } = useContractWrite({
     ...config,
     onError(err) {
-      console.error(err);
+      onProgress?.(ClaimStage.Error);
     },
   });
 
   useWaitForTransaction({
     hash: data?.hash,
-    // should wait when connected to a testnet
     confirmations: 1,
-    onSuccess(data) {
-      onSuccess?.();
+    onSuccess() {
+      onProgress?.(ClaimStage.Success);
     },
-    onError(err) {
-      onError?.(err);
+    onError() {
+      onProgress?.(ClaimStage.Error);
     },
   });
+
+  useEffect(() => {
+    if (isSigning && !!data?.hash) {
+      setIsSigning(false);
+      onProgress?.(ClaimStage.Transacting);
+    }
+  }, [isSigning, data?.hash, onProgress]);
 
   return (
     <Button
       primary
       onClick={() => {
-        onStart?.();
+        setIsSigning(true);
         write?.();
+        onProgress?.(ClaimStage.Signing);
       }}
     >
       Claim
