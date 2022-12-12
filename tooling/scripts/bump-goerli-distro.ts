@@ -25,9 +25,17 @@ async function fundAndWriteNewCheckpoint(bump: BigNumber) {
     await token.mint(merkleDistro.address, total);
   }
 
+  const claimed1 = await merkleDistro.claimed(
+    "0x485E60C486671E932fd9C53d4110cdEab1E7F0eb",
+  );
+
+  const claimed2 = await merkleDistro.claimed(
+    "0x031487A94a58b6E438A571256C0bD9093B564a86",
+  );
+
   const checkpoint = {
-    "0x485E60C486671E932fd9C53d4110cdEab1E7F0eb": bump,
-    "0x031487A94a58b6E438A571256C0bD9093B564a86": bump,
+    "0x485E60C486671E932fd9C53d4110cdEab1E7F0eb": claimed1.add(bump),
+    "0x031487A94a58b6E438A571256C0bD9093B564a86": claimed2.add(bump),
   };
   const tree = createMerkleTree(checkpoint);
   saveCheckpoint(checkpoint, tree);
