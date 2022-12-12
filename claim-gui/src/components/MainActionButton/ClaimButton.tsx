@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, errors, ethers } from "ethers";
 import {
   useContractWrite,
   useNetwork,
@@ -12,10 +12,11 @@ import MerkleDistroABI from "../../abis/MerkleDistro";
 import { distroSetup } from "../../config";
 import { useEffect, useState } from "react";
 
+import classes from "./style.module.css";
+
 type Props = {
   proof: readonly `0x${string}`[];
   amount: BigNumber;
-  onProgress?: (next: ClaimStage) => void;
 };
 
 export enum ClaimStage {
@@ -23,14 +24,29 @@ export enum ClaimStage {
   Signing,
   Transacting,
   Success,
+  UserRejected,
   Error,
 }
 
-const ClaimButton: React.FC<Props> = ({ proof, amount, onProgress }: Props) => {
+const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
   const network = useNetwork();
   const { isDistroEnabled, distroAddress } = distroSetup(network);
   const [isSigning, setIsSigning] = useState<boolean>(false);
+  const [claimStage, setClaimStage] = useState<ClaimStage>(ClaimStage.Idle);
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined;
+    if (
+      claimStage === ClaimStage.Error ||
+      claimStage === ClaimStage.UserRejected ||
+      claimStage === ClaimStage.Success
+    ) {
+      timeoutId = setTimeout(() => setClaimStage(ClaimStage.Idle), 3000);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [claimStage]);
   const { config } = usePrepareContractWrite({
     address: distroAddress,
     abi: MerkleDistroABI,
@@ -41,8 +57,12 @@ const ClaimButton: React.FC<Props> = ({ proof, amount, onProgress }: Props) => {
 
   const { data, write } = useContractWrite({
     ...config,
-    onError(err) {
-      onProgress?.(ClaimStage.Error);
+    onError(err: any) {
+      setClaimStage(
+        err.code === "ACTION_REJECTED"
+          ? ClaimStage.UserRejected
+          : ClaimStage.Error,
+      );
     },
   });
 
@@ -50,31 +70,38 @@ const ClaimButton: React.FC<Props> = ({ proof, amount, onProgress }: Props) => {
     hash: data?.hash,
     confirmations: 1,
     onSuccess() {
-      onProgress?.(ClaimStage.Success);
+      setClaimStage(ClaimStage.Success);
     },
-    onError() {
-      onProgress?.(ClaimStage.Error);
+    onError(err) {
+      setClaimStage(ClaimStage.Error);
     },
   });
 
   useEffect(() => {
     if (isSigning && !!data?.hash) {
       setIsSigning(false);
-      onProgress?.(ClaimStage.Transacting);
+      setClaimStage(ClaimStage.Transacting);
     }
-  }, [isSigning, data?.hash, onProgress]);
+  }, [isSigning, data?.hash]);
 
   return (
-    <Button
-      primary
-      onClick={() => {
-        setIsSigning(true);
-        write?.();
-        onProgress?.(ClaimStage.Signing);
-      }}
-    >
-      Claim
-    </Button>
+    <div className={classes.claimContainer}>
+      <Button
+        primary
+        onClick={() => {
+          setIsSigning(true);
+          write?.();
+          setClaimStage(ClaimStage.Signing);
+        }}
+      >
+        Claim
+      </Button>
+      {claimStage !== ClaimStage.Idle && (
+        <div className={classes.statusContainer}>
+          <p>{claimStage}</p>
+        </div>
+      )}
+    </div>
   );
 };
 
