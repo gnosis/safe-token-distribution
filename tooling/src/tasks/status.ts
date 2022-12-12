@@ -12,7 +12,7 @@ import {
 } from "../config";
 import { ProviderConfig } from "../types";
 
-task("status", "Checks that both distro setups are good to go").setAction(
+task("status", "Checks SafeToken and MerkleDistro status").setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
     const providers = getProviders(hre);
     const log = (text: string) => console.info(`Task status -> ${text}`);
@@ -34,17 +34,17 @@ task("status", "Checks that both distro setups are good to go").setAction(
 
     const {
       areDistrosReady,
-      isDistroMainnetReady,
-      isDistroGnosisReady,
+      isDistroMainnetDeployed,
+      isDistroGnosisDeployed,
       distroAddressMainnet,
       distroAddressGnosis,
     } = await distroStatus(tokenAddressGnosis, providers);
 
-    if (!isDistroMainnetReady) {
+    if (!isDistroMainnetDeployed) {
       log(`MerkleDistroMainnet not yet deployed`);
     }
 
-    if (!isDistroGnosisReady) {
+    if (!isDistroGnosisDeployed) {
       log(`MerkleDistroGnosis not yet deployed`);
     }
 
@@ -108,8 +108,8 @@ async function distroStatus(
 
   return {
     areDistrosReady: codeMainnet !== "0x" && codeGnosis !== "0x",
-    isDistroMainnetReady: codeMainnet !== "0x",
-    isDistroGnosisReady: codeGnosis !== "0x",
+    isDistroMainnetDeployed: codeMainnet !== "0x",
+    isDistroGnosisDeployed: codeGnosis !== "0x",
     distroAddressMainnet,
     distroAddressGnosis,
   };
