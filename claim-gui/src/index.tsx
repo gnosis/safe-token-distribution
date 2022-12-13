@@ -7,6 +7,8 @@ import { mainnet, goerli } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { infuraProvider } from "@wagmi/core/providers/infura";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import { WalletConnectConnector } from "@wagmi/core/connectors/walletConnect";
+import { CoinbaseWalletConnector } from "@wagmi/core/connectors/coinbaseWallet";
 
 import HomePage from "./Pages/HomePage";
 import { DistroSetupProvider } from "./hooks/useDistroSetup";
@@ -27,13 +29,24 @@ const { chains, provider } = configureChains(
 
 const wagmiClient = createClient({
   autoConnect: true,
-  connectors: [new InjectedConnector({ chains })],
+  connectors: [
+    new InjectedConnector({ chains }),
+    new WalletConnectConnector({ chains, options: { qrcode: true } }),
+    new CoinbaseWalletConnector({
+      options: {
+        appName: "GnosisDAO — Safe Claim",
+      },
+    }),
+  ],
   provider,
 });
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
+
+// https://github.com/WalletConnect/walletconnect-monorepo/issues/748
+window.Buffer = window.Buffer || require("buffer").Buffer;
 
 root.render(
   <React.StrictMode>

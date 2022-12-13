@@ -50,7 +50,7 @@ const MainActionButton: React.FC = () => {
 
   return (
     <Card>
-      {showModal && <ConnectModal />}
+      <ConnectModal show={showModal} setShow={setShowModal} />
       {address ? (
         <>
           {showAction && !!allocation ? (

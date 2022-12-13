@@ -2,10 +2,21 @@ import { useConnect } from "wagmi";
 import Modal from "react-modal";
 import classes from "./style.module.css";
 
-const ConnectModal: React.FC = () => {
+interface Props {
+  show: boolean;
+  setShow: (show: boolean) => void;
+}
+
+const ConnectModal: React.FC<Props> = ({ show, setShow }) => {
   const { connect, connectors, error } = useConnect();
   return (
-    <Modal isOpen className={classes.container} ariaHideApp={false}>
+    <Modal
+      isOpen={show}
+      className={classes.container}
+      ariaHideApp={false}
+      onRequestClose={() => setShow(false)}
+      shouldCloseOnOverlayClick={true}
+    >
       <h2 className={classes.h2}>Select a Wallet</h2>
       <p className={classes.textSmall}>
         Please select a wallet to connect to lock your GNO.
@@ -30,8 +41,6 @@ const ConnectModal: React.FC = () => {
           <strong className={classes.walletLabel}>{connector.name}</strong>
         </button>
       ))}
-
-      {error && <div>{error?.message ?? "Failed to connect"}</div>}
     </Modal>
   );
 };
