@@ -35,7 +35,7 @@ const ConnectButton: React.FC = () => {
   }, [address]);
   return (
     <>
-      {showModal && <Modal />}
+      <Modal show={showModal} setShow={setShowModal} />
 
       <div className={classes.container}>
         <button
