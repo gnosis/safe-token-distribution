@@ -16,10 +16,10 @@ task(
     areDistrosReady,
     distroAddressMainnet,
     distroAddressGnosis,
-  } = await hre.run("status");
+  } = await hre.run("status", { silent: true });
 
   if (!isTokenReady || !areDistrosReady) {
-    log("Distribution setup isn't ready. Skipping...");
+    log("Setup not ready for Distribution. Skipping...");
     return;
   }
 

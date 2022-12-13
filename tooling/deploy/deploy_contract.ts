@@ -17,9 +17,12 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const [deployer] = await hre.ethers.getSigners();
     const { deterministic } = hre.deployments;
 
-    const { isTokenReady, isPaused, isBridged } = await hre.run("status");
+    const { isTokenReady, isTokenPaused, isTokenBridged } = await hre.run(
+      "status",
+      { silent: true },
+    );
 
-    if (isPaused || !isBridged) {
+    if (isTokenPaused || !isTokenBridged) {
       throw new Error("SafeToken still paused, or not yet bridged");
     }
     assert(isTokenReady === true);

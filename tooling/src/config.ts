@@ -67,15 +67,8 @@ export async function getSafeClients(
     signerOrProvider: delegate.connect(providers.gnosis),
   });
 
-  const serviceClientMainnet = new SafeServiceClient({
-    txServiceUrl: "https://safe-transaction-mainnet.safe.global/",
-    ethAdapter: ethAdapterMainnet,
-  });
-
-  const serviceClientGC = new SafeServiceClient({
-    txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global/",
-    ethAdapter: ethAdapterGC,
-  });
+  const { mainnet: serviceClientMainnet, gnosis: serviceClientGC } =
+    getServiceClients(ethAdapterMainnet, ethAdapterGC);
 
   const safeSdkMainnet = await Safe.create({
     ethAdapter: ethAdapterMainnet,
@@ -106,4 +99,20 @@ export function getProviders(hre: HardhatRuntimeEnvironment): ProviderConfig {
   );
 
   return { mainnet, gnosis };
+}
+
+export function getServiceClients(
+  ethAdapterMainnet: EthersAdapter,
+  ethAdapterGnosis: EthersAdapter,
+) {
+  return {
+    mainnet: new SafeServiceClient({
+      txServiceUrl: "https://safe-transaction-mainnet.safe.global/",
+      ethAdapter: ethAdapterMainnet,
+    }),
+    gnosis: new SafeServiceClient({
+      txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global/",
+      ethAdapter: ethAdapterGnosis,
+    }),
+  };
 }
