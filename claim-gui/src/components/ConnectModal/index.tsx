@@ -8,7 +8,7 @@ interface Props {
 }
 
 const ConnectModal: React.FC<Props> = ({ show, setShow }) => {
-  const { connect, connectors, error } = useConnect();
+  const { connect, connectors } = useConnect();
   return (
     <Modal
       isOpen={show}
