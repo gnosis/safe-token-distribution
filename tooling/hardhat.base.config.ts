@@ -18,7 +18,6 @@ dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
 let mnemonic: string | undefined = process.env.MNEMONIC;
 if (!mnemonic) {
   mnemonic = "test test test test test test test test test test test junk";
-  console.info("using bogus mnemonic");
   //throw new Error("Please set your MNEMONIC in a .env file");
 }
 
@@ -31,8 +30,6 @@ const chainIds = {
   mainnet: 1,
   goerli: 5,
   gnosis: 100,
-  hardhat: 31337,
-  local: 31337,
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -90,7 +87,7 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic,
       },
-      chainId: chainIds.hardhat,
+      chainId: 31337,
     },
     mainnet: getChainConfig("mainnet"),
     goerli: getChainConfig("goerli"),

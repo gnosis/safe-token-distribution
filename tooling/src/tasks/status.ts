@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import { task } from "hardhat/config";
+import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryBridgedAddress, queryIsPaused } from "../queries/queryToken";
@@ -8,14 +8,20 @@ import calculateDistroAddress from "../fns/calculateDistroAdress";
 import {
   addresses,
   getProviders,
+  getServiceClients,
   MERKLE_DISTRO_DEPLOYMENT_SALT,
 } from "../config";
-import { ProviderConfig } from "../types";
 
-task("status", "Checks SafeToken and MerkleDistro status").setAction(
-  async (_, hre: HardhatRuntimeEnvironment) => {
+import { ProviderConfig } from "../types";
+import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
+import { getAddress } from "ethers/lib/utils";
+
+task("status", "Checks SafeToken and MerkleDistro status")
+  .addOptionalParam("silent", "No log output", false, types.boolean)
+  .setAction(async ({ silent }, hre: HardhatRuntimeEnvironment) => {
     const providers = getProviders(hre);
-    const log = (text: string) => console.info(`Task status -> ${text}`);
+    const log = (text: string) =>
+      !silent && console.info(`Task status -> ${text}`);
 
     log("Starting...");
 
@@ -23,14 +29,10 @@ task("status", "Checks SafeToken and MerkleDistro status").setAction(
       await safeTokenStatus(providers);
 
     if (isPaused) {
-      log(`SafeToken is still paused`);
     }
 
     if (!isBridged) {
-      log(`SafeToken is not yet bridged`);
     }
-
-    log(`SafeToken ready: ${isTokenReady}`);
 
     const {
       areDistrosReady,
@@ -40,26 +42,36 @@ task("status", "Checks SafeToken and MerkleDistro status").setAction(
       distroAddressGnosis,
     } = await distroStatus(tokenAddressGnosis, providers);
 
-    if (!isDistroMainnetDeployed) {
-      log(`MerkleDistroMainnet not yet deployed`);
-    }
+    const { isDelegateMainnet, isDelegateGnosis } = await delegateStatus(
+      addresses.mainnet.treasurySafe,
+      addresses.gnosis.treasurySafe,
+      hre,
+    );
 
-    if (!isDistroGnosisDeployed) {
-      log(`MerkleDistroGnosis not yet deployed`);
-    }
-
-    log(`Are MerkleDistros ready: ${areDistrosReady}`);
+    log(`SafeToken Paused   ${isPaused}`);
+    log(`SafeToken Bridged  ${isBridged}`);
+    log(`SafeToken Ready    ${isTokenReady}`);
+    log(`Distro Mainnet     ${isDistroMainnetDeployed}`);
+    log(`Distro Gnosis      ${isDistroGnosisDeployed}`);
+    log(`Distros Ready      ${areDistrosReady}`);
+    log(`Delegate Mainnet   ${isDelegateMainnet}`);
+    log(`Delegate Gnosis    ${isDelegateGnosis}`);
 
     log("Done");
     return {
       isTokenReady,
-      areDistrosReady,
+      isTokenPaused: isPaused,
+      isTokenBridged: isBridged,
       tokenAddressGnosis,
+      areDistrosReady,
+      isDistroMainnetDeployed,
+      isDistroGnosisDeployed,
       distroAddressMainnet,
       distroAddressGnosis,
+      isDelegateMainnet,
+      isDelegateGnosis,
     };
-  },
-);
+  });
 
 async function safeTokenStatus(providers: ProviderConfig) {
   const isPaused = await queryIsPaused(addresses, providers);
@@ -112,5 +124,41 @@ async function distroStatus(
     isDistroGnosisDeployed: codeGnosis !== "0x",
     distroAddressMainnet,
     distroAddressGnosis,
+  };
+}
+
+async function delegateStatus(
+  safeAddressMainnet: string,
+  safeAddressGnosis: string,
+  hre: HardhatRuntimeEnvironment,
+) {
+  const providers = getProviders(hre);
+
+  const [delegate] = await hre.ethers.getSigners();
+
+  const ethAdapterMainnet = new EthersAdapter({
+    ethers: hre.ethers,
+    signerOrProvider: providers.mainnet,
+  });
+
+  const ethAdapterGC = new EthersAdapter({
+    ethers: hre.ethers,
+    signerOrProvider: providers.gnosis,
+  });
+
+  const serviceClients = getServiceClients(ethAdapterMainnet, ethAdapterGC);
+
+  const [delegatesMainnet, delegatesGnosis] = await Promise.all([
+    serviceClients.mainnet.getSafeDelegates(safeAddressMainnet),
+    serviceClients.gnosis.getSafeDelegates(safeAddressGnosis),
+  ]);
+
+  return {
+    isDelegateMainnet: delegatesMainnet.results.some(
+      (result) => getAddress(result.delegate) === getAddress(delegate.address),
+    ),
+    isDelegateGnosis: delegatesGnosis.results.some(
+      (result) => getAddress(result.delegate) === getAddress(delegate.address),
+    ),
   };
 }
