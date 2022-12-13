@@ -28,12 +28,6 @@ task("status", "Checks SafeToken and MerkleDistro status")
     const { isTokenReady, isBridged, isPaused, tokenAddressGnosis } =
       await safeTokenStatus(providers);
 
-    if (isPaused) {
-    }
-
-    if (!isBridged) {
-    }
-
     const {
       areDistrosReady,
       isDistroMainnetDeployed,
