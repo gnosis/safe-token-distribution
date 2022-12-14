@@ -4,10 +4,7 @@ GnosisDAO received 15% of the total SAFE Token supply, vesting over 4 years. The
 
 This repo contains the codebases for the distribution contracts, the scripts for claiming and calculating distributions, and the web app used by GNO holders to claim tokens.
 
-**_Note:_** Token distributions will not be available until the SAFE Token is made transferable, and the Distribution contracts are deployed.
-
-**_AlternativeNote:_** Daily harvests are live, and can already be inspected. Monthly distributions are dependent on the
-SAFE Token being transferable. Once SAFE is unpaused, and MerkleDistros deployed, distributions will automatically start happening monthly.
+**_Note:_** Token distributions will not be available until the SAFE Token is made transferable, and the Distribution contracts are deployed. However, daily harvests are live, and can already be inspected. Once SAFE is unpaused, and MerkleDistros deployed, distributions will automatically start happening monthly.
 
 # Architecture
 
@@ -46,20 +43,20 @@ The task that progressively expands schedule is called `schedule:expand`:
 
 #### `Allocations`
 
-For each VestingSlice, two allocation files will be written - mainnet and gnosis. [Allocations can be viewed here](tooling/_harvest/allocations).
+For each VestingSlice, two allocation files will be written one for mainnet and one for gnosis. [Allocations can be viewed here](tooling/_harvest/allocations).
 
-Each allocation file contains a map of addresses to balances, and it represents the quantities of SAFE allocated to an address in a VestingSlice.
-
-!!!@SAM!!! NOT SURE ABOUT THE LAYOUT for the REST of THIS SECTION
+Each allocation file contains a map of addresses to amounts, and it represents the quantities of SAFE allocated to an address in a VestingSlice.
 
 The allocation formula inputs:
 
 - `balancesGNO`: retrieved by querying subgraphs at blockHeight
-- `totalAmountVested`: the total universe of tokens vested out of the VestingPool during a VestingSlice. Retrieved by directly calling the VestingPool contract at the appropriate block heights.
+- `totalAmountVested`: the total amount of tokens vested out of the VestingPool during a VestingSlice. Retrieved by directly calling the VestingPool contract at the respective block heights.
 
 Formula for amount allocated to an address during a slice:
 
-- `allocation[address]` = balancesGNO[address] / sum(balancesGNO) \* totalAmountVested
+```
+allocation[address] = balancesGNO[address] / sum(balancesGNO) * totalAmountVested
+```
 
 #### `Checkpoints`
 
