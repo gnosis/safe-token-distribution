@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       INFURA_API_KEY: ${{ secrets.INFURA_API_KEY  }}
-    name: schedule harvest
+    name: harvest
     steps:
       - uses: actions/checkout@main
         with:
