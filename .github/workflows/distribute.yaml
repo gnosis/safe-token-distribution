@@ -1,8 +1,9 @@
-name: Harvest
+name: Distribute
 
 on:
   schedule:
-    - cron: "0 10 * * *"
+    # still need to update this to every first monday of the Month at 11
+    - cron: "0 11 * * *"
 
 defaults:
   run:
@@ -13,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       INFURA_API_KEY: ${{ secrets.INFURA_API_KEY  }}
-    name: harvest
+      MNEMONIC: ${{ secrets.DELEGATE_MNEMONIC }}
+    name: distribute
     steps:
       - uses: actions/checkout@main
         with:
@@ -26,10 +28,10 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn clean
       - run: yarn compile
-      - run: yarn hardhat harvest
+      - run: yarn hardhat distribute
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Automated Message: Update Schedule & Allocations"
+          commit_message: "Automated Message: Generate Checkpoints & Post Distributions"
           branch: master
           commit_user_name: Guild Bot
           commit_user_email: automation@gnosisguild.org
