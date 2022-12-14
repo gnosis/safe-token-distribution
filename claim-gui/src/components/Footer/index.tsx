@@ -1,37 +1,46 @@
+import { distroSetupByNetwork } from "../../config";
 import classes from "./style.module.css";
 
-const Footer: React.FC = () => (
+interface Props {
+  isDistroEnabled: boolean;
+  distroAddress: string;
+}
+const Footer: React.FC<Props> = ({ isDistroEnabled, distroAddress }) => (
   <footer className={classes.footer}>
     <div className={classes.footerContainer}>
       <div className={classes.left}>
-        <span>Distribution contract: </span>
-        {/* {connectedChainId === 100 ? (
+        {isDistroEnabled && (
+          <>
+            <span>Distribution contract: </span>
+            {distroAddress === distroSetupByNetwork[1].distroAddress ? (
               <a
-                href="https://blockscout.com/xdai/"
+                href={`https://etherscan.io/address/${distroAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <img
                   src="/etherscan.svg"
-                  alt="View contract on Gnosis Chain Blockscout"
+                  alt="View contract on Etherscan"
                   width={16}
                   height={16}
                 />
               </a>
-            ) : ( */}
-        <a
-          href="https://etherscan.io/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/etherscan.svg"
-            alt="View contract on Etherscan"
-            width={16}
-            height={16}
-          />
-        </a>
-
+            ) : (
+              <a
+                href={`https://gnosisscan.io/address/${distroAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="/gnosisscan.svg"
+                  alt="View contract on Gnosisscan"
+                  width={16}
+                  height={16}
+                />
+              </a>
+            )}
+          </>
+        )}
         <a
           href="https://github.com/gnosis/safe-token-distribution"
           target="_blank"

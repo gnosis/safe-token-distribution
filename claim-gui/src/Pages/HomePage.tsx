@@ -10,7 +10,7 @@ import Footer from "../components/Footer";
 import useDistroSetup from "../hooks/useDistroSetup";
 
 const HomePage = () => {
-  const { isDistroEnabled } = useDistroSetup();
+  const { isDistroEnabled, distroAddress } = useDistroSetup();
 
   return (
     <div className={classes.container}>
@@ -25,7 +25,7 @@ const HomePage = () => {
           </>
         )}
       </main>
-      <Footer />
+      <Footer isDistroEnabled={isDistroEnabled} distroAddress={distroAddress} />
     </div>
   );
 };
