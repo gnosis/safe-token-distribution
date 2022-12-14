@@ -88,11 +88,10 @@ function withRetry(
 }
 
 const urlMainnet =
-  "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip";
+  "https://api.thegraph.com/subgraphs/id/QmNUxw4m4xGzz4D8Qy1fobJ4UXbXeBdSEbkpjeeWxERNyy";
 
 const urlGnosis =
-  "https://api.thegraph.com/subgraphs/id/QmbJaRFT59ANkbqXHHCkR6euNyTBD2ypnwek9Gneohx8ha";
-
+  "https://api.thegraph.com/subgraphs/id/QmXFaKZuRWQT1e8oFpuPasVGhWF561MeC7nij6yf4CpwFV";
 const queryLgno = gql`
   query ($block: Int, $lastId: String) {
     users(
