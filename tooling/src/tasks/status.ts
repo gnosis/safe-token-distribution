@@ -25,45 +25,43 @@ task("status", "Checks SafeToken and MerkleDistro status")
 
     log("Starting...");
 
-    const { isTokenReady, isBridged, isPaused, tokenAddressGnosis } =
-      await safeTokenStatus(providers);
+    const { isBridged, isPaused, tokenAddressGnosis } = await safeTokenStatus(
+      providers,
+    );
 
     const {
-      areDistrosReady,
       isDistroMainnetDeployed,
       isDistroGnosisDeployed,
       distroAddressMainnet,
       distroAddressGnosis,
     } = await distroStatus(tokenAddressGnosis, providers);
 
-    const { isDelegateMainnet, isDelegateGnosis } = await delegateStatus(
-      addresses.mainnet.treasurySafe,
-      addresses.gnosis.treasurySafe,
-      hre,
-    );
+    const { delegateAddress, isDelegateMainnet, isDelegateGnosis } =
+      await delegateStatus(
+        addresses.mainnet.treasurySafe,
+        addresses.gnosis.treasurySafe,
+        hre,
+      );
 
-    log(`SafeToken Paused   ${isPaused}`);
-    log(`SafeToken Bridged  ${isBridged}`);
-    log(`SafeToken Ready    ${isTokenReady}`);
-    log(`Distro Mainnet     ${isDistroMainnetDeployed}`);
-    log(`Distro Gnosis      ${isDistroGnosisDeployed}`);
-    log(`Distros Ready      ${areDistrosReady}`);
-    log(`Delegate Mainnet   ${isDelegateMainnet}`);
-    log(`Delegate Gnosis    ${isDelegateGnosis}`);
-
+    log(`SafeToken`);
+    log(`    Paused   ${isPaused}`);
+    log(`    Bridged  ${tokenAddressGnosis}`);
+    log(`    Ready    ${isBridged}`);
+    log(`MerkleDistro (address , isDeployed)`);
+    log(`    Mainnet  (${distroAddressMainnet} , ${isDistroMainnetDeployed})`);
+    log(`    Gnosis   (${distroAddressGnosis} , ${isDistroGnosisDeployed})`);
+    log(`Delegate     (address , isEnabled)`);
+    log(`    Mainnet  (${delegateAddress} , ${isDelegateMainnet})`);
+    log(`    Gnosis   (${delegateAddress} , ${isDelegateGnosis})`);
     log("Done");
+
     return {
-      isTokenReady,
-      isTokenPaused: isPaused,
-      isTokenBridged: isBridged,
+      isTokenReady: isBridged,
+      isDistroReady: isDistroMainnetDeployed && isDistroGnosisDeployed,
+      isDelegateReady: isDelegateMainnet && isDelegateGnosis,
       tokenAddressGnosis,
-      areDistrosReady,
-      isDistroMainnetDeployed,
-      isDistroGnosisDeployed,
       distroAddressMainnet,
       distroAddressGnosis,
-      isDelegateMainnet,
-      isDelegateGnosis,
     };
   });
 
@@ -73,7 +71,6 @@ async function safeTokenStatus(providers: ProviderConfig) {
     return {
       isPaused: true,
       isBridged: false,
-      isTokenReady: false,
       tokenAddressGnosis: constants.AddressZero,
     };
   }
@@ -82,7 +79,6 @@ async function safeTokenStatus(providers: ProviderConfig) {
   return {
     isPaused: false,
     isBridged: !!tokenAddressGnosis,
-    isTokenReady: !!tokenAddressGnosis,
     tokenAddressGnosis: tokenAddressGnosis || constants.AddressZero,
   };
 }
@@ -113,7 +109,6 @@ async function distroStatus(
   ]);
 
   return {
-    areDistrosReady: codeMainnet !== "0x" && codeGnosis !== "0x",
     isDistroMainnetDeployed: codeMainnet !== "0x",
     isDistroGnosisDeployed: codeGnosis !== "0x",
     distroAddressMainnet,
@@ -128,7 +123,9 @@ async function delegateStatus(
 ) {
   const providers = getProviders(hre);
 
-  const [delegate] = await hre.ethers.getSigners();
+  if (!process.env.MNEMONIC) {
+    throw new Error("No MNEMONIC provided");
+  }
 
   const ethAdapterMainnet = new EthersAdapter({
     ethers: hre.ethers,
@@ -147,7 +144,10 @@ async function delegateStatus(
     serviceClients.gnosis.getSafeDelegates(safeAddressGnosis),
   ]);
 
+  const delegate = hre.ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
+
   return {
+    delegateAddress: delegate.address,
     isDelegateMainnet: delegatesMainnet.results.some(
       (result) => getAddress(result.delegate) === getAddress(delegate.address),
     ),
