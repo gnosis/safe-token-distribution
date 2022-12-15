@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b8c10928.css",
+    "main.js": "/static/js/main.728e718b.js",
+    "static/js/563.7a0cb630.chunk.js": "/static/js/563.7a0cb630.chunk.js",
+    "static/js/942.1ddd3c57.chunk.js": "/static/js/942.1ddd3c57.chunk.js",
+    "static/js/836.c4ad82e5.chunk.js": "/static/js/836.c4ad82e5.chunk.js",
+    "static/js/299.67e801ab.chunk.js": "/static/js/299.67e801ab.chunk.js",
+    "static/media/AvertaBold.woff2": "/static/media/AvertaBold.8760f55e7a4d4a6bc723.woff2",
+    "static/media/Averta-ExtraBold.woff2": "/static/media/Averta-ExtraBold.8fdcd8d42c7e77010193.woff2",
+    "static/media/Averta-normal.woff2": "/static/media/Averta-normal.39d048797bfbc1bff77c.woff2",
+    "static/media/DMSans-Regular.woff2": "/static/media/DMSans-Regular.7a349a9d8c1028818d58.woff2",
+    "static/media/DMSans-Medium.woff2": "/static/media/DMSans-Medium.c23743104c7a069d1daf.woff2",
+    "static/media/DMSans-Bold.woff2": "/static/media/DMSans-Bold.50ecd372655e5a685565.woff2",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.b8c10928.css",
+    "static/js/main.728e718b.js"
+  ]
+}
