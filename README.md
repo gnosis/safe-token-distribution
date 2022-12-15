@@ -127,12 +127,22 @@ To deploy the MerkleDistro.sol contract:
 
 **_Note_**: The deploy will fail if SafeToken not yet deloyed and bridged to Gnosis Chain
 
-## Calculating Allocations
+## Calculating allocations
 
-### For a single vesting slice
+### All allocations (up to now)
+
+- run `yarn hardhat allocate:all --lazy false`
+
+### One allocation (one VestingSlice)
 
 - run `yarn hardhat allocate:one [blockNumber]`
 
-### All Allocations (up to now)
+## Calculating checkpoint
 
-- run `yarn hardhat allocate:all --lazy false`
+### latest
+
+- run `yarn hardhat checkpoint`
+
+### past (TODO)
+
+- run `yarn hardhat checkpoint [blockNumber]`
