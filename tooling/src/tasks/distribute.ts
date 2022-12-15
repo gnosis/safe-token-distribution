@@ -13,13 +13,16 @@ task(
 
   const {
     isTokenReady,
-    areDistrosReady,
+    isDistroReady,
+    isDelegateReady,
     distroAddressMainnet,
     distroAddressGnosis,
   } = await hre.run("status", { silent: true });
 
-  if (!isTokenReady || !areDistrosReady) {
-    log("Setup not ready for Distribution. Skipping...");
+  if (!isTokenReady || !isDistroReady || isDelegateReady) {
+    log(
+      "Setup not ready for Distribution. Run status for more info. Skipping...",
+    );
     return;
   }
 
