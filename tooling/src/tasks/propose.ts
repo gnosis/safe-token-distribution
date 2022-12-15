@@ -29,7 +29,7 @@ type TaskArgs = {
 
 task(
   "propose",
-  "It updates the distribution setup, by unlocking tokens and uploading new proofs to the distribution contracts",
+  "Updates the distribution setup, by unlocking tokens and uploading new proofs to the distribution contracts",
 )
   .addParam("distroAddressMainnet", "", undefined, types.string)
   .addParam("distroAddressGnosis", "", undefined, types.string)
