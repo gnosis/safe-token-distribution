@@ -808,5 +808,35 @@
       "timestamp": 1670687180,
       "blockNumber": 25380389
     }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16162165,
+      "timestamp": 1670770103
+    },
+    "gnosis": {
+      "timestamp": 1670770100,
+      "blockNumber": 25396287
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16171968,
+      "timestamp": 1670888447
+    },
+    "gnosis": {
+      "timestamp": 1670888445,
+      "blockNumber": 25418959
+    }
+  },
+  {
+    "mainnet": {
+      "blockNumber": 16182368,
+      "timestamp": 1671014087
+    },
+    "gnosis": {
+      "timestamp": 1671014085,
+      "blockNumber": 25443220
+    }
   }
 ]
