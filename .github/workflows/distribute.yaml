@@ -2,8 +2,8 @@ name: Distribute
 
 on:
   schedule:
-    # still need to update this to every first monday of the Month at 11
-    - cron: "0 11 * * *"
+    # first day of the month 11 UTC
+    - cron: "0 11 1 * *"
 
 defaults:
   run:
