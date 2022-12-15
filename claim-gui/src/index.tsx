@@ -17,7 +17,9 @@ import { AllocationProvider } from "./hooks/useAllocation";
 import { gnosis } from "./config";
 
 const { chains, provider } = configureChains(
-  [mainnet, gnosis, goerli],
+  process.env.NODE_ENV === "development"
+    ? [mainnet, gnosis, goerli]
+    : [mainnet, gnosis],
   [
     jsonRpcProvider({
       rpc: (chain) =>
