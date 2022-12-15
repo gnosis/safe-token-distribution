@@ -35,12 +35,11 @@ export function AllocationProvider({
 
   useEffect(() => {
     setAllocation(null);
-    if (shouldLazyLoad(merkleRoot, address)) {
-      import(`../../checkpoints/${merkleRoot}.json`).then((result) => {
-        const distro = result.default;
-        setAllocation(computeProof(distro, address as string));
-      });
-    }
+    lazyLoad(merkleRoot, address).then((distribution) => {
+      if (distribution) {
+        setAllocation(computeProof(distribution, address as string));
+      }
+    });
   }, [address, merkleRoot]);
 
   return (
@@ -79,14 +78,22 @@ function computeProof(
   };
 }
 
-function shouldLazyLoad(
+async function lazyLoad(
   merkleRoot: string | undefined,
   address: string | undefined,
 ) {
-  return (
+  const shouldLoad =
     !!merkleRoot &&
     merkleRoot !== constants.HashZero &&
     !!address &&
-    address !== constants.AddressZero
-  );
+    address !== constants.AddressZero;
+
+  return shouldLoad
+    ? import(`../../../tooling/_harvest/checkpoints/${merkleRoot}.json`).then(
+        (result) => {
+          const distribution = result.default;
+          return distribution;
+        },
+      )
+    : null;
 }
