@@ -33,7 +33,7 @@ export const distroSetupByNetwork = {
   },
   100: {
     isDistroEnabled: false,
-    // can't predict cuz not bridged
+    // can't predict yet, not bridged
     distroAddress: constants.AddressZero,
     // not bridged
     tokenAddress: constants.AddressZero,
