@@ -1,7 +1,6 @@
 import assert from "assert";
-import { Provider } from "@ethersproject/providers";
+import { Block, Provider } from "@ethersproject/providers";
 
-import { BlockAndTimestamp } from "../persistence";
 import { Interval } from "../types";
 
 export default async function intervalsToBlocks(
@@ -9,7 +8,7 @@ export default async function intervalsToBlocks(
   provider: Provider,
   floor?: number,
   ceiling?: number,
-): Promise<BlockAndTimestamp[]> {
+): Promise<Block[]> {
   if (intervals.length === 0) {
     return [];
   }
@@ -42,7 +41,7 @@ export default async function intervalsToBlocks(
       floor,
       block.number,
     )),
-    { blockNumber: block.number, timestamp: block.timestamp },
+    block,
     ...(await intervalsToBlocks(
       intervals.slice(index + 1),
       provider,
