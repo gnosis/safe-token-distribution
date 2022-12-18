@@ -8,7 +8,6 @@ import { Interval } from "../types";
 import queryClosestBlock from "../queries/queryClosestBlock";
 import intervalsToBlocks from "../fns/intervalsToBlocks";
 import intervalsGenerate from "../fns/intervalsGenerate";
-import scheduleValidate from "../fns/scheduleValidate";
 
 import {
   getProviders,
@@ -38,29 +37,21 @@ task(
 
   log(`Inserting ${intervals.length - prevSchedule.length} new entries`);
 
-  const nextMainnetEntries = await intervalsToBlocks(
+  const blocks = await intervalsToBlocks(
     intervals.slice(prevSchedule.length),
     providers.mainnet,
   );
 
   let nextSchedule = prevSchedule;
-  for (const mainnetEntry of nextMainnetEntries) {
-    log(
-      `Finding a block in GC that matches mainnet ${mainnetEntry.blockNumber}`,
-    );
+  for (const block of blocks) {
+    log(`Finding a block in gnosis that matches mainnet ${block.number}`);
 
-    const blockGC = await queryClosestBlock(
-      mainnetEntry.timestamp,
-      providers.gnosis,
-    );
+    const blockGC = await queryClosestBlock(block.timestamp, providers.gnosis);
     nextSchedule = [
       ...nextSchedule,
       {
-        mainnet: mainnetEntry,
-        gnosis: {
-          timestamp: blockGC.timestamp,
-          blockNumber: blockGC.number,
-        },
+        mainnet: block.number,
+        gnosis: blockGC.number,
       },
     ];
   }
@@ -76,12 +67,6 @@ task(
   "Validates that every entry in the schedule is correct",
 )
   .addOptionalParam(
-    "deep",
-    "refetch block info - don't rely on timestamps in disk",
-    false,
-    types.boolean,
-  )
-  .addOptionalParam(
     "frozen",
     "validates that no schedule entry is missing",
     false,
@@ -90,32 +75,49 @@ task(
   .setAction(async ({ deep, frozen }, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) =>
       console.info(`Task schedule:validate -> ${text}`);
+
     log("Starting...");
 
     const providers = getProviders(hre);
     const intervals = pastIntervals();
     const schedule = loadSchedule();
-    log(
-      `Validating ${schedule.length} entries ${
-        deep ? "(with block metadata refetching)" : ""
-      }`,
-    );
+    log(`Validating ${schedule.length} slices`);
 
     if (schedule.length > intervals.length) {
-      throw new Error("More schedule entries than past vesting intervals");
+      throw new Error("More vesting slices than past intervals");
     }
 
-    await scheduleValidate(
-      intervals,
-      schedule,
-      deep,
-      providers,
-      deep ? log : () => {},
-    );
+    for (let i = 0; i < schedule.length; i++) {
+      const slice = schedule[i];
+      const { left, right } = intervals[i];
+
+      const [timestampMainnet, timestampGnosis] = await Promise.all([
+        providers.mainnet
+          .getBlock(slice.mainnet)
+          .then(({ timestamp }) => timestamp),
+        providers.gnosis
+          .getBlock(slice.gnosis)
+          .then(({ timestamp }) => timestamp),
+      ]);
+
+      if (!(left <= timestampMainnet && timestampMainnet <= right)) {
+        throw new Error(
+          `Mainnet block ${slice.mainnet} in schedule at position ${i} does not match interval`,
+        );
+      }
+
+      if (!(left <= timestampGnosis && timestampGnosis <= right)) {
+        throw new Error(
+          `GC block ${slice.gnosis} in schedule at position ${i} does not match interval`,
+        );
+      }
+
+      log(`${i}: OK`);
+    }
 
     if (frozen && schedule.length < intervals.length) {
       throw new Error(
-        "One or more past vesting intervals don't yet have a matching entry in schedule.json",
+        "One or more past vesting intervals don't yet have a matching slice in schedule.json",
       );
     }
     log("Ok & Done");

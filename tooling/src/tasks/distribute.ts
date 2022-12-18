@@ -28,6 +28,8 @@ task(
 
   await hre.run("harvest");
 
+  await hre.run("schedule:validate", { frozen: true });
+
   const { merkleRootMainnet, merkleRootGnosis } = await hre.run("checkpoint");
 
   await hre.run("propose", {
