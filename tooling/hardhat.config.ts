@@ -5,6 +5,7 @@ import "./src/tasks/allocate";
 import "./src/tasks/status";
 import "./src/tasks/checkpoint";
 import "./src/tasks/propose";
+import "./src/tasks/audit";
 
 import "./src/tasks/harvest";
 import "./src/tasks/distribute";
