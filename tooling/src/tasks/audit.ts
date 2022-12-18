@@ -2,21 +2,18 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { queryAllocationSetup } from "../queries/queryAllocationSetup";
 import scheduleFind from "../fns/scheduleFind";
 import snapshotSum from "../fns/snapshotSum";
 
 import { loadSchedule, loadAllocation } from "../persistence";
-import {
-  addresses,
-  getProviders,
-  GNO_LOCK_OPEN_TIMESTAMP,
-  VESTING_ID,
-} from "../config";
+import { addresses, getProviders, VESTING_ID } from "../config";
 import { BigNumber } from "ethers";
 import { queryAmountVested } from "../queries/queryVestingPool";
 
-task("audit", "").setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+task(
+  "audit",
+  "Verifies that the sum of all allocations snapshots adds up to the raw amount out of VestingPool",
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   const log = (text: string) => console.info(`Task audit -> ${text}`);
 
   const providers = getProviders(hre);
