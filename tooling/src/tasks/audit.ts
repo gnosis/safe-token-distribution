@@ -1,5 +1,5 @@
 import assert from "assert";
-import { task, types } from "hardhat/config";
+import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import scheduleFind from "../fns/scheduleFind";
@@ -59,6 +59,6 @@ task(
   if (amountVested.eq(result)) {
     log("OK & Done");
   } else {
-    throw new Error("Allocation amounts don't add up to VestingPool numbers.");
+    throw new Error("Allocation sum doesn't add up to VestingPool numbers.");
   }
 });
