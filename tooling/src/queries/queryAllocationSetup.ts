@@ -55,6 +55,6 @@ export async function queryAllocationSetup(
   return {
     balancesMainnet,
     balancesGC,
-    amountVested,
+    amountVested: amountVested.sub(prevAmountVested),
   };
 }
