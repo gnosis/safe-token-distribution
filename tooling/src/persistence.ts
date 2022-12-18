@@ -6,13 +6,28 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { Schedule, Snapshot } from "./types";
 
 export function loadSchedule(filePath?: string): Schedule {
-  return JSON.parse(fs.readFileSync(filePath || scheduleFilePath(), "utf8"));
+  const schedule = JSON.parse(
+    fs.readFileSync(filePath || scheduleFilePath(), "utf8"),
+  );
+
+  for (let i = 0; i < schedule.length; i++) {
+    const isFirst = i === 0;
+    const isLast = i === schedule.length - 1;
+    schedule[i].prev = isFirst ? null : schedule[i - 1];
+    schedule[i].next = isLast ? null : schedule[i + 1];
+  }
+
+  return schedule;
 }
 
 export function saveSchedule(schedule: Schedule, filePath?: string) {
   fs.writeFileSync(
     filePath || scheduleFilePath(),
-    JSON.stringify(schedule, null, 2),
+    JSON.stringify(
+      schedule.map(({ mainnet, gnosis }) => ({ mainnet, gnosis })),
+      null,
+      2,
+    ),
     "utf8",
   );
 }
