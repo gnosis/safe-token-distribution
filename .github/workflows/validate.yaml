@@ -25,3 +25,4 @@ jobs:
       - run: yarn clean
       - run: yarn compile
       - run: yarn hardhat schedule:validate --deep true
+      - run: yarn hardhat audit
