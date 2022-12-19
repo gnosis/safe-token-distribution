@@ -84,7 +84,7 @@ export function checkpointExists(id: string) {
   const dirPath = checkpointDirPath();
   fs.ensureDirSync(dirPath);
 
-  const checkpointPath = path.join(dirPath, `$id}.json`);
+  const checkpointPath = path.join(dirPath, `${id}.json`);
   const treePath = path.join(dirPath, `${id}.tree.json`);
 
   return fs.existsSync(checkpointPath) && fs.existsSync(treePath);

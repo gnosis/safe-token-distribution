@@ -35,6 +35,7 @@ subtask(
   .addParam("merkleRootMainnet", "", undefined, types.string)
   .addParam("merkleRootGnosis", "", undefined, types.string)
   .addParam("amountToClaim", "", undefined, types.any)
+  .addParam("amountToFundMainnet", "", undefined, types.any)
   .addParam("amountToFundGnosis", "", undefined, types.any)
   .setAction(async (taskArgs: TaskArgs, hre: HardhatRuntimeEnvironment) => {
     const {

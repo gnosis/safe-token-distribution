@@ -19,6 +19,7 @@ task(
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   const log = (text: string) => console.info(`Task distribute -> ${text}`);
 
+  log("Starting...");
   const { isReady } = await hre.run("status", { silent: true });
   if (!isReady) {
     log("Setup not ready for Distribution. Skipping...");
@@ -30,13 +31,16 @@ task(
   await hre.run("schedule:validate", { frozen: true });
 
   await hre.run("checkpoint", { persist: true });
+
+  log("Done");
 });
 
 task(
   "distribute:apply",
-  "Calculates claim amounts, and posts the transactions that will eventually updates distro setup and enable new claimers",
+  "Calculate funding amounts, and posts two transactions that will eventually update the Distribution setup and enable new claimers",
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  const log = (text: string) => console.info(`Task distribute -> ${text}`);
+  const log = (text: string) =>
+    console.info(`Task distribute:apply -> ${text}`);
 
   const { isReady, distroAddressMainnet, distroAddressGnosis } = await hre.run(
     "status",
