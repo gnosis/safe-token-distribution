@@ -4,7 +4,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryAllocationSetup } from "../queries/queryAllocationSetup";
 import calculateAllocation from "../fns/calculateAllocation";
-import calculateAllocationPerNetwork from "../fns/calculateAllocationPerNetwork";
+import calculateAllocationBreakdown from "../fns/calculateAllocationBreakdown";
 import scheduleFind from "../fns/scheduleFind";
 import snapshotSort from "../fns/snapshotSort";
 import snapshotSum from "../fns/snapshotSum";
@@ -16,7 +16,7 @@ import {
   GNO_LOCK_OPEN_TIMESTAMP,
   VESTING_ID,
 } from "../config";
-import { ProviderConfig, ScheduleEntry } from "../types";
+import { ProviderConfig, VestingSlice } from "../types";
 
 task(
   "allocate:all",
@@ -38,21 +38,14 @@ task(
 
     for (const entry of schedule) {
       const allocationsMainnet = lazy
-        ? loadAllocation("mainnet", entry.mainnet.blockNumber)
+        ? loadAllocation("mainnet", entry.mainnet)
         : null;
       const allocationsGC = lazy
-        ? loadAllocation("gnosis", entry.gnosis.blockNumber)
+        ? loadAllocation("gnosis", entry.gnosis)
         : null;
 
       if (!allocationsMainnet || !allocationsGC) {
-        const { prevEntry } = scheduleFind(schedule, entry.mainnet.blockNumber);
-
-        assert(
-          prevEntry === null ||
-            schedule.indexOf(prevEntry) + 1 == schedule.indexOf(entry),
-        );
-
-        await _writeOne(prevEntry, entry, providers, log);
+        await _writeOne(entry, providers, log);
       }
     }
   });
@@ -71,40 +64,35 @@ task(
 
     log("Starting");
 
-    const { prevEntry, entry } = scheduleFind(schedule, block);
+    const entry = scheduleFind(schedule, block);
     if (!entry) {
       throw new Error(`Could not find a schedule entry for ${block}`);
     }
 
-    await _writeOne(prevEntry, entry, providers, log);
+    await _writeOne(entry, providers, log);
   });
 
 async function _writeOne(
-  prevEntry: ScheduleEntry | null,
-  entry: ScheduleEntry,
+  entry: VestingSlice,
   providers: ProviderConfig,
   log: (text: string) => void,
 ) {
-  const blockMainnet = entry.mainnet.blockNumber;
-  const blockGC = entry.gnosis.blockNumber;
+  const blockMainnet = entry.mainnet;
+  const blockGC = entry.gnosis;
 
   log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
     await queryAllocationSetup(
-      prevEntry,
       entry,
       addresses,
       VESTING_ID,
       GNO_LOCK_OPEN_TIMESTAMP,
-      providers.mainnet,
+      providers,
       log,
     );
 
-  const { allocatedToMainnet, allocatedToGC } = calculateAllocationPerNetwork(
-    balancesMainnet,
-    balancesGC,
-    amountVested,
-  );
+  const { allocatedToMainnet, allocatedToGnosis } =
+    calculateAllocationBreakdown(balancesMainnet, balancesGC, amountVested);
 
   const allocationMainnet = calculateAllocation(
     balancesMainnet,
@@ -112,8 +100,8 @@ async function _writeOne(
   );
   assert(snapshotSum(allocationMainnet).eq(allocatedToMainnet));
 
-  const allocationGC = calculateAllocation(balancesGC, allocatedToGC);
-  assert(snapshotSum(allocationGC).eq(allocatedToGC));
+  const allocationGC = calculateAllocation(balancesGC, allocatedToGnosis);
+  assert(snapshotSum(allocationGC).eq(allocatedToGnosis));
 
   saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
   saveAllocation("gnosis", blockGC, snapshotSort(allocationGC));

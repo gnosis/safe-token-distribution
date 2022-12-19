@@ -6,7 +6,7 @@ import snapshotSum from "./snapshotSum";
 
 import { Snapshot } from "../types";
 
-export default function calculateAllocationPerNetwork(
+export default function calculateAllocationBreakdown(
   balancesMainnet: Snapshot,
   balancesGC: Snapshot,
   amountVested: BigNumber,
@@ -25,6 +25,6 @@ export default function calculateAllocationPerNetwork(
 
   return {
     allocatedToMainnet,
-    allocatedToGC,
+    allocatedToGnosis,
   };
 }
