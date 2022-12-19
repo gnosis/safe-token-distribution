@@ -19,9 +19,9 @@ export default function calculateAllocationBreakdown(
   );
 
   const allocatedToMainnet = BigNumber.from(result.mainnet || 0);
-  const allocatedToGC = BigNumber.from(result.gnosis || 0);
+  const allocatedToGnosis = BigNumber.from(result.gnosis || 0);
   // sanity check
-  assert(allocatedToMainnet.add(allocatedToGC).eq(amountVested));
+  assert(allocatedToMainnet.add(allocatedToGnosis).eq(amountVested));
 
   return {
     allocatedToMainnet,
