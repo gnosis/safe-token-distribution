@@ -16,7 +16,7 @@ export async function queryAllocationSetup(
 ) {
   const [blockMainnet, blockGnosis] = await Promise.all([
     providers.mainnet.getBlock(entry.mainnet),
-    providers.mainnet.getBlock(entry.gnosis),
+    providers.gnosis.getBlock(entry.gnosis),
   ]);
 
   const withLgno =

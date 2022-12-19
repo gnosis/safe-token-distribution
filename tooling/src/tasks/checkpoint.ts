@@ -57,6 +57,8 @@ task(
       saveCheckpoint(snapshotSort(checkpointGnosis), treeGnosis);
     }
 
+    log("Done");
+
     return {
       merkleRootMainnet: treeMainnet.root,
       merkleRootGnosis: treeGnosis.root,
