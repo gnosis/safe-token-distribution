@@ -28,7 +28,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn clean
       - run: yarn compile
-      - run: yarn hardhat distribute
+      - run: yarn hardhat distribute:prepare
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Automated Message: Generate Checkpoints & Post Distributions"
@@ -36,3 +36,4 @@ jobs:
           commit_user_name: Guild Bot
           commit_user_email: automation@gnosisguild.org
           commit_author: Guild Bot <automation@gnosisguild.org>
+      - run: yarn hardhat distribute:apply

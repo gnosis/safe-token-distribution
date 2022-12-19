@@ -46,7 +46,7 @@ export const addresses = {
   },
 };
 
-export async function getSafeClients(
+export async function getClients(
   safeAddressMainnet: string,
   safeAddressGC: string,
   hre: HardhatRuntimeEnvironment,

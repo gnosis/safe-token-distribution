@@ -55,10 +55,15 @@ task("status", "Checks SafeToken and MerkleDistro status")
     log(`    Gnosis   (${delegateAddress} , ${isDelegateGnosis})`);
     log("Done");
 
+    const isTokenReady = isBridged;
+    const isDistroReady = isDistroMainnetDeployed && isDistroGnosisDeployed;
+    const isDelegateReady = isDelegateMainnet && isDelegateGnosis;
+
     return {
-      isTokenReady: isBridged,
-      isDistroReady: isDistroMainnetDeployed && isDistroGnosisDeployed,
-      isDelegateReady: isDelegateMainnet && isDelegateGnosis,
+      isReady: isTokenReady && isDistroReady && isDelegateReady,
+      isTokenReady,
+      isDistroReady,
+      isDelegateReady,
       tokenAddressGnosis,
       distroAddressMainnet,
       distroAddressGnosis,

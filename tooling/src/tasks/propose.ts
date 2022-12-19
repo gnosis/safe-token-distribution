@@ -1,5 +1,5 @@
 import assert from "assert";
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { isAddress, isHexString } from "ethers/lib/utils";
 
 import Safe from "@gnosis.pm/safe-core-sdk";
@@ -9,22 +9,22 @@ import { SafeTransaction } from "@gnosis.pm/safe-core-sdk-types";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { queryAmountToClaim } from "../queries/queryVestingPool";
-import calculateClaimBreakdown from "../fns/calculateClaimBreakdown";
 import {
   createDistributeTxGC,
   createDistributeTxMainnet,
 } from "../fns/createDistributeTx";
 
-import { loadSchedule } from "../persistence";
-
-import { addresses, getProviders, getSafeClients, VESTING_ID } from "../config";
+import { addresses, getClients, VESTING_ID } from "../config";
+import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
 
 type TaskArgs = {
   distroAddressMainnet: string;
   distroAddressGnosis: string;
   merkleRootMainnet: string;
   merkleRootGnosis: string;
+  amountToClaim: BigNumber;
+  amountToFundMainnet: BigNumber;
+  amountToFundGnosis: BigNumber;
 };
 
 task(
@@ -35,48 +35,18 @@ task(
   .addParam("distroAddressGnosis", "", undefined, types.string)
   .addParam("merkleRootMainnet", "", undefined, types.string)
   .addParam("merkleRootGnosis", "", undefined, types.string)
+  .addParam("amountToClaim", "", undefined, types.any)
+  .addParam("amountToFundGnosis", "", undefined, types.any)
   .setAction(async (taskArgs: TaskArgs, hre: HardhatRuntimeEnvironment) => {
     const {
       distroAddressMainnet,
       distroAddressGnosis,
       merkleRootMainnet,
       merkleRootGnosis,
-    } = taskArgs;
-
-    if (!isAddress(distroAddressMainnet)) {
-      throw new Error("Arg distroAddressMainnet is not an address");
-    }
-
-    if (!isAddress(distroAddressGnosis)) {
-      throw new Error("Arg distroAddressGnosis is not an address");
-    }
-
-    if (!isHexBytes32(merkleRootMainnet)) {
-      throw new Error("Arg MerkleRootMainnet is not 32 bytes hex");
-    }
-
-    if (!isHexBytes32(merkleRootGnosis)) {
-      throw new Error("Arg MerkleRootGnosis is not 32 bytes hex");
-    }
-
-    const providers = getProviders(hre);
-    const schedule = loadSchedule();
-
-    const lastEntry = schedule[schedule.length - 1];
-
-    const amountToClaim = await queryAmountToClaim(
-      addresses.mainnet.vestingPool,
-      VESTING_ID,
-      lastEntry.mainnet.blockNumber,
-      providers.mainnet,
-    );
-
-    const { amountForMainnet, amountForGC } = await calculateClaimBreakdown(
-      schedule,
       amountToClaim,
-    );
-
-    assert(amountForMainnet.add(amountForGC).eq(amountToClaim));
+      amountToFundMainnet,
+      amountToFundGnosis,
+    } = validateTaskArgs(taskArgs);
 
     const {
       delegate,
@@ -84,7 +54,7 @@ task(
       safeSdkGC,
       serviceClientMainnet,
       serviceClientGC,
-    } = await getSafeClients(
+    } = await getClients(
       addresses.mainnet.treasurySafe,
       addresses.gnosis.treasurySafe,
       hre,
@@ -97,7 +67,7 @@ task(
       distroAddressGnosis,
       VESTING_ID,
       amountToClaim,
-      amountForGC,
+      amountToFundGnosis,
       merkleRootMainnet,
     );
 
@@ -130,6 +100,64 @@ async function propose(
     senderAddress,
     senderSignature: senderSignature.data,
   });
+}
+
+function validateTaskArgs(taskArgs: TaskArgs): TaskArgs {
+  const {
+    distroAddressMainnet,
+    distroAddressGnosis,
+    merkleRootMainnet,
+    merkleRootGnosis,
+    amountToClaim,
+    amountToFundMainnet,
+    amountToFundGnosis,
+  } = taskArgs;
+
+  if (!isAddress(distroAddressMainnet)) {
+    throw new Error("Arg distroAddressMainnet is not an address");
+  }
+
+  if (!isAddress(distroAddressGnosis)) {
+    throw new Error("Arg distroAddressGnosis is not an address");
+  }
+
+  if (!isHexBytes32(merkleRootMainnet)) {
+    throw new Error("Arg MerkleRootMainnet is not 32 bytes hex");
+  }
+
+  if (!isHexBytes32(merkleRootGnosis)) {
+    throw new Error("Arg MerkleRootGnosis is not 32 bytes hex");
+  }
+
+  if (!isBigNumberish(amountToClaim)) {
+    throw new Error("Arg amountToClaim, is not a BigNumber");
+  }
+
+  if (!isBigNumberish(amountToFundMainnet)) {
+    throw new Error("Arg amountToFundMainnet, is not a BigNumber");
+  }
+
+  if (!isBigNumberish(amountToFundGnosis)) {
+    throw new Error("Arg amountToFundGnosis, is not a BigNumber");
+  }
+
+  if (
+    !BigNumber.from(amountToClaim).eq(
+      BigNumber.from(amountToFundMainnet).add(amountToFundGnosis),
+    )
+  ) {
+    throw new Error("Funding amounts don't add up to claim amount");
+  }
+
+  return {
+    distroAddressMainnet,
+    distroAddressGnosis,
+    merkleRootMainnet,
+    merkleRootGnosis,
+    amountToClaim: BigNumber.from(amountToClaim),
+    amountToFundMainnet: BigNumber.from(amountToFundMainnet),
+    amountToFundGnosis: BigNumber.from(amountToFundGnosis),
+  };
 }
 
 function isHexBytes32(s: string) {
