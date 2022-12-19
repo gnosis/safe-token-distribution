@@ -52,6 +52,8 @@ task(
       {
         mainnet: block.number,
         gnosis: blockGC.number,
+        prev: null,
+        next: null,
       },
     ];
   }
@@ -72,7 +74,7 @@ task(
     false,
     types.boolean,
   )
-  .setAction(async ({ deep, frozen }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ frozen }, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) =>
       console.info(`Task schedule:validate -> ${text}`);
 
@@ -115,7 +117,7 @@ task(
       log(`${i}: OK`);
     }
 
-    if (frozen && schedule.length < intervals.length) {
+    if (frozen && schedule.length !== intervals.length) {
       throw new Error(
         "One or more past vesting intervals don't yet have a matching slice in schedule.json",
       );

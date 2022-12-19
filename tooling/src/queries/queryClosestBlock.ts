@@ -1,5 +1,5 @@
-import { Provider } from "@ethersproject/providers";
 import assert from "assert";
+import { Provider } from "@ethersproject/providers";
 
 export default async function queryClosestBlock(
   timestamp: number,

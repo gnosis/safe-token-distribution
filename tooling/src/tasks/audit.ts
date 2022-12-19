@@ -1,8 +1,6 @@
-import assert from "assert";
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import scheduleFind from "../fns/scheduleFind";
 import snapshotSum from "../fns/snapshotSum";
 
 import { loadSchedule, loadAllocation } from "../persistence";
@@ -23,24 +21,14 @@ task(
 
   let result = BigNumber.from(0);
   for (const entry of schedule) {
-    const allocationsMainnet = loadAllocation(
-      "mainnet",
-      entry.mainnet.blockNumber,
-    );
-
-    const allocationsGC = loadAllocation("gnosis", entry.gnosis.blockNumber);
+    const allocationsMainnet = loadAllocation("mainnet", entry.mainnet);
+    const allocationsGC = loadAllocation("gnosis", entry.gnosis);
 
     if (!allocationsMainnet || !allocationsGC) {
       throw new Error(
-        `No allocations found for ${entry.mainnet.blockNumber}/${entry.gnosis.blockNumber}`,
+        `No allocations found for ${entry.mainnet}/${entry.gnosis}`,
       );
     }
-
-    const { prevEntry } = scheduleFind(schedule, entry.mainnet.blockNumber);
-    assert(
-      prevEntry === null ||
-        schedule.indexOf(prevEntry) + 1 == schedule.indexOf(entry),
-    );
 
     result = result
       .add(snapshotSum(allocationsMainnet))
@@ -48,11 +36,10 @@ task(
   }
 
   const lastEntry = schedule[schedule.length - 1];
-
   const amountVested = await queryAmountVested(
     addresses.mainnet.vestingPool,
     VESTING_ID,
-    lastEntry.mainnet.blockNumber,
+    lastEntry.mainnet,
     providers.mainnet,
   );
 

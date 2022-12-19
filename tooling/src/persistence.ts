@@ -20,9 +20,9 @@ export function loadSchedule(filePath?: string): Schedule {
   return schedule;
 }
 
-export function saveSchedule(schedule: Schedule, filePath?: string) {
+export function saveSchedule(schedule: Schedule) {
   fs.writeFileSync(
-    filePath || scheduleFilePath(),
+    scheduleFilePath(),
     JSON.stringify(
       schedule.map(({ mainnet, gnosis }) => ({ mainnet, gnosis })),
       null,
