@@ -12,18 +12,34 @@ import {
   OmniMediator__factory,
 } from "../../typechain";
 import { AddressConfig } from "../types";
+import assert from "assert";
+
+type MainnetArgs = {
+  distroAddressMainnet: string;
+  distroAddressGnosis: string;
+  vestingId: string;
+  amountToClaim: BigNumber;
+  amountToFund: BigNumber;
+  amountToBridge: BigNumber;
+  nextMerkleRoot: string;
+};
 
 export async function createDistributeTxMainnet(
   safeSdk: Safe,
   addresses: AddressConfig,
-  merkleDistroAddressMainnet: string,
-  merkleDistroAddressGC: string,
-  vestingId: string,
-  amountToClaim: BigNumber,
-  amountToBridge: BigNumber,
-  nextMerkleRoot: string,
+  {
+    distroAddressMainnet,
+    distroAddressGnosis,
+    vestingId,
+    amountToClaim,
+    amountToFund,
+    amountToBridge,
+    nextMerkleRoot,
+  }: MainnetArgs,
 ): Promise<SafeTransaction> {
   const safeAddress = await safeSdk.getAddress();
+
+  assert(amountToClaim.eq(amountToFund.add(amountToBridge)));
 
   // encode as multisend
   return safeSdk.createTransaction({
@@ -36,16 +52,16 @@ export async function createDistributeTxMainnet(
       ),
       encodeFundDistroMainnet(
         addresses.mainnet.token,
-        merkleDistroAddressMainnet,
-        amountToClaim,
+        distroAddressMainnet,
+        amountToFund,
       ),
-      ...encodeFundDistroGC(
+      ...encodeFundDistroGnosis(
         addresses.mainnet.token,
         addresses.mainnet.omniMediator,
-        merkleDistroAddressGC,
+        distroAddressGnosis,
         amountToBridge,
       ),
-      encodeSetMerkleRoot(merkleDistroAddressMainnet, nextMerkleRoot),
+      encodeSetMerkleRoot(distroAddressMainnet, nextMerkleRoot),
     ],
   });
 }
@@ -108,7 +124,7 @@ function encodeSetMerkleRoot(
   };
 }
 
-function encodeFundDistroGC(
+function encodeFundDistroGnosis(
   safeTokenAddress: string,
   omniMediatorAddress: string,
   merkleDistroAddress: string,

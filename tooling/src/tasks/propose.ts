@@ -51,9 +51,9 @@ task(
     const {
       delegate,
       safeSdkMainnet,
-      safeSdkGC,
+      safeSdkGnosis,
       serviceClientMainnet,
-      serviceClientGC,
+      serviceClientGnosis,
     } = await getClients(
       addresses.mainnet.treasurySafe,
       addresses.gnosis.treasurySafe,
@@ -63,23 +63,26 @@ task(
     const txMainnet = await createDistributeTxMainnet(
       safeSdkMainnet,
       addresses,
-      distroAddressMainnet,
-      distroAddressGnosis,
-      VESTING_ID,
-      amountToClaim,
-      amountToFundGnosis,
-      merkleRootMainnet,
+      {
+        distroAddressMainnet,
+        distroAddressGnosis,
+        vestingId: VESTING_ID,
+        amountToClaim,
+        amountToFund: amountToFundMainnet,
+        amountToBridge: amountToFundGnosis,
+        nextMerkleRoot: merkleRootMainnet,
+      },
     );
 
     const txGC = await createDistributeTxGC(
-      safeSdkGC,
+      safeSdkGnosis,
       distroAddressGnosis,
       merkleRootGnosis,
     );
 
     await Promise.all([
       propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet),
-      propose(safeSdkGC, serviceClientGC, delegate, txGC),
+      propose(safeSdkGnosis, serviceClientGnosis, delegate, txGC),
     ]);
   });
 

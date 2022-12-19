@@ -48,7 +48,7 @@ export const addresses = {
 
 export async function getClients(
   safeAddressMainnet: string,
-  safeAddressGC: string,
+  safeAddressGnosis: string,
   hre: HardhatRuntimeEnvironment,
 ) {
   assert(process.env.MNEMONIC);
@@ -62,29 +62,29 @@ export async function getClients(
     signerOrProvider: delegate.connect(providers.mainnet),
   });
 
-  const ethAdapterGC = new EthersAdapter({
+  const ethAdapterGnosis = new EthersAdapter({
     ethers: hre.ethers,
     signerOrProvider: delegate.connect(providers.gnosis),
   });
 
-  const { mainnet: serviceClientMainnet, gnosis: serviceClientGC } =
-    getServiceClients(ethAdapterMainnet, ethAdapterGC);
+  const { mainnet: serviceClientMainnet, gnosis: serviceClientGnosis } =
+    getServiceClients(ethAdapterMainnet, ethAdapterGnosis);
 
   const safeSdkMainnet = await Safe.create({
     ethAdapter: ethAdapterMainnet,
     safeAddress: safeAddressMainnet,
   });
 
-  const safeSdkGC = await Safe.create({
-    ethAdapter: ethAdapterGC,
-    safeAddress: safeAddressGC,
+  const safeSdkGnosis = await Safe.create({
+    ethAdapter: ethAdapterGnosis,
+    safeAddress: safeAddressGnosis,
   });
 
   return {
     safeSdkMainnet,
-    safeSdkGC,
+    safeSdkGnosis,
     serviceClientMainnet,
-    serviceClientGC,
+    serviceClientGnosis,
     delegate,
   };
 }

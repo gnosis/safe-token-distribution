@@ -31,21 +31,21 @@ describe("createDistributeTxMainnet", function () {
     );
 
     const amountToClaim = BigNumber.from("10000000");
-    const amountToBridge = BigNumber.from("500000");
+    const amountToBridge = BigNumber.from("300000");
+    const amountToFund = amountToClaim.sub(amountToBridge);
     const nextMerkleRoot =
       "0xaaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999";
 
-    const tx = await createDistributeTxMainnet(
-      safeSdk,
-      addresses,
-      merkleDistro.address,
-      // doesnt matter
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe",
-      VESTING_ID,
+    const doesntMatterAddress = "0x5aFE3855358E112B5647B952709E6165e1c1eEEe";
+    const tx = await createDistributeTxMainnet(safeSdk, addresses, {
+      distroAddressMainnet: merkleDistro.address,
+      distroAddressGnosis: doesntMatterAddress,
+      vestingId: VESTING_ID,
       amountToClaim,
+      amountToFund,
       amountToBridge,
       nextMerkleRoot,
-    );
+    });
     await safeSdk.executeTransaction(tx);
 
     const safeBalanceAfter = await safeToken.balanceOf(safeSdk.getAddress());
@@ -53,7 +53,7 @@ describe("createDistributeTxMainnet", function () {
     // POST-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(nextMerkleRoot);
     expect(await safeToken.balanceOf(merkleDistro.address)).to.equal(
-      amountToClaim,
+      amountToFund,
     );
     expect(await safeToken.balanceOf(addresses.mainnet.omniMediator)).to.equal(
       amountToBridge,
