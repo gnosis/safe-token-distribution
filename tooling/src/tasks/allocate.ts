@@ -48,6 +48,7 @@ task(
         await _writeOne(entry, providers, log);
       }
     }
+    log("Done");
   });
 
 task(
@@ -73,17 +74,17 @@ task(
   });
 
 async function _writeOne(
-  entry: VestingSlice,
+  slice: VestingSlice,
   providers: ProviderConfig,
   log: (text: string) => void,
 ) {
-  const blockMainnet = entry.mainnet;
-  const blockGC = entry.gnosis;
+  const blockMainnet = slice.mainnet;
+  const blockGC = slice.gnosis;
 
   log(`mainnet ${blockMainnet} gnosis ${blockGC}`);
   const { balancesMainnet, balancesGC, amountVested } =
     await queryAllocationSetup(
-      entry,
+      slice,
       addresses,
       VESTING_ID,
       GNO_LOCK_OPEN_TIMESTAMP,
