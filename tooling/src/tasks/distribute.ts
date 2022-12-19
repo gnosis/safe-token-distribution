@@ -1,28 +1,27 @@
+import assert from "assert";
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { getProviders } from "../config";
+import { queryAmountToClaim } from "../queries/queryVestingPool";
+import calculateFundingBreakdown from "../fns/calculateFundingBreakdown";
+
+import {
+  checkpointCount,
+  checkpointExists,
+  loadSchedule,
+} from "../persistence";
+import { Schedule } from "../types";
+import { addresses, getProviders, VESTING_ID } from "../config";
 
 task(
-  "distribute",
-  "Creates a new checkpoint, calculates claim amounts, and updates distro setup enabling new claimers on both networks",
+  "distribute:prepare",
+  "Creates a new checkpoint, and persists it to the repo",
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  const providers = getProviders(hre);
-
   const log = (text: string) => console.info(`Task distribute -> ${text}`);
 
-  const {
-    isTokenReady,
-    isDistroReady,
-    isDelegateReady,
-    distroAddressMainnet,
-    distroAddressGnosis,
-  } = await hre.run("status", { silent: true });
-
-  if (!isTokenReady || !isDistroReady || isDelegateReady) {
-    log(
-      "Setup not ready for Distribution. Run status for more info. Skipping...",
-    );
+  const { isReady } = await hre.run("status", { silent: true });
+  if (!isReady) {
+    log("Setup not ready for Distribution. Skipping...");
     return;
   }
 
@@ -30,12 +29,80 @@ task(
 
   await hre.run("schedule:validate", { frozen: true });
 
-  const { merkleRootMainnet, merkleRootGnosis } = await hre.run("checkpoint");
+  await hre.run("checkpoint", { persist: true });
+});
+
+task(
+  "distribute:apply",
+  "Calculates claim amounts, and posts the transactions that will eventually updates distro setup and enable new claimers",
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+  const log = (text: string) => console.info(`Task distribute -> ${text}`);
+
+  const { isReady, distroAddressMainnet, distroAddressGnosis } = await hre.run(
+    "status",
+    { silent: true },
+  );
+
+  if (!isReady) {
+    log("Setup not ready for Distribution. Skipping...");
+    return;
+  }
+
+  const schedule = loadSchedule();
+  const preCount = checkpointCount();
+  const { merkleRootMainnet, merkleRootGnosis } = await hre.run("checkpoint", {
+    persist: false,
+  });
+  const postCount = checkpointCount();
+  // its important to ensure that checkpoint:apply is running
+  // on artifacts previously calculated and committed
+  assert(preCount === postCount, "Checkpoint task persist=false is writing?");
+
+  if (!checkpointExists(merkleRootMainnet)) {
+    throw new Error(`Checkpoints for (mainnet) ${merkleRootMainnet} not found`);
+  }
+
+  if (!checkpointExists(merkleRootGnosis)) {
+    throw new Error(`Checkpoints for (gnosis) ${merkleRootGnosis} not found`);
+  }
+
+  const { amountToClaim, amountToFundMainnet, amountToFundGnosis } =
+    await fundingAmounts(schedule, hre);
 
   await hre.run("propose", {
     distroAddressMainnet,
     distroAddressGnosis,
     merkleRootMainnet,
     merkleRootGnosis,
+    amountToClaim,
+    amountToFundMainnet,
+    amountToFundGnosis,
   });
 });
+
+async function fundingAmounts(
+  schedule: Schedule,
+  hre: HardhatRuntimeEnvironment,
+) {
+  const providers = getProviders(hre);
+
+  const lastEntry = schedule[schedule.length - 1];
+
+  const amountToClaim = await queryAmountToClaim(
+    addresses.mainnet.vestingPool,
+    VESTING_ID,
+    lastEntry.mainnet,
+    providers.mainnet,
+  );
+
+  const { amountToFundMainnet, amountToFundGnosis } = calculateFundingBreakdown(
+    schedule,
+    amountToClaim,
+  );
+
+  return {
+    amountToClaim,
+    amountToFundMainnet,
+    amountToFundGnosis,
+  };
+}

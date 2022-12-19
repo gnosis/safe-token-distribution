@@ -1,4 +1,4 @@
-import { task } from "hardhat/config";
+import { task, types } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
 import snapshotMerge from "../fns/snapshotMerge";
@@ -11,47 +11,54 @@ import { Snapshot } from "../types";
 task(
   "checkpoint",
   "Reduces through past allocation files, and consolidates it in a Snapshot, and persists it as a MerkleTree",
-).setAction(async () => {
-  const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
+)
+  .addOptionalParam(
+    "persist",
+    "Should the output files be persisted to the repo?",
+    true,
+    types.boolean,
+  )
+  .setAction(async ({ persist }) => {
+    const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
 
-  const schedule = loadSchedule();
+    const schedule = loadSchedule();
 
-  log("Starting");
+    log("Starting");
 
-  let checkpointMainnet: Snapshot = {};
-  let checkpointGC: Snapshot = {};
+    let checkpointMainnet: Snapshot = {};
+    let checkpointGnosis: Snapshot = {};
 
-  for (const entry of schedule) {
-    const allocationMainnet = loadAllocation(
-      "mainnet",
-      entry.mainnet.blockNumber,
-    );
-    const allocationGC = loadAllocation("gnosis", entry.gnosis.blockNumber);
+    for (const vestingSlice of schedule) {
+      const allocationMainnet = loadAllocation("mainnet", vestingSlice.mainnet);
+      const allocationGnosis = loadAllocation("gnosis", vestingSlice.gnosis);
 
-    if (!allocationMainnet) {
-      throw new Error(
-        `Mainnet Allocation Not Calculated ${entry.mainnet.blockNumber}`,
-      );
+      if (!allocationMainnet) {
+        throw new Error(
+          `Mainnet allocation not yet calculated ${vestingSlice.mainnet}`,
+        );
+      }
+
+      if (!allocationGnosis) {
+        throw new Error(
+          `Gnosis allocation not yet calculated ${vestingSlice.gnosis}`,
+        );
+      }
+
+      checkpointMainnet = snapshotMerge(checkpointMainnet, allocationMainnet);
+      checkpointGnosis = snapshotMerge(checkpointGnosis, allocationGnosis);
     }
 
-    if (!allocationGC) {
-      throw new Error(
-        `Gnosis Allocation Not Calculated ${entry.gnosis.blockNumber}`,
-      );
+    const treeMainnet = createMerkleTree(checkpointMainnet);
+    const treeGnosis = createMerkleTree(checkpointGnosis);
+
+    if (persist) {
+      log("Saving checkpoints and trees");
+      saveCheckpoint(snapshotSort(checkpointMainnet), treeMainnet);
+      saveCheckpoint(snapshotSort(checkpointGnosis), treeGnosis);
     }
 
-    checkpointMainnet = snapshotMerge(checkpointMainnet, allocationMainnet);
-    checkpointGC = snapshotMerge(checkpointGC, allocationGC);
-  }
-
-  const treeMainnet = createMerkleTree(checkpointMainnet);
-  const treeGnosis = createMerkleTree(checkpointGC);
-
-  saveCheckpoint(snapshotSort(checkpointMainnet), treeMainnet);
-  saveCheckpoint(snapshotSort(checkpointGC), treeGnosis);
-
-  return {
-    merkleRootMainnet: treeMainnet.root,
-    merkleRootGnosis: treeGnosis.root,
-  };
-});
+    return {
+      merkleRootMainnet: treeMainnet.root,
+      merkleRootGnosis: treeGnosis.root,
+    };
+  });
