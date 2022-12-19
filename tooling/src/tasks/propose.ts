@@ -1,4 +1,3 @@
-import assert from "assert";
 import { BigNumber, Signer } from "ethers";
 import { isAddress, isHexString } from "ethers/lib/utils";
 
@@ -6,7 +5,7 @@ import Safe from "@gnosis.pm/safe-core-sdk";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import { SafeTransaction } from "@gnosis.pm/safe-core-sdk-types";
 
-import { task, types } from "hardhat/config";
+import { subtask, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import {
@@ -27,7 +26,7 @@ type TaskArgs = {
   amountToFundGnosis: BigNumber;
 };
 
-task(
+subtask(
   "propose",
   "Updates the distribution setup, by unlocking tokens and uploading new proofs to the distribution contracts",
 )
