@@ -60,7 +60,10 @@ task(
   const postCount = checkpointCount();
   // its important to ensure that checkpoint:apply is running
   // on artifacts previously calculated and committed
-  assert(preCount === postCount, "Checkpoint task persist=false is writing?");
+  assert(
+    preCount === postCount,
+    "Checkpoint task with ‘persist=false’ should not be writing",
+  );
 
   if (!checkpointExists(merkleRootMainnet)) {
     throw new Error(`Checkpoints for (mainnet) ${merkleRootMainnet} not found`);
