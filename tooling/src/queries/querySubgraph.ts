@@ -4,7 +4,7 @@ import { request as gqlRequest, gql } from "graphql-request";
 import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 
-import snapshotMerge from "../fns/snapshotMerge";
+import balancemapMerge from "../fns/balancemapMerge";
 import { BalanceMap, UserBalance } from "../types";
 
 const request = withPaging(withRetry(gqlRequest));
@@ -39,7 +39,7 @@ export async function queryBalancesGC(
   const s2 = aggregate(balancesWithDeposit);
   const s3 = aggregate(balancesWithStaked);
 
-  return snapshotMerge(s1, snapshotMerge(s2, s3));
+  return balancemapMerge(s1, balancemapMerge(s2, s3));
 }
 
 function withPaging(

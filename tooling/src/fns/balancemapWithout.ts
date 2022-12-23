@@ -1,19 +1,19 @@
 import { getAddress } from "ethers/lib/utils";
 import { BalanceMap } from "../types";
 
-export default function snapshotWithout(
-  snapshot: BalanceMap,
+export default function balancemapWithout(
+  map: BalanceMap,
   toRemove: string[],
 ): BalanceMap {
   toRemove = toRemove.map((address) => getAddress(address));
 
-  const addresses = Object.keys(snapshot).filter(
+  const addresses = Object.keys(map).filter(
     (address) => !toRemove.includes(getAddress(address)),
   );
 
-  const nextSnapshot: BalanceMap = {};
+  const nextMap: BalanceMap = {};
   for (const address of addresses) {
-    nextSnapshot[address] = snapshot[address];
+    nextMap[address] = map[address];
   }
-  return nextSnapshot;
+  return nextMap;
 }

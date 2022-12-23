@@ -1,8 +1,8 @@
 import { task, types } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
-import snapshotMerge from "../fns/snapshotMerge";
-import snapshotSort from "../fns/snapshotSort";
+import balancemapMerge from "../fns/balancemapMerge";
+import balancemapSort from "../fns/balancemapSort";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
@@ -44,8 +44,8 @@ task(
         );
       }
 
-      checkpointMainnet = snapshotMerge(checkpointMainnet, allocationMainnet);
-      checkpointGnosis = snapshotMerge(checkpointGnosis, allocationGnosis);
+      checkpointMainnet = balancemapMerge(checkpointMainnet, allocationMainnet);
+      checkpointGnosis = balancemapMerge(checkpointGnosis, allocationGnosis);
     }
 
     const treeMainnet = createMerkleTree(checkpointMainnet);
@@ -53,8 +53,8 @@ task(
 
     if (persist) {
       log("Saving checkpoints and trees");
-      saveCheckpoint(snapshotSort(checkpointMainnet), treeMainnet);
-      saveCheckpoint(snapshotSort(checkpointGnosis), treeGnosis);
+      saveCheckpoint(balancemapSort(checkpointMainnet), treeMainnet);
+      saveCheckpoint(balancemapSort(checkpointGnosis), treeGnosis);
     }
 
     log("Done");
