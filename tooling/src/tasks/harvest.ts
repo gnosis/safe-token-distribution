@@ -6,5 +6,5 @@ task(
   "Tries to expand the schedule and calculate any missing allocations",
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   await hre.run("schedule:expand");
-  await hre.run("allocate:all");
+  await hre.run("allocate");
 });
