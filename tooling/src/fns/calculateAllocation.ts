@@ -4,12 +4,12 @@ import { BigNumber } from "ethers";
 import snapshotMerge from "./snapshotMerge";
 import snapshotSum from "./snapshotSum";
 
-import { Snapshot } from "../types";
+import { BalanceMap } from "../types";
 
 export default function calculateAllocation(
-  balances: Snapshot,
+  balances: BalanceMap,
   amountToAllocate: BigNumber,
-): Snapshot {
+): BalanceMap {
   if (amountToAllocate.eq(0)) {
     return {};
   }
@@ -19,7 +19,7 @@ export default function calculateAllocation(
   return snapshotMerge(allocation, calculateAllocation(balances, remainder));
 }
 
-function divide(balances: Snapshot, amountToAllocate: BigNumber) {
+function divide(balances: BalanceMap, amountToAllocate: BigNumber) {
   const holderCount = Object.keys(balances).length;
   const isMicroPeanuts = amountToAllocate.lte(holderCount);
   return !isMicroPeanuts
@@ -27,7 +27,7 @@ function divide(balances: Snapshot, amountToAllocate: BigNumber) {
     : dividePeanuts(balances, amountToAllocate);
 }
 
-function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
+function divideWeighted(balances: BalanceMap, amountToAllocate: BigNumber) {
   const totalBalances = snapshotSum(balances);
   const allocation = Object.keys(balances)
     .map((address) => ({
@@ -49,7 +49,7 @@ function divideWeighted(balances: Snapshot, amountToAllocate: BigNumber) {
   };
 }
 
-function dividePeanuts(balances: Snapshot, dust: BigNumber) {
+function dividePeanuts(balances: BalanceMap, dust: BigNumber) {
   const holderCount = Object.keys(balances).length;
 
   assert(dust.toNumber() <= holderCount);

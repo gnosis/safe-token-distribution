@@ -6,11 +6,11 @@ import snapshotSort from "../fns/snapshotSort";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
-import { Snapshot } from "../types";
+import { BalanceMap } from "../types";
 
 task(
   "checkpoint",
-  "Reduces through past allocation files, and consolidates it in a Snapshot, and persists it as a MerkleTree",
+  "Reduces through past allocation files, consolidates it in a BalanceMap and persists it as a MerkleTree",
 )
   .addOptionalParam(
     "persist",
@@ -25,8 +25,8 @@ task(
 
     log("Starting");
 
-    let checkpointMainnet: Snapshot = {};
-    let checkpointGnosis: Snapshot = {};
+    let checkpointMainnet: BalanceMap = {};
+    let checkpointGnosis: BalanceMap = {};
 
     for (const vestingSlice of schedule) {
       const allocationMainnet = loadAllocation("mainnet", vestingSlice.mainnet);
