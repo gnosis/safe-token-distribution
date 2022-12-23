@@ -14,7 +14,7 @@ export type VestingSlice = {
   next: VestingSlice | null;
 };
 
-export type Snapshot = {
+export type BalanceMap = {
   [key: string]: BigNumber;
 };
 

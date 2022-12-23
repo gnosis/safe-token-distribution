@@ -1,6 +1,9 @@
-import { Snapshot } from "../types";
+import { BalanceMap } from "../types";
 
-export default function snapshotMerge(s1: Snapshot, s2: Snapshot): Snapshot {
+export default function snapshotMerge(
+  m1: BalanceMap,
+  m2: BalanceMap,
+): BalanceMap {
   // !!this is MUCH slower!!
   // return Object.keys(s1).reduce(
   //   (result, key) => ({
@@ -10,8 +13,8 @@ export default function snapshotMerge(s1: Snapshot, s2: Snapshot): Snapshot {
   //   s2,
   // );
 
-  const dest = { ...s1 };
-  const src = s2;
+  const dest = { ...m1 };
+  const src = m2;
 
   for (const key in src) {
     dest[key] = src[key].add(dest[key] || 0);

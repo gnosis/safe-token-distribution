@@ -4,11 +4,11 @@ import { BigNumber } from "ethers";
 import calculateAllocation from "./calculateAllocation";
 import snapshotSum from "./snapshotSum";
 
-import { Snapshot } from "../types";
+import { BalanceMap } from "../types";
 
 export default function calculateAllocationBreakdown(
-  balancesMainnet: Snapshot,
-  balancesGC: Snapshot,
+  balancesMainnet: BalanceMap,
+  balancesGC: BalanceMap,
   amountVested: BigNumber,
 ) {
   // just re-use allocation math to figure how much (for this vestingSlice)
