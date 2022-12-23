@@ -2,7 +2,7 @@ import assert from "assert";
 
 import { queryBalancesGC, queryBalancesMainnet } from "./querySubgraph";
 import { queryAmountVested } from "./queryVestingPool";
-import snapshotWithout from "../fns/snapshotWithout";
+import without from "../fns/balancemapWithout";
 
 import { AddressConfig, ProviderConfig, VestingSlice } from "../types";
 
@@ -56,8 +56,8 @@ export async function queryAllocationSetup(
   };
 
   return {
-    balancesMainnet: snapshotWithout(balancesMainnet, ignore.mainnet),
-    balancesGC: snapshotWithout(balancesGC, ignore.gnosis),
+    balancesMainnet: without(balancesMainnet, ignore.mainnet),
+    balancesGC: without(balancesGC, ignore.gnosis),
     amountVested: amountVested.sub(prevAmountVested),
   };
 }
