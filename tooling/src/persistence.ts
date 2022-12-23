@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import path from "path";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { Schedule, Snapshot } from "./types";
+import { Schedule, BalanceMap } from "./types";
 
 export function loadSchedule(filePath?: string): Schedule {
   const schedule = JSON.parse(
@@ -39,7 +39,7 @@ function scheduleFilePath() {
 export function loadAllocation(
   chain: "mainnet" | "gnosis",
   block: number,
-): Snapshot | null {
+): BalanceMap | null {
   const filePath = allocationFilePath(chain, block);
   return loadSnapshot(filePath);
 }
@@ -47,7 +47,7 @@ export function loadAllocation(
 export function saveAllocation(
   chain: "mainnet" | "gnosis",
   block: number,
-  allocation: Snapshot,
+  allocation: BalanceMap,
 ) {
   const filePath = allocationFilePath(chain, block);
   fs.ensureDirSync(path.dirname(filePath));
@@ -67,7 +67,7 @@ export function allocationFilePath(chain: "mainnet" | "gnosis", block: number) {
 }
 
 export function saveCheckpoint(
-  checkpoint: Snapshot,
+  checkpoint: BalanceMap,
   tree: StandardMerkleTree<(string | BigNumber)[]>,
 ) {
   const dirPath = checkpointDirPath();
@@ -100,7 +100,7 @@ function checkpointDirPath() {
   return path.resolve(path.join(__dirname, "..", "_harvest", "checkpoints"));
 }
 
-function loadSnapshot(filePath: string): Snapshot | null {
+function loadSnapshot(filePath: string): BalanceMap | null {
   if (!fs.existsSync(filePath)) {
     return null;
   }
@@ -108,7 +108,7 @@ function loadSnapshot(filePath: string): Snapshot | null {
   return valuesToBigNumber(JSON.parse(fs.readFileSync(filePath, "utf8")));
 }
 
-function writeSnapshot(filePath: string, map: Snapshot) {
+function writeSnapshot(filePath: string, map: BalanceMap) {
   fs.writeFileSync(
     filePath,
     JSON.stringify(valuesToString(map), null, 2),
@@ -120,7 +120,7 @@ type StringMap = {
   [key: string]: string;
 };
 
-function valuesToBigNumber(map: StringMap): Snapshot {
+function valuesToBigNumber(map: StringMap): BalanceMap {
   // !!this is (catastrophically) MUCH slower!!
   // return Object.keys(map).reduce(
   //   (prev, key) => ({
@@ -130,14 +130,14 @@ function valuesToBigNumber(map: StringMap): Snapshot {
   //   {},
   // );
   // this is faster
-  const result: Snapshot = {};
+  const result: BalanceMap = {};
   for (const key in map) {
     result[key] = BigNumber.from(map[key]);
   }
   return result;
 }
 
-function valuesToString(map: Snapshot): StringMap {
+function valuesToString(map: BalanceMap): StringMap {
   // !!this is MUCH slower!!
   // return Object.keys(map).reduce(
   //   (prev, key) => ({

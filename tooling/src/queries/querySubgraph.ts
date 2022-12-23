@@ -5,14 +5,14 @@ import { BigNumber, constants } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 
 import snapshotMerge from "../fns/snapshotMerge";
-import { Snapshot, UserBalance } from "../types";
+import { BalanceMap, UserBalance } from "../types";
 
 const request = withPaging(withRetry(gqlRequest));
 
 export async function queryBalancesMainnet(
   block: number,
   withLgno: boolean,
-): Promise<Snapshot> {
+): Promise<BalanceMap> {
   if (!withLgno) {
     return {};
   }
@@ -27,7 +27,7 @@ export async function queryBalancesMainnet(
 export async function queryBalancesGC(
   block: number,
   withLgno: boolean,
-): Promise<Snapshot> {
+): Promise<BalanceMap> {
   const [balancesWithLgno, balancesWithDeposit, balancesWithStaked] =
     await Promise.all([
       withLgno ? request(urlGnosis, queryLgno, { block }) : [],
@@ -131,7 +131,7 @@ const queryStaked = gql`
   }
 `;
 
-function aggregate(users: UserBalance[]): Snapshot {
+function aggregate(users: UserBalance[]): BalanceMap {
   if (users.length === 0) {
     return {};
   }
@@ -146,7 +146,7 @@ function aggregate(users: UserBalance[]): Snapshot {
     }))
     .filter(({ balance }) => balance.gt(0));
 
-  const result: Snapshot = {};
+  const result: BalanceMap = {};
   for (const { id, balance } of idsAndBalances) {
     result[id] = balance;
   }
