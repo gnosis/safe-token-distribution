@@ -5,7 +5,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { queryAllocationSetup } from "../queries/queryAllocationSetup";
 import calculateAllocation from "../fns/calculateAllocation";
 import calculateAllocationBreakdown from "../fns/calculateAllocationBreakdown";
-import scheduleFind from "../fns/scheduleFind";
 import snapshotSort from "../fns/snapshotSort";
 import snapshotSum from "../fns/snapshotSum";
 
@@ -104,7 +103,7 @@ function slicesInScope(
     );
   }
 
-  const entry = scheduleFind(schedule, blockNumber);
+  const entry = schedule.find((entry) => blockNumber <= entry.mainnet);
   if (!entry) {
     throw new Error(
       `Distribution not yet scheduled for block ${blockNumber} - too late`,
