@@ -1,6 +1,6 @@
 import { BalanceMap } from "../types";
 
-export default function snapshotMerge(
+export default function balancemapMerge(
   m1: BalanceMap,
   m2: BalanceMap,
 ): BalanceMap {

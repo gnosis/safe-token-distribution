@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import snapshotSum from "../fns/snapshotSum";
+import balancemapSum from "../fns/balancemapSum";
 
 import { loadSchedule, loadAllocation } from "../persistence";
 import { addresses, getProviders, VESTING_ID } from "../config";
@@ -31,8 +31,8 @@ task(
     }
 
     result = result
-      .add(snapshotSum(allocationsMainnet))
-      .add(snapshotSum(allocationsGC));
+      .add(balancemapSum(allocationsMainnet))
+      .add(balancemapSum(allocationsGC));
   }
 
   const lastEntry = schedule[schedule.length - 1];

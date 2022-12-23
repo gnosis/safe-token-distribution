@@ -5,8 +5,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { queryAllocationSetup } from "../queries/queryAllocationSetup";
 import calculateAllocation from "../fns/calculateAllocation";
 import calculateAllocationBreakdown from "../fns/calculateAllocationBreakdown";
-import snapshotSort from "../fns/snapshotSort";
-import snapshotSum from "../fns/snapshotSum";
+import sort from "../fns/balancemapSort";
+import sum from "../fns/balancemapSum";
 
 import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
 import {
@@ -74,16 +74,16 @@ task(
         balancesMainnet,
         allocatedToMainnet,
       );
-      assert(snapshotSum(allocationMainnet).eq(allocatedToMainnet));
+      assert(sum(allocationMainnet).eq(allocatedToMainnet));
 
       const allocationGnosis = calculateAllocation(
         balancesGC,
         allocatedToGnosis,
       );
-      assert(snapshotSum(allocationGnosis).eq(allocatedToGnosis));
+      assert(sum(allocationGnosis).eq(allocatedToGnosis));
 
-      saveAllocation("mainnet", blockMainnet, snapshotSort(allocationMainnet));
-      saveAllocation("gnosis", blockGnosis, snapshotSort(allocationGnosis));
+      saveAllocation("mainnet", blockMainnet, sort(allocationMainnet));
+      saveAllocation("gnosis", blockGnosis, sort(allocationGnosis));
     }
 
     log("Done");

@@ -2,7 +2,7 @@ import assert from "assert";
 import { BigNumber } from "ethers";
 
 import calculateAllocation from "./calculateAllocation";
-import snapshotSum from "./snapshotSum";
+import balancemapSum from "./balancemapSum";
 
 import { BalanceMap } from "../types";
 
@@ -14,7 +14,10 @@ export default function calculateAllocationBreakdown(
   // just re-use allocation math to figure how much (for this vestingSlice)
   // does Mainnet get, and how much does GC get
   const result = calculateAllocation(
-    { mainnet: snapshotSum(balancesMainnet), gnosis: snapshotSum(balancesGC) },
+    {
+      mainnet: balancemapSum(balancesMainnet),
+      gnosis: balancemapSum(balancesGC),
+    },
     amountVested,
   );
 

@@ -1,7 +1,7 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import snapshotSum from "./snapshotSum";
+import balancemapSum from "./balancemapSum";
 
 import { loadAllocation } from "../persistence";
 import { Schedule } from "../types";
@@ -20,8 +20,8 @@ export default function calculateFundingBreakdown(
     const allocationGC = loadAllocation("gnosis", gnosis);
     assert(!!allocationGC);
 
-    totalMainnet = totalMainnet.add(snapshotSum(allocationMainnet));
-    totalGnosis = totalGnosis.add(snapshotSum(allocationGC));
+    totalMainnet = totalMainnet.add(balancemapSum(allocationMainnet));
+    totalGnosis = totalGnosis.add(balancemapSum(allocationGC));
     const total = totalMainnet.add(totalGnosis);
 
     if (total.eq(amountToClaim)) {
