@@ -131,11 +131,11 @@ To deploy the MerkleDistro.sol contract:
 
 ### All allocations (up to now)
 
-- run `yarn hardhat allocate:all --lazy false`
+- run `yarn hardhat allocate --lazy false`
 
 ### One allocation (one VestingSlice)
 
-- run `yarn hardhat allocate:one [blockNumber]`
+- run `yarn hardhat allocate [blockNumber]`
 
 ## Calculating checkpoint
 

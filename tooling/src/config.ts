@@ -28,6 +28,7 @@ export const VESTING_ID =
   "0x12c1ee9f9b122fa7a0e7a6a733f6e07d30affb7fac1ca061325b11d9ba677382";
 
 // created @ blockNumber: 15582160  blockTimestamp: 1663768259,
+export const VESTING_CREATION_BLOCK_NUMBER = 15582160;
 export const VESTING_CREATION_TIMESTAMP = 1663768259;
 
 export const MERKLE_DISTRO_DEPLOYMENT_SALT =
