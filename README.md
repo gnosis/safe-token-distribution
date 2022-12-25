@@ -143,6 +143,6 @@ To deploy the MerkleDistro.sol contract:
 
 - run `yarn hardhat checkpoint`
 
-### past (TODO)
+### past
 
 - run `yarn hardhat checkpoint [blockNumber]`
