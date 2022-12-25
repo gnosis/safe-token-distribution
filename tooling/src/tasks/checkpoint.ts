@@ -6,7 +6,7 @@ import balancemapSort from "../fns/balancemapSort";
 
 import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
 
-import { BalanceMap } from "../types";
+import { BalanceMap, Schedule } from "../types";
 
 task(
   "checkpoint",
@@ -18,30 +18,39 @@ task(
     true,
     types.boolean,
   )
-  .setAction(async ({ persist }) => {
+  .addOptionalPositionalParam(
+    "blockNumber",
+    "Should the output files be persisted to the repo?",
+    undefined,
+    types.int,
+  )
+  .setAction(async ({ persist, blockNumber }) => {
     const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
 
-    const schedule = loadSchedule();
-
     log("Starting");
+
+    const schedule = filterSchedule(loadSchedule(), blockNumber);
+    log(
+      `Calculating checkpoint until slice ${
+        schedule[schedule.length - 1].mainnet
+      }`,
+    );
 
     let checkpointMainnet: BalanceMap = {};
     let checkpointGnosis: BalanceMap = {};
 
-    for (const vestingSlice of schedule) {
-      const allocationMainnet = loadAllocation("mainnet", vestingSlice.mainnet);
-      const allocationGnosis = loadAllocation("gnosis", vestingSlice.gnosis);
+    for (const slice of schedule) {
+      const allocationMainnet = loadAllocation("mainnet", slice.mainnet);
+      const allocationGnosis = loadAllocation("gnosis", slice.gnosis);
 
       if (!allocationMainnet) {
         throw new Error(
-          `Mainnet allocation not yet calculated ${vestingSlice.mainnet}`,
+          `Mainnet allocation not yet calculated ${slice.mainnet}`,
         );
       }
 
       if (!allocationGnosis) {
-        throw new Error(
-          `Gnosis allocation not yet calculated ${vestingSlice.gnosis}`,
-        );
+        throw new Error(`Gnosis allocation not yet calculated ${slice.gnosis}`);
       }
 
       checkpointMainnet = balancemapMerge(checkpointMainnet, allocationMainnet);
@@ -52,8 +61,9 @@ task(
     const treeGnosis = createMerkleTree(checkpointGnosis);
 
     if (persist) {
-      log("Saving checkpoints and trees");
+      log(`Saved checkpoint ${treeMainnet.root} (Mainnet)`);
       saveCheckpoint(balancemapSort(checkpointMainnet), treeMainnet);
+      log(`Saved checkpoint ${treeGnosis.root} (Gnosis)`);
       saveCheckpoint(balancemapSort(checkpointGnosis), treeGnosis);
     }
 
@@ -64,3 +74,13 @@ task(
       merkleRootGnosis: treeGnosis.root,
     };
   });
+
+function filterSchedule(schedule: Schedule, blockNumber: number | undefined) {
+  if (blockNumber) {
+    schedule = schedule.filter((slice) => slice.mainnet <= blockNumber);
+    if (schedule.length === 0) {
+      throw new Error(`No Schedule slices matching block ${blockNumber}`);
+    }
+  }
+  return schedule;
+}
