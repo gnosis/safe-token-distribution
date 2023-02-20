@@ -10,7 +10,7 @@ This repo contains the codebases for the distribution contracts, the scripts for
 
 ## `claim-gui`
 
-This is a React app that allows you to connect a wallet, view claimed and unclaimed tokens, and submit transactions to claim any available tokens. This app is live here -> [https://safe-distro.gnosis.io](https://safe-distro.gnosis.io)
+This is a React app that allows you to connect a wallet, view claimed and unclaimed tokens, and submit transactions to claim any available tokens. This app is live here -> [http://claim-safe.gnosis.io/](http://claim-safe.gnosis.io/)
 
 ## `tooling`
 
