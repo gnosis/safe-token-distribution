@@ -2,6 +2,9 @@ import assert from "assert";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
+
 import { queryAllocationSetup } from "../queries/queryAllocationSetup";
 import calculateAllocation from "../fns/calculateAllocation";
 import calculateAllocationBreakdown from "../fns/calculateAllocationBreakdown";
@@ -16,7 +19,7 @@ import {
   VESTING_ID,
   VESTING_CREATION_BLOCK_NUMBER,
 } from "../config";
-import { Schedule, VestingSlice } from "../types";
+import { BalanceMap, Schedule, VestingSlice } from "../types";
 
 task(
   "allocate",
@@ -56,7 +59,7 @@ task(
       const blockMainnet = slice.mainnet;
       const blockGnosis = slice.gnosis;
 
-      log(`mainnet ${blockMainnet} gnosis ${blockGnosis}`);
+      log(`mainnet block#${blockMainnet} gnosis block#${blockGnosis}`);
       const { balancesMainnet, balancesGC, amountVested } =
         await queryAllocationSetup(
           slice,
@@ -66,6 +69,8 @@ task(
           providers,
           log,
         );
+
+      stats(balancesMainnet, balancesGC, amountVested, log);
 
       const { allocatedToMainnet, allocatedToGnosis } =
         calculateAllocationBreakdown(balancesMainnet, balancesGC, amountVested);
@@ -88,6 +93,26 @@ task(
 
     log("Done");
   });
+
+function stats(
+  balancesMainnet: BalanceMap,
+  balancesGC: BalanceMap,
+  amountVested: BigNumber,
+  log: (t: string) => void,
+) {
+  const totalGNOMainnet = sum(balancesMainnet)
+    .div(parseUnits("1", 18))
+    .toNumber();
+  const totalGNOGnosis = sum(balancesGC).div(parseUnits("1", 18)).toNumber();
+  const totalGNO = totalGNOMainnet + totalGNOGnosis;
+  const totalVested = amountVested.div(parseUnits("1", 18)).toNumber();
+
+  log(
+    `Eligible: ${totalGNO} GNO (mainnet ${totalGNOMainnet} GNO gnosis ${totalGNOGnosis} GNO)`,
+  );
+
+  log(`Distributed: ${totalVested} SAFE`);
+}
 
 function slicesInScope(
   schedule: Schedule,
