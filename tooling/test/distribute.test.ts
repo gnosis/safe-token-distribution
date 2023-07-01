@@ -19,9 +19,9 @@ describe("createDistributeTxMainnet", function () {
     await loadFixture(setup);
   });
   it("correctly executes the encoded multisend tx", async () => {
-    const { safeSdk, safeToken, merkleDistro } = await loadFixture(setup);
+    const { safe, safeToken, merkleDistro } = await loadFixture(setup);
 
-    const safeBalanceBefore = await safeToken.balanceOf(safeSdk.getAddress());
+    const safeBalanceBefore = await safeToken.balanceOf(safe.getAddress());
 
     // PRE-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(ethers.constants.HashZero);
@@ -37,7 +37,7 @@ describe("createDistributeTxMainnet", function () {
       "0xaaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999";
 
     const doesntMatterAddress = "0x5aFE3855358E112B5647B952709E6165e1c1eEEe";
-    const tx = await createDistributeTxMainnet(safeSdk, addresses, {
+    const tx = await createDistributeTxMainnet(safe, addresses, {
       distroAddressMainnet: merkleDistro.address,
       distroAddressGnosis: doesntMatterAddress,
       vestingId: VESTING_ID,
@@ -46,9 +46,9 @@ describe("createDistributeTxMainnet", function () {
       amountToBridge,
       nextMerkleRoot,
     });
-    await safeSdk.executeTransaction(tx);
+    await safe.executeTransaction(tx);
 
-    const safeBalanceAfter = await safeToken.balanceOf(safeSdk.getAddress());
+    const safeBalanceAfter = await safeToken.balanceOf(safe.getAddress());
 
     // POST-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(nextMerkleRoot);
@@ -70,7 +70,7 @@ async function setup() {
 
   const safeAddress = addresses.mainnet.treasurySafe;
 
-  const safeSdk = await safeSetOwner(safeAddress, deployer);
+  const safe = await safeSetOwner(safeAddress, deployer);
 
   const safeToken = SafeToken__factory.connect(
     addresses.mainnet.token,
@@ -90,7 +90,7 @@ async function setup() {
   );
 
   return {
-    safeSdk,
+    safe,
     safeToken,
     merkleDistro,
   };

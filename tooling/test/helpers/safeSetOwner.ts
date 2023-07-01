@@ -15,7 +15,7 @@ export default async function safeSetOwner(
     safeAddress,
   );
 
-  const safeSdk = await Safe.create({
+  const safe = await Safe.create({
     ethAdapter: new EthersAdapter({
       ethers,
       signerOrProvider: safeContractImpersonator,
@@ -26,7 +26,7 @@ export default async function safeSetOwner(
 
   const newOwnerAddress = await newOwner.getAddress();
 
-  const tx = await safeSdk.createAddOwnerTx({
+  const tx = await safe.createAddOwnerTx({
     ownerAddress: newOwnerAddress,
     threshold: 1,
   });
