@@ -1,6 +1,8 @@
 import { constants } from "ethers";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { EthersAdapter } from "@safe-global/protocol-kit";
+import { getAddress } from "ethers/lib/utils";
 
 import { queryBridgedAddress, queryIsPaused } from "../queries/queryToken";
 import calculateDistroAddress from "../fns/calculateDistroAdress";
@@ -13,8 +15,6 @@ import {
 } from "../config";
 
 import { ProviderConfig } from "../types";
-import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
-import { getAddress } from "ethers/lib/utils";
 
 task("status", "Checks SafeToken and MerkleDistro status")
   .addOptionalParam("silent", "No log output", false, types.boolean)
@@ -145,8 +145,12 @@ async function delegateStatus(
   const serviceClients = getServiceClients(ethAdapterMainnet, ethAdapterGC);
 
   const [delegatesMainnet, delegatesGnosis] = await Promise.all([
-    serviceClients.mainnet.getSafeDelegates(safeAddressMainnet),
-    serviceClients.gnosis.getSafeDelegates(safeAddressGnosis),
+    serviceClients.mainnet.getSafeDelegates({
+      safeAddress: safeAddressMainnet,
+    }),
+    serviceClients.gnosis.getSafeDelegates({
+      safeAddress: safeAddressGnosis,
+    }),
   ]);
 
   const delegate = hre.ethers.Wallet.fromMnemonic(process.env.MNEMONIC);

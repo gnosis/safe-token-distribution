@@ -1,9 +1,9 @@
 import { BigNumber, Signer } from "ethers";
 import { isAddress, isHexString } from "ethers/lib/utils";
 
-import Safe from "@gnosis.pm/safe-core-sdk";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import { SafeTransaction } from "@gnosis.pm/safe-core-sdk-types";
+import Safe from "@safe-global/protocol-kit";
+import SafeServiceClient from "@safe-global/api-kit";
+import { SafeTransaction } from "@safe-global/safe-core-sdk-types";
 
 import { subtask, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
@@ -97,7 +97,7 @@ async function propose(
   const senderAddress = await delegate.getAddress();
 
   await client.proposeTransaction({
-    safeAddress: safeSdk.getAddress(),
+    safeAddress: await safeSdk.getAddress(),
     safeTransactionData: tx.data,
     safeTxHash,
     senderAddress,

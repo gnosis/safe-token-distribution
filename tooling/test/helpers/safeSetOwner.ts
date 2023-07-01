@@ -1,5 +1,5 @@
-import Safe from "@gnosis.pm/safe-core-sdk";
-import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
+import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
+
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";

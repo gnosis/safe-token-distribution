@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish } from "ethers";
-import Safe from "@gnosis.pm/safe-core-sdk";
+import Safe from "@safe-global/protocol-kit";
 import {
   SafeTransaction,
   SafeTransactionDataPartial,
-} from "@gnosis.pm/safe-core-sdk-types";
+} from "@safe-global/safe-core-sdk-types";
 
 import {
   MerkleDistro__factory,

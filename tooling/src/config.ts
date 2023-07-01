@@ -1,9 +1,9 @@
 import assert from "assert";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import Safe from "@gnosis.pm/safe-core-sdk";
+import SafeApiKit from "@safe-global/api-kit";
+import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
+
 import { ProviderConfig } from "./types";
 
 /*
@@ -107,11 +107,11 @@ export function getServiceClients(
   ethAdapterGnosis: EthersAdapter,
 ) {
   return {
-    mainnet: new SafeServiceClient({
+    mainnet: new SafeApiKit({
       txServiceUrl: "https://safe-transaction-mainnet.safe.global/",
       ethAdapter: ethAdapterMainnet,
     }),
-    gnosis: new SafeServiceClient({
+    gnosis: new SafeApiKit({
       txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global/",
       ethAdapter: ethAdapterGnosis,
     }),
