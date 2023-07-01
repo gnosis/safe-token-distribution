@@ -50,8 +50,8 @@ subtask(
 
     const {
       delegate,
-      safeSdkMainnet,
-      safeSdkGnosis,
+      safeMainnet,
+      safeGnosis,
       serviceClientMainnet,
       serviceClientGnosis,
     } = await getClients(
@@ -60,44 +60,40 @@ subtask(
       hre,
     );
 
-    const txMainnet = await createDistributeTxMainnet(
-      safeSdkMainnet,
-      addresses,
-      {
-        distroAddressMainnet,
-        distroAddressGnosis,
-        vestingId: VESTING_ID,
-        amountToClaim,
-        amountToFund: amountToFundMainnet,
-        amountToBridge: amountToFundGnosis,
-        nextMerkleRoot: merkleRootMainnet,
-      },
-    );
+    const txMainnet = await createDistributeTxMainnet(safeMainnet, addresses, {
+      distroAddressMainnet,
+      distroAddressGnosis,
+      vestingId: VESTING_ID,
+      amountToClaim,
+      amountToFund: amountToFundMainnet,
+      amountToBridge: amountToFundGnosis,
+      nextMerkleRoot: merkleRootMainnet,
+    });
 
     const txGC = await createDistributeTxGC(
-      safeSdkGnosis,
+      safeGnosis,
       distroAddressGnosis,
       merkleRootGnosis,
     );
 
     await Promise.all([
-      propose(safeSdkMainnet, serviceClientMainnet, delegate, txMainnet),
-      propose(safeSdkGnosis, serviceClientGnosis, delegate, txGC),
+      propose(safeMainnet, serviceClientMainnet, delegate, txMainnet),
+      propose(safeGnosis, serviceClientGnosis, delegate, txGC),
     ]);
   });
 
 async function propose(
-  safeSdk: Safe,
+  safe: Safe,
   client: SafeServiceClient,
   delegate: Signer,
   tx: SafeTransaction,
 ) {
-  const safeTxHash = await safeSdk.getTransactionHash(tx);
-  const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
+  const safeTxHash = await safe.getTransactionHash(tx);
+  const senderSignature = await safe.signTransactionHash(safeTxHash);
   const senderAddress = await delegate.getAddress();
 
   await client.proposeTransaction({
-    safeAddress: await safeSdk.getAddress(),
+    safeAddress: await safe.getAddress(),
     safeTransactionData: tx.data,
     safeTxHash,
     senderAddress,

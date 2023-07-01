@@ -71,19 +71,19 @@ export async function getClients(
   const { mainnet: serviceClientMainnet, gnosis: serviceClientGnosis } =
     getServiceClients(ethAdapterMainnet, ethAdapterGnosis);
 
-  const safeSdkMainnet = await Safe.create({
+  const safeMainnet = await Safe.create({
     ethAdapter: ethAdapterMainnet,
     safeAddress: safeAddressMainnet,
   });
 
-  const safeSdkGnosis = await Safe.create({
+  const safeGnosis = await Safe.create({
     ethAdapter: ethAdapterGnosis,
     safeAddress: safeAddressGnosis,
   });
 
   return {
-    safeSdkMainnet,
-    safeSdkGnosis,
+    safeMainnet,
+    safeGnosis,
     serviceClientMainnet,
     serviceClientGnosis,
     delegate,

@@ -25,7 +25,7 @@ type MainnetArgs = {
 };
 
 export async function createDistributeTxMainnet(
-  safeSdk: Safe,
+  safe: Safe,
   addresses: AddressConfig,
   {
     distroAddressMainnet,
@@ -37,12 +37,12 @@ export async function createDistributeTxMainnet(
     nextMerkleRoot,
   }: MainnetArgs,
 ): Promise<SafeTransaction> {
-  const safeAddress = await safeSdk.getAddress();
+  const safeAddress = await safe.getAddress();
 
   assert(amountToClaim.eq(amountToFund.add(amountToBridge)));
 
   // encode as multisend
-  return safeSdk.createTransaction({
+  return safe.createTransaction({
     safeTransactionData: [
       encodeClaim(
         addresses.mainnet.vestingPool,
@@ -67,11 +67,11 @@ export async function createDistributeTxMainnet(
 }
 
 export async function createDistributeTxGC(
-  safeSdk: Safe,
+  safe: Safe,
   merkleDistroAddress: string,
   nextMerkleRoot: string,
 ): Promise<SafeTransaction> {
-  return safeSdk.createTransaction({
+  return safe.createTransaction({
     safeTransactionData: encodeSetMerkleRoot(
       merkleDistroAddress,
       nextMerkleRoot,
