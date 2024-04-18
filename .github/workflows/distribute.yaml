@@ -4,6 +4,7 @@ on:
   schedule:
     # first day of the month 11 UTC
     - cron: "0 11 1 * *"
+  workflow_dispatch:
 
 defaults:
   run:
