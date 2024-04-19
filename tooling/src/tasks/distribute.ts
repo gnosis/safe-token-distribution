@@ -1,5 +1,5 @@
 import assert from "assert";
-import { task } from "hardhat/config";
+import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { queryAmountToClaim } from "../queries/queryVestingPool";
@@ -38,54 +38,65 @@ task(
 task(
   "distribute:apply",
   "Calculate funding amounts, and posts two transactions that will eventually update the Distribution setup and enable new claimers",
-).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  const log = (text: string) =>
-    console.info(`Task distribute:apply -> ${text}`);
+)
+  .addOptionalParam(
+    "blockNumber",
+    "Block number to apply until",
+    undefined,
+    types.int,
+  )
+  .setAction(async (blockNumber, hre: HardhatRuntimeEnvironment) => {
+    const log = (text: string) =>
+      console.info(`Task distribute:apply -> ${text}`);
+    const { isReady, distroAddressMainnet, distroAddressGnosis } =
+      await hre.run("status", { silent: true });
 
-  const { isReady, distroAddressMainnet, distroAddressGnosis } = await hre.run(
-    "status",
-    { silent: true },
-  );
+    if (!isReady) {
+      log("Setup not ready for Distribution. Skipping...");
+      return;
+    }
 
-  if (!isReady) {
-    log("Setup not ready for Distribution. Skipping...");
-    return;
-  }
+    const schedule = loadSchedule();
+    const preCount = checkpointCount();
+    console.log("blockNumber", blockNumber.blockNumber);
+    const { merkleRootMainnet, merkleRootGnosis } = await hre.run(
+      "checkpoint",
+      {
+        persist: false,
+        blockNumber: blockNumber.blockNumber,
+      },
+    );
+    const postCount = checkpointCount();
+    // its important to ensure that checkpoint:apply is running
+    // on artifacts previously calculated and committed
+    assert(
+      preCount === postCount,
+      "Checkpoint task with ‘persist=false’ should not be writing",
+    );
 
-  const schedule = loadSchedule();
-  const preCount = checkpointCount();
-  const { merkleRootMainnet, merkleRootGnosis } = await hre.run("checkpoint", {
-    persist: false,
+    if (!checkpointExists(merkleRootMainnet)) {
+      throw new Error(
+        `Checkpoints for (mainnet) ${merkleRootMainnet} not found`,
+      );
+    }
+
+    if (!checkpointExists(merkleRootGnosis)) {
+      throw new Error(`Checkpoints for (gnosis) ${merkleRootGnosis} not found`);
+    }
+
+    const { amountToClaim, amountToFundMainnet, amountToFundGnosis } =
+      await fundingAmounts(schedule, hre);
+
+    await hre.run("propose", {
+      distroAddressMainnet,
+      distroAddressGnosis,
+      merkleRootMainnet,
+      merkleRootGnosis,
+      amountToClaim,
+      amountToFundMainnet,
+      amountToFundGnosis,
+    });
   });
-  const postCount = checkpointCount();
-  // its important to ensure that checkpoint:apply is running
-  // on artifacts previously calculated and committed
-  assert(
-    preCount === postCount,
-    "Checkpoint task with ‘persist=false’ should not be writing",
-  );
-
-  if (!checkpointExists(merkleRootMainnet)) {
-    throw new Error(`Checkpoints for (mainnet) ${merkleRootMainnet} not found`);
-  }
-
-  if (!checkpointExists(merkleRootGnosis)) {
-    throw new Error(`Checkpoints for (gnosis) ${merkleRootGnosis} not found`);
-  }
-
-  const { amountToClaim, amountToFundMainnet, amountToFundGnosis } =
-    await fundingAmounts(schedule, hre);
-
-  await hre.run("propose", {
-    distroAddressMainnet,
-    distroAddressGnosis,
-    merkleRootMainnet,
-    merkleRootGnosis,
-    amountToClaim,
-    amountToFundMainnet,
-    amountToFundGnosis,
-  });
-});
 
 async function fundingAmounts(
   schedule: Schedule,

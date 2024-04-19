@@ -18,9 +18,9 @@ task(
     true,
     types.boolean,
   )
-  .addOptionalPositionalParam(
+  .addOptionalParam(
     "blockNumber",
-    "Should the output files be persisted to the repo?",
+    "Block number to apply until",
     undefined,
     types.int,
   )
