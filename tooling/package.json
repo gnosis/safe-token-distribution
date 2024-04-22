@@ -73,6 +73,8 @@
     "prettier": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
     "test": "hardhat test --config hardhat.base.config.ts",
-    "typechain": "hardhat typechain --config hardhat.base.config.ts"
+    "typechain": "hardhat typechain --config hardhat.base.config.ts",
+    "allocate": "hardhat allocate --name firstyear --weights-mainnet './csv/mainnet.example.csv' --weights-gnosis './csv/gnosis.example.csv' 9000000",
+    "checkpoint": "hardhat checkpoint"
   }
 }

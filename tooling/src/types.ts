@@ -6,14 +6,6 @@ export type Interval = {
   right: number;
 };
 
-export type Schedule = VestingSlice[];
-export type VestingSlice = {
-  mainnet: number;
-  gnosis: number;
-  prev: VestingSlice | null;
-  next: VestingSlice | null;
-};
-
 export type BalanceMap = {
   [key: string]: BigNumber;
 };

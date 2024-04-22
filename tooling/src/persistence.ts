@@ -3,65 +3,38 @@ import fs from "fs-extra";
 import path from "path";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { Schedule, BalanceMap } from "./types";
-
-export function loadSchedule(filePath?: string): Schedule {
-  const schedule = JSON.parse(
-    fs.readFileSync(filePath || scheduleFilePath(), "utf8"),
-  );
-
-  for (let i = 0; i < schedule.length; i++) {
-    const isFirst = i === 0;
-    const isLast = i === schedule.length - 1;
-    schedule[i].prev = isFirst ? null : schedule[i - 1];
-    schedule[i].next = isLast ? null : schedule[i + 1];
-  }
-
-  return schedule;
-}
-
-export function saveSchedule(schedule: Schedule) {
-  fs.writeFileSync(
-    scheduleFilePath(),
-    JSON.stringify(
-      schedule.map(({ mainnet, gnosis }) => ({ mainnet, gnosis })),
-      null,
-      2,
-    ),
-    "utf8",
-  );
-}
-
-function scheduleFilePath() {
-  return path.resolve(path.join(__dirname, "..", "_harvest", "schedule.json"));
-}
+import { BalanceMap } from "./types";
 
 export function loadAllocation(
   chain: "mainnet" | "gnosis",
-  block: number,
+  name: string,
 ): BalanceMap | null {
-  const filePath = allocationFilePath(chain, block);
+  const filePath = allocationFilePath(chain, name);
   return loadSnapshot(filePath);
 }
 
 export function saveAllocation(
   chain: "mainnet" | "gnosis",
-  block: number,
+  name: string,
   allocation: BalanceMap,
 ) {
-  const filePath = allocationFilePath(chain, block);
+  const filePath = allocationFilePath(chain, name);
   fs.ensureDirSync(path.dirname(filePath));
   writeSnapshot(filePath, allocation);
 }
 
-export function allocationFilePath(chain: "mainnet" | "gnosis", block: number) {
+export const ALLOCATIONS_DIR = path.resolve(
+  path.join(__dirname, "..", "_harvest", "allocations"),
+);
+
+export function allocationFilePath(chain: "mainnet" | "gnosis", name: string) {
   return path.resolve(
     path.join(
       __dirname,
       "..",
       "_harvest",
       "allocations",
-      `${chain}.${block}.json`,
+      `${chain}.${name}.json`,
     ),
   );
 }
@@ -100,7 +73,7 @@ function checkpointDirPath() {
   return path.resolve(path.join(__dirname, "..", "_harvest", "checkpoints"));
 }
 
-function loadSnapshot(filePath: string): BalanceMap | null {
+export function loadSnapshot(filePath: string): BalanceMap | null {
   if (!fs.existsSync(filePath)) {
     return null;
   }
