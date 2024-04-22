@@ -1,138 +1,110 @@
+import { readFileSync } from "fs";
 import assert from "assert";
 import { task, types } from "hardhat/config";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
+import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
+import { getAddress, isAddress, parseUnits } from "ethers/lib/utils";
 
-import { queryAllocationSetup } from "../queries/queryAllocationSetup";
-import calculateAllocation from "../fns/calculateAllocation";
-import calculateAllocationBreakdown from "../fns/calculateAllocationBreakdown";
+import { saveAllocation } from "../persistence";
+import proportionally from "../fns/proportionally";
 import sort from "../fns/balancemapSort";
 import sum from "../fns/balancemapSum";
 
-import { loadSchedule, loadAllocation, saveAllocation } from "../persistence";
-import {
-  addresses,
-  getProviders,
-  GNO_LOCK_OPEN_TIMESTAMP,
-  VESTING_ID,
-  VESTING_CREATION_BLOCK_NUMBER,
-} from "../config";
-import { BalanceMap, Schedule, VestingSlice } from "../types";
+import { BalanceMap } from "../types";
 
 task(
   "allocate",
   "Calculates and persists one allocation file per VestingSlice entry in the schedule",
 )
-  .addOptionalParam(
-    "lazy",
-    "Don't recalculate an allocation entry if already in disk",
-    true,
-    types.boolean,
-  )
-  .addOptionalPositionalParam(
-    "blockNumber",
-    "Calculate for one VestingSlice, the one closest to block number",
+  .addParam("name", "Allocation Name", undefined, types.string, false)
+  .addParam("weightsMainnet", "", undefined, types.string, false)
+  .addParam("weightsGnosis", "", undefined, types.string, false)
+  .addPositionalParam(
+    "amountToDistribute",
+    "Total amount to be taken out of the vesting pool. Scale to 18 decimals inside",
     undefined,
-    types.int,
+    types.string,
   )
-  .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async (taskArgs) => {
     const log = (text: string) => console.info(`Task allocate -> ${text}`);
 
-    const providers = getProviders(hre);
-    const schedule = loadSchedule();
+    const weightsMainnet = weightsFromCSV(taskArgs.weightsMainnet);
+    const weightsGnosis = weightsFromCSV(taskArgs.weightsGnosis);
+    const amountToDistribute = parseUnits(taskArgs.amountToDistribute, 18);
 
     log("Starting");
 
-    const slices = slicesInScope(schedule, taskArgs.blockNumber);
+    const { toDistributeMainnet, toDistributeGnosis } = perNetwork(
+      weightsMainnet,
+      weightsGnosis,
+      amountToDistribute,
+    );
 
-    for (const slice of slices) {
-      const allocationsMainnet = taskArgs.lazy
-        ? loadAllocation("mainnet", slice.mainnet)
-        : null;
-      const allocationsGC = taskArgs.lazy
-        ? loadAllocation("gnosis", slice.gnosis)
-        : null;
+    const allocationMainnet = proportionally(
+      weightsMainnet,
+      toDistributeMainnet,
+    );
+    assert(sum(allocationMainnet).eq(toDistributeMainnet));
 
-      if (allocationsMainnet && allocationsGC) continue;
-      const blockMainnet = slice.mainnet;
-      const blockGnosis = slice.gnosis;
+    const allocationGnosis = proportionally(weightsGnosis, toDistributeGnosis);
+    assert(sum(allocationGnosis).eq(toDistributeGnosis));
 
-      log(`mainnet block#${blockMainnet} gnosis block#${blockGnosis}`);
-      const { balancesMainnet, balancesGC, amountVested } =
-        await queryAllocationSetup(
-          slice,
-          addresses,
-          VESTING_ID,
-          GNO_LOCK_OPEN_TIMESTAMP,
-          providers,
-          log,
-        );
-
-      stats(balancesMainnet, balancesGC, amountVested, log);
-
-      const { allocatedToMainnet, allocatedToGnosis } =
-        calculateAllocationBreakdown(balancesMainnet, balancesGC, amountVested);
-
-      const allocationMainnet = calculateAllocation(
-        balancesMainnet,
-        allocatedToMainnet,
-      );
-      assert(sum(allocationMainnet).eq(allocatedToMainnet));
-
-      const allocationGnosis = calculateAllocation(
-        balancesGC,
-        allocatedToGnosis,
-      );
-      assert(sum(allocationGnosis).eq(allocatedToGnosis));
-
-      saveAllocation("mainnet", blockMainnet, sort(allocationMainnet));
-      saveAllocation("gnosis", blockGnosis, sort(allocationGnosis));
-    }
+    saveAllocation("mainnet", taskArgs.name, sort(allocationMainnet));
+    saveAllocation("gnosis", taskArgs.name, sort(allocationGnosis));
 
     log("Done");
   });
 
-function stats(
-  balancesMainnet: BalanceMap,
-  balancesGC: BalanceMap,
-  amountVested: BigNumber,
-  log: (t: string) => void,
+function perNetwork(
+  weightsMainnet: BalanceMap,
+  weightsGC: BalanceMap,
+  amountToDistribute: BigNumber,
 ) {
-  const totalGNOMainnet = sum(balancesMainnet)
-    .div(parseUnits("1", 18))
-    .toNumber();
-  const totalGNOGnosis = sum(balancesGC).div(parseUnits("1", 18)).toNumber();
-  const totalGNO = totalGNOMainnet + totalGNOGnosis;
-  const totalVested = amountVested.div(parseUnits("1", 18)).toNumber();
-
-  log(
-    `Eligible: ${totalGNO} GNO (mainnet ${totalGNOMainnet} GNO gnosis ${totalGNOGnosis} GNO)`,
+  // just re-use allocation math to figure how much (for this vestingSlice)
+  // does Mainnet get, and how much does GC get
+  const result = proportionally(
+    {
+      mainnet: sum(weightsMainnet),
+      gnosis: sum(weightsGC),
+    },
+    amountToDistribute,
   );
 
-  log(`Distributed: ${totalVested} SAFE`);
+  const toDistributeMainnet = BigNumber.from(result.mainnet || 0);
+  const toDistributeGnosis = BigNumber.from(result.gnosis || 0);
+  // sanity check
+  assert(toDistributeMainnet.add(toDistributeGnosis).eq(amountToDistribute));
+
+  return {
+    toDistributeMainnet,
+    toDistributeGnosis,
+  };
 }
 
-function slicesInScope(
-  schedule: Schedule,
-  blockNumber: number | undefined,
-): VestingSlice[] {
-  if (!blockNumber) {
-    return schedule;
-  }
+function weightsFromCSV(path: string): BalanceMap {
+  console.log(path);
+  const data = readFileSync(path, "utf8");
 
-  if (blockNumber < VESTING_CREATION_BLOCK_NUMBER) {
-    throw new Error(
-      `Distribution hadn't started at block ${blockNumber} - too early`,
-    );
-  }
+  const result: BalanceMap = {};
+  for (const row of data.split("\n")) {
+    const [, _address, _balance] = row.split(",");
 
-  const entry = schedule.find((entry) => blockNumber <= entry.mainnet);
-  if (!entry) {
-    throw new Error(
-      `Distribution not yet scheduled for block ${blockNumber} - too late`,
-    );
+    if (
+      !isAddress(_address) ||
+      !isBigNumberish(parseUnits(_balance, "ether"))
+    ) {
+      continue;
+    }
+
+    const address = getAddress(_address);
+    const balance = parseUnits(_balance, "ether");
+
+    if (result.address) {
+      throw Error("Repeated");
+    }
+
+    result[address] = balance;
   }
-  return [entry];
+  return result;
 }

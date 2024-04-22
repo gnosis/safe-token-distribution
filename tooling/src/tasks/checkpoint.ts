@@ -1,86 +1,57 @@
-import { task, types } from "hardhat/config";
+import { task } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
 import balancemapMerge from "../fns/balancemapMerge";
 import balancemapSort from "../fns/balancemapSort";
 
-import { loadAllocation, loadSchedule, saveCheckpoint } from "../persistence";
+import { ALLOCATIONS_DIR, loadSnapshot, saveCheckpoint } from "../persistence";
 
-import { BalanceMap, Schedule } from "../types";
+import { BalanceMap } from "../types";
+import { readdirSync } from "fs";
+import path from "path";
+import assert from "assert";
 
 task(
   "checkpoint",
   "Reduces through past allocation files, consolidates it in a BalanceMap and persists it as a MerkleTree",
-)
-  .addOptionalParam(
-    "persist",
-    "Should the output files be persisted to the repo?",
-    true,
-    types.boolean,
-  )
-  .addOptionalPositionalParam(
-    "blockNumber",
-    "Should the output files be persisted to the repo?",
-    undefined,
-    types.int,
-  )
-  .setAction(async ({ persist, blockNumber }) => {
-    const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
+).setAction(async () => {
+  const log = (text: string) => console.info(`Task checkpoint -> ${text}`);
 
-    log("Starting");
+  log("Starting");
 
-    const schedule = filterSchedule(loadSchedule(), blockNumber);
-    log(
-      `Calculating checkpoint until slice ${
-        schedule[schedule.length - 1].mainnet
-      }`,
-    );
+  let checkpointMainnet: BalanceMap = {};
+  let checkpointGnosis: BalanceMap = {};
 
-    let checkpointMainnet: BalanceMap = {};
-    let checkpointGnosis: BalanceMap = {};
+  for (const fileName of readdirSync(ALLOCATIONS_DIR)) {
+    const filePath = path.join(ALLOCATIONS_DIR, fileName);
 
-    for (const slice of schedule) {
-      const allocationMainnet = loadAllocation("mainnet", slice.mainnet);
-      const allocationGnosis = loadAllocation("gnosis", slice.gnosis);
-
-      if (!allocationMainnet) {
-        throw new Error(
-          `Mainnet allocation not yet calculated ${slice.mainnet}`,
-        );
-      }
-
-      if (!allocationGnosis) {
-        throw new Error(`Gnosis allocation not yet calculated ${slice.gnosis}`);
-      }
-
-      checkpointMainnet = balancemapMerge(checkpointMainnet, allocationMainnet);
-      checkpointGnosis = balancemapMerge(checkpointGnosis, allocationGnosis);
+    if (fileName.startsWith("gnosis")) {
+      log(`Factoring in ${filePath}`);
+      const allocation = loadSnapshot(filePath);
+      assert(allocation);
+      checkpointMainnet = balancemapMerge(checkpointMainnet, allocation);
     }
 
-    const treeMainnet = createMerkleTree(checkpointMainnet);
-    const treeGnosis = createMerkleTree(checkpointGnosis);
-
-    if (persist) {
-      log(`Saved checkpoint ${treeMainnet.root} (Mainnet)`);
-      saveCheckpoint(balancemapSort(checkpointMainnet), treeMainnet);
-      log(`Saved checkpoint ${treeGnosis.root} (Gnosis)`);
-      saveCheckpoint(balancemapSort(checkpointGnosis), treeGnosis);
-    }
-
-    log("Done");
-
-    return {
-      merkleRootMainnet: treeMainnet.root,
-      merkleRootGnosis: treeGnosis.root,
-    };
-  });
-
-function filterSchedule(schedule: Schedule, blockNumber: number | undefined) {
-  if (blockNumber) {
-    schedule = schedule.filter((slice) => slice.mainnet <= blockNumber);
-    if (schedule.length === 0) {
-      throw new Error(`No Schedule slices matching block ${blockNumber}`);
+    if (fileName.startsWith("mainnet")) {
+      log(`Factoring in ${filePath}`);
+      const allocation = loadSnapshot(filePath);
+      assert(allocation);
+      checkpointGnosis = balancemapMerge(checkpointGnosis, allocation);
     }
   }
-  return schedule;
-}
+
+  const treeMainnet = createMerkleTree(checkpointMainnet);
+  const treeGnosis = createMerkleTree(checkpointGnosis);
+
+  log(`Saved checkpoint ${treeMainnet.root} (Mainnet)`);
+  saveCheckpoint(balancemapSort(checkpointMainnet), treeMainnet);
+  log(`Saved checkpoint ${treeGnosis.root} (Gnosis)`);
+  saveCheckpoint(balancemapSort(checkpointGnosis), treeGnosis);
+
+  log("Done");
+
+  return {
+    merkleRootMainnet: treeMainnet.root,
+    merkleRootGnosis: treeGnosis.root,
+  };
+});

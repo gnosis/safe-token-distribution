@@ -6,17 +6,17 @@ import balancemapSum from "./balancemapSum";
 
 import { BalanceMap } from "../types";
 
-export default function calculateAllocation(
-  balances: BalanceMap,
-  amountToAllocate: BigNumber,
+export default function proportionally(
+  weights: BalanceMap,
+  amount: BigNumber,
 ): BalanceMap {
-  if (amountToAllocate.eq(0)) {
+  if (amount.eq(0)) {
     return {};
   }
 
-  const { allocation, remainder } = divide(balances, amountToAllocate);
+  const { allocation, remainder } = divide(weights, amount);
 
-  return balancemapMerge(allocation, calculateAllocation(balances, remainder));
+  return balancemapMerge(allocation, proportionally(weights, remainder));
 }
 
 function divide(balances: BalanceMap, amountToAllocate: BigNumber) {
