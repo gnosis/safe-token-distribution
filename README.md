@@ -1,5 +1,7 @@
 # GnosisDAO — Safe Token Distribution
 
+ATTENTION: this README is OUTDATED
+
 GnosisDAO received 15% of the total SAFE Token supply, vesting over 4 years. These tokens continuously vest to GnosisDAO, and this tool is responsible for distributing these tokens to GNO holders. The distributions for each address are calculated daily, and vested tokens are made available to claim monthly. [GIP and discussion can be read here](https://forum.gnosis.io/t/gip-64-should-gnosisdao-distribute-safe-tokens-to-incentivize-decentralizing-gnosis-chain/5896).
 
 This repo contains the codebases for the distribution contracts, the scripts for claiming and calculating distributions, and the web app used by GNO holders to claim tokens.
