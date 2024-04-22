@@ -1,4 +1,7 @@
+import { BigNumber } from "ethers";
 import { BalanceMap } from "../types";
+
+const Zero = BigNumber.from(0);
 
 export default function balancemapMerge(
   m1: BalanceMap,
@@ -13,11 +16,11 @@ export default function balancemapMerge(
   //   s2,
   // );
 
-  const dest = { ...m1 };
-  const src = m2;
+  const keys = Array.from(
+    new Set([...Object.keys(m1), ...Object.keys(m2)]),
+  ).sort();
 
-  for (const key in src) {
-    dest[key] = src[key].add(dest[key] || 0);
-  }
-  return dest;
+  return Object.fromEntries(
+    keys.map((key) => [key, (m1[key] || Zero).add(m2[key] || Zero)]),
+  );
 }

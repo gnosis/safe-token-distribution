@@ -104,7 +104,7 @@ function valuesToBigNumber(map: StringMap): BalanceMap {
   // );
   // this is faster
   const result: BalanceMap = {};
-  for (const key in map) {
+  for (const key of Object.keys(map).sort()) {
     result[key] = BigNumber.from(map[key]);
   }
   return result;
@@ -122,7 +122,7 @@ function valuesToString(map: BalanceMap): StringMap {
 
   // this is faster
   const result: StringMap = {};
-  for (const key in map) {
+  for (const key of Object.keys(map).sort()) {
     result[key] = map[key].toString();
   }
   return result;
