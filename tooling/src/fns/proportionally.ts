@@ -20,11 +20,15 @@ export default function proportionally(
 }
 
 function divideWeighted(weights: BalanceMap, amountToDivide: BigNumber) {
-  const allWeight = balancemapSum(weights);
+  const totalWeight = balancemapSum(weights);
   const result = Object.keys(weights)
     .map((address) => ({
       address,
-      amount: weights[address].mul(amountToDivide).div(allWeight),
+      weight: weights[address],
+    }))
+    .map(({ address, weight }) => ({
+      address,
+      amount: weight.mul(amountToDivide).div(totalWeight),
     }))
     .reduce(
       (prev, { address, amount }) => ({ ...prev, [address]: amount }),
