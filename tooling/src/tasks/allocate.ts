@@ -45,16 +45,32 @@ task(
       weightsMainnet,
       toDistributeMainnet,
     );
-    assert(sum(allocationMainnet).eq(toDistributeMainnet));
-
     const allocationGnosis = proportionally(weightsGnosis, toDistributeGnosis);
-    assert(sum(allocationGnosis).eq(toDistributeGnosis));
+
+    sanity({
+      allocationMainnet,
+      allocationGnosis,
+      amountToDistribute,
+    });
 
     saveAllocation("mainnet", taskArgs.name, sort(allocationMainnet));
     saveAllocation("gnosis", taskArgs.name, sort(allocationGnosis));
 
     log("Done");
   });
+
+function sanity({
+  allocationMainnet,
+  allocationGnosis,
+  amountToDistribute,
+}: {
+  allocationMainnet: BalanceMap;
+  allocationGnosis: BalanceMap;
+  amountToDistribute: BigNumber;
+}) {
+  const total = sum(allocationMainnet).add(sum(allocationGnosis));
+  assert(total.eq(amountToDistribute));
+}
 
 function perNetwork(
   weightsMainnet: BalanceMap,
@@ -83,22 +99,18 @@ function perNetwork(
 }
 
 function weightsFromCSV(path: string): BalanceMap {
-  console.log(path);
   const data = readFileSync(path, "utf8");
 
   const result: BalanceMap = {};
   for (const row of data.split("\n")) {
-    const [, _address, _balance] = row.split(",");
+    const [_address, _score] = row.split(",");
 
-    if (
-      !isAddress(_address) ||
-      !isBigNumberish(parseUnits(_balance, "ether"))
-    ) {
+    if (!isAddress(_address) || !isBigNumberish(parseUnits(_score, "ether"))) {
       continue;
     }
 
     const address = getAddress(_address);
-    const balance = parseUnits(_balance, "ether");
+    const balance = parseUnits(_score, "ether");
 
     if (result.address) {
       throw Error("Repeated");

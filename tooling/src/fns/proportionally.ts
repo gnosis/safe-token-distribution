@@ -8,60 +8,52 @@ import { BalanceMap } from "../types";
 
 export default function proportionally(
   weights: BalanceMap,
-  amount: BigNumber,
+  amountToDivide: BigNumber,
 ): BalanceMap {
-  if (amount.eq(0)) {
-    return {};
+  if (amountToDivide.lte(Object.keys(weights).length)) {
+    return divideDust(weights, amountToDivide);
   }
 
-  const { allocation, remainder } = divide(weights, amount);
+  const { result, rest } = divideWeighted(weights, amountToDivide);
 
-  return balancemapMerge(allocation, proportionally(weights, remainder));
+  return balancemapMerge(result, proportionally(weights, rest));
 }
 
-function divide(balances: BalanceMap, amountToAllocate: BigNumber) {
-  const holderCount = Object.keys(balances).length;
-  const isMicroPeanuts = amountToAllocate.lte(holderCount);
-  return !isMicroPeanuts
-    ? divideWeighted(balances, amountToAllocate)
-    : dividePeanuts(balances, amountToAllocate);
-}
-
-function divideWeighted(balances: BalanceMap, amountToAllocate: BigNumber) {
-  const totalBalances = balancemapSum(balances);
-  const allocation = Object.keys(balances)
+function divideWeighted(weights: BalanceMap, amountToDivide: BigNumber) {
+  const allWeight = balancemapSum(weights);
+  const result = Object.keys(weights)
     .map((address) => ({
       address,
-      amount: balances[address].mul(amountToAllocate).div(totalBalances),
+      amount: weights[address].mul(amountToDivide).div(allWeight),
     }))
     .reduce(
       (prev, { address, amount }) => ({ ...prev, [address]: amount }),
       {},
     );
 
-  const totalAllocated = balancemapSum(allocation);
-
-  assert(totalAllocated.gt(0), "Unexpected Standstill");
+  const total = balancemapSum(result);
+  assert(total.gt(0), "Unexpected Standstill");
 
   return {
-    allocation,
-    remainder: amountToAllocate.sub(totalAllocated),
+    result,
+    rest: amountToDivide.sub(total),
   };
 }
 
-function dividePeanuts(balances: BalanceMap, dust: BigNumber) {
-  const holderCount = Object.keys(balances).length;
+function divideDust(balances: BalanceMap, dust: BigNumber): BalanceMap {
+  if (dust.eq(0)) {
+    return {};
+  }
 
+  const holderCount = Object.keys(balances).length;
   assert(dust.toNumber() <= holderCount);
 
-  const allocation = Object.keys(balances)
-    .map((address) => ({ address, amount: balances[address] }))
-    .sort((a, b) => (a.address < b.address ? -1 : 1))
+  return Object.keys(balances)
+    .map((address) => address)
+    .sort((a, b) => (a < b ? -1 : 1))
     .slice(0, dust.toNumber())
     .reduce(
-      (result, { address }) => ({ ...result, [address]: BigNumber.from(1) }),
+      (result, address) => ({ ...result, [address]: BigNumber.from(1) }),
       {},
     );
-
-  return { allocation, remainder: BigNumber.from(0) };
 }
