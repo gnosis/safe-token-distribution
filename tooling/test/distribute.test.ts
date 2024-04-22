@@ -21,7 +21,9 @@ describe("createDistributeTxMainnet", function () {
   it("correctly executes the encoded multisend tx", async () => {
     const { safe, safeToken, merkleDistro } = await loadFixture(setup);
 
-    const safeBalanceBefore = await safeToken.balanceOf(safe.getAddress());
+    const safeBalanceBefore = await safeToken.balanceOf(
+      await safe.getAddress(),
+    );
 
     // PRE-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(ethers.constants.HashZero);
@@ -48,7 +50,7 @@ describe("createDistributeTxMainnet", function () {
     });
     await safe.executeTransaction(tx);
 
-    const safeBalanceAfter = await safeToken.balanceOf(safe.getAddress());
+    const safeBalanceAfter = await safeToken.balanceOf(await safe.getAddress());
 
     // POST-CLAIM checks
     expect(await merkleDistro.merkleRoot()).to.equal(nextMerkleRoot);
