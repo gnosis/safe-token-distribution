@@ -4,7 +4,12 @@ import { task, types } from "hardhat/config";
 
 import { BigNumber } from "ethers";
 import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
-import { getAddress, isAddress, parseUnits } from "ethers/lib/utils";
+import {
+  formatUnits,
+  getAddress,
+  isAddress,
+  parseUnits,
+} from "ethers/lib/utils";
 
 import { saveAllocation } from "../persistence";
 import proportionally from "../fns/proportionally";
@@ -53,7 +58,9 @@ task(
       amountToDistribute,
     });
 
+    log(`${formatUnits(sum(allocationMainnet))} SAFE in Mainnet`);
     saveAllocation("mainnet", taskArgs.name, sort(allocationMainnet));
+    log(`${formatUnits(sum(allocationGnosis))} SAFE in Gnosis`);
     saveAllocation("gnosis", taskArgs.name, sort(allocationGnosis));
 
     log("Done");
@@ -101,22 +108,25 @@ function perNetwork(
 function weightsFromCSV(path: string): BalanceMap {
   const data = readFileSync(path, "utf8");
 
+  const regex = /\d*\.?\d*/;
+
   const result: BalanceMap = {};
   for (const row of data.split("\n")) {
-    const [_address, _score] = row.split(",");
+    let [_address, _score] = row.split(",");
 
-    if (!isAddress(_address) || !isBigNumberish(parseUnits(_score, "ether"))) {
+    if (!isAddress(_address) || !regex.test(_score)) {
       continue;
     }
 
     const address = getAddress(_address);
-    const balance = parseUnits(_score, "ether");
+    const score = parseUnits((_score.match(regex) as string[])[0], "ether");
 
     if (result.address) {
       throw Error("Repeated");
     }
+    assert(isBigNumberish(score));
 
-    result[address] = balance;
+    result[address] = score;
   }
   return result;
 }

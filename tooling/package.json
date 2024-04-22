@@ -74,7 +74,9 @@
     "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
     "test": "hardhat test --config hardhat.base.config.ts",
     "typechain": "hardhat typechain --config hardhat.base.config.ts",
-    "allocate": "hardhat allocate --name firstyear --weights-mainnet './csv/mainnet.example.csv' --weights-gnosis './csv/gnosis.example.csv' 9000000",
-    "checkpoint": "hardhat checkpoint"
+    "audit": "hardhat audit",
+    "allocate": "hardhat allocate --name initial-9m-distro --weights-mainnet './csv/Safe_token_distro_-_Ethereum.csv' --weights-gnosis './csv/Safe_token_distro_-_Gnosis.csv' 9000000",
+    "checkpoint": "hardhat checkpoint",
+    "distribute": "hardhat distribute --merkle-root-mainnet 0xf38b15d520f5f20dffe653ad78f0923800eed2c1c46fa405a6793efc47cc6bde --merkle-root-gnosis 0x27f7d7fe906b7a57aa9d7df3f894c7262c71c31b62bf36c514f1d4e650e433cc"
   }
 }

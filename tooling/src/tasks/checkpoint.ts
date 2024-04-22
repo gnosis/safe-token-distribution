@@ -26,14 +26,14 @@ task(
     const filePath = path.join(ALLOCATIONS_DIR, fileName);
 
     if (fileName.startsWith("gnosis")) {
-      log(`Factoring in ${filePath}`);
+      log(`Factoring in ${fileName}`);
       const allocation = loadSnapshot(filePath);
       assert(allocation);
       checkpointMainnet = balancemapMerge(checkpointMainnet, allocation);
     }
 
     if (fileName.startsWith("mainnet")) {
-      log(`Factoring in ${filePath}`);
+      log(`Factoring in ${fileName}`);
       const allocation = loadSnapshot(filePath);
       assert(allocation);
       checkpointGnosis = balancemapMerge(checkpointGnosis, allocation);

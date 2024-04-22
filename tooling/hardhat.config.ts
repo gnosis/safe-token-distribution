@@ -1,5 +1,6 @@
 import "./src/tasks/verify-distro";
 
+import "./src/tasks/audit";
 import "./src/tasks/allocate";
 import "./src/tasks/status";
 import "./src/tasks/checkpoint";

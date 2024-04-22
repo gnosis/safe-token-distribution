@@ -12,6 +12,7 @@ import {
   checkpointExists,
   loadSnapshot,
 } from "../persistence";
+import { formatUnits } from "ethers/lib/utils";
 
 task(
   "distribute",
@@ -20,8 +21,7 @@ task(
   .addParam("merkleRootMainnet", "", undefined, types.string, false)
   .addParam("merkleRootGnosis", "", undefined, types.string, false)
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const log = (text: string) =>
-      console.info(`Task distribute:apply -> ${text}`);
+    const log = (text: string) => console.info(`Task distribute -> ${text}`);
 
     const { isReady, distroAddressMainnet, distroAddressGnosis } =
       await hre.run("status", { silent: true });
@@ -50,24 +50,32 @@ task(
       if (fileName.startsWith("mainnet")) {
         const allocation = loadSnapshot(filePath);
         assert(allocation);
-        amountToFundMainnet.add(balancemapSum(allocation));
+        amountToFundMainnet = amountToFundMainnet.add(
+          balancemapSum(allocation),
+        );
       }
 
       if (fileName.startsWith("gnosis")) {
         const allocation = loadSnapshot(filePath);
         assert(allocation);
-        amountToFundGnosis.add(balancemapSum(allocation));
+        amountToFundGnosis = amountToFundGnosis.add(balancemapSum(allocation));
       }
     }
+
+    const amountToClaim = BigNumber.from(0)
+      .add(amountToFundMainnet)
+      .add(amountToFundGnosis);
+
+    log(`AmountToClaim      : ${formatUnits(amountToClaim)}`);
+    log(`AmountToFundMainnet: ${formatUnits(amountToFundMainnet)}`);
+    log(`AmountToFundGnosis : ${formatUnits(amountToFundGnosis)}`);
 
     await hre.run("propose", {
       distroAddressMainnet,
       distroAddressGnosis,
       merkleRootMainnet,
       merkleRootGnosis,
-      amountToClaim: BigNumber.from(0)
-        .add(amountToFundMainnet)
-        .add(amountToFundGnosis),
+      amountToClaim,
       amountToFundMainnet,
       amountToFundGnosis,
     });
