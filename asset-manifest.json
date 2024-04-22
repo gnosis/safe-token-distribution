@@ -1,10 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.b8c10928.css",
-    "main.js": "/static/js/main.728e718b.js",
+    "main.js": "/static/js/main.13ebee08.js",
+    "static/js/324.8230fde5.chunk.js": "/static/js/324.8230fde5.chunk.js",
+    "static/js/205.e1c36ea1.chunk.js": "/static/js/205.e1c36ea1.chunk.js",
+    "static/js/482.df1dcc4b.chunk.js": "/static/js/482.df1dcc4b.chunk.js",
+    "static/js/938.0c5e4769.chunk.js": "/static/js/938.0c5e4769.chunk.js",
     "static/js/563.7a0cb630.chunk.js": "/static/js/563.7a0cb630.chunk.js",
     "static/js/942.1ddd3c57.chunk.js": "/static/js/942.1ddd3c57.chunk.js",
-    "static/js/836.c4ad82e5.chunk.js": "/static/js/836.c4ad82e5.chunk.js",
+    "static/js/836.c18034de.chunk.js": "/static/js/836.c18034de.chunk.js",
     "static/js/299.67e801ab.chunk.js": "/static/js/299.67e801ab.chunk.js",
     "static/media/AvertaBold.woff2": "/static/media/AvertaBold.8760f55e7a4d4a6bc723.woff2",
     "static/media/Averta-ExtraBold.woff2": "/static/media/Averta-ExtraBold.8fdcd8d42c7e77010193.woff2",
@@ -16,6 +20,6 @@
   },
   "entrypoints": [
     "static/css/main.b8c10928.css",
-    "static/js/main.728e718b.js"
+    "static/js/main.13ebee08.js"
   ]
 }
