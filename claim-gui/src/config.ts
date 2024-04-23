@@ -1,4 +1,3 @@
-import { constants } from "ethers";
 import { Chain } from "wagmi";
 
 export const gnosis: Chain = {
