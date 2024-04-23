@@ -1,9 +1,9 @@
 import assert from "assert";
 import "hardhat-deploy";
+import { constants } from "ethers";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { queryBridgedAddress } from "../src/queries/queryToken";
 import calculateDistroAddress from "../src/fns/calculateDistroAdress";
 
 import {
@@ -11,6 +11,8 @@ import {
   getProviders,
   MERKLE_DISTRO_DEPLOYMENT_SALT,
 } from "../src/config";
+import { AddressConfig, ProviderConfig } from "../src/types";
+import { OmniMediator__factory } from "../typechain";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   if (hre.network.name === "mainnet" || hre.network.name === "gnosis") {
@@ -76,6 +78,24 @@ async function deploymentArgs(hre: HardhatRuntimeEnvironment) {
       : addresses.gnosis.treasurySafe;
 
   return [tokenAddress, merkleRoot, ownerAddress];
+}
+
+async function queryBridgedAddress(
+  addresses: AddressConfig,
+  providers: ProviderConfig,
+): Promise<string | null> {
+  const omniMediatorGC = OmniMediator__factory.connect(
+    addresses.gnosis.omniMediator,
+    providers.gnosis,
+  );
+
+  const tokenAddressGC = await omniMediatorGC.bridgedTokenAddress(
+    addresses.mainnet.token,
+  );
+
+  const isBridged = tokenAddressGC !== constants.AddressZero;
+
+  return isBridged ? tokenAddressGC : null;
 }
 
 export default deploy;

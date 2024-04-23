@@ -51,12 +51,11 @@ function divideDust(balances: BalanceMap, dust: BigNumber): BalanceMap {
   const holderCount = Object.keys(balances).length;
   assert(dust.toNumber() <= holderCount);
 
-  return Object.keys(balances)
-    .map((address) => address)
-    .sort((a, b) => (a < b ? -1 : 1))
-    .slice(0, dust.toNumber())
-    .reduce(
-      (result, address) => ({ ...result, [address]: BigNumber.from(1) }),
-      {},
-    );
+  return Object.fromEntries(
+    Object.keys(balances)
+      .map((address) => address)
+      .sort()
+      .slice(0, dust.toNumber())
+      .map((address) => [address, BigNumber.from(1)]),
+  );
 }
