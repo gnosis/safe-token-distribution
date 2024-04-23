@@ -15,8 +15,11 @@ import { saveAllocation } from "../persistence";
 import proportionally from "../fns/proportionally";
 import sort from "../fns/balancemapSort";
 import sum from "../fns/balancemapSum";
+import balancemapWithout from "../fns/balancemapWithout";
 
 import { BalanceMap } from "../types";
+
+const EXCLUDE = [getAddress("0x2686d5e477d1aaa58bf8ce598fa95d97985c7fb1")];
 
 task(
   "allocate",
@@ -34,8 +37,15 @@ task(
   .setAction(async (taskArgs) => {
     const log = (text: string) => console.info(`Task allocate -> ${text}`);
 
-    const weightsMainnet = weightsFromCSV(taskArgs.weightsMainnet);
-    const weightsGnosis = weightsFromCSV(taskArgs.weightsGnosis);
+    const weightsMainnet = balancemapWithout(
+      weightsFromCSV(taskArgs.weightsMainnet),
+      EXCLUDE,
+    );
+    const weightsGnosis = balancemapWithout(
+      weightsFromCSV(taskArgs.weightsGnosis),
+      EXCLUDE,
+    );
+
     const amountToDistribute = parseUnits(taskArgs.amountToDistribute, 18);
 
     log("Starting");
