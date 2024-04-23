@@ -18,8 +18,8 @@ task(
   "distribute",
   "Calculate funding amounts, and posts two transactions that will eventually update the Distribution setup and enable new claimers",
 )
-  .addParam("merkleRootMainnet", "", undefined, types.string, false)
-  .addParam("merkleRootGnosis", "", undefined, types.string, false)
+  .addParam("merkleRootMainnet", "", undefined, types.string, true)
+  .addParam("merkleRootGnosis", "", undefined, types.string, true)
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const log = (text: string) => console.info(`Task distribute -> ${text}`);
 
@@ -31,7 +31,10 @@ task(
       return;
     }
 
-    const { merkleRootMainnet, merkleRootGnosis } = taskArgs;
+    const { merkleRootMainnet, merkleRootGnosis } =
+      taskArgs.merkleRootMainnet && taskArgs.merkleRootGnosis
+        ? taskArgs
+        : await hre.run("checkpoint");
     if (!checkpointExists(merkleRootMainnet)) {
       throw new Error(
         `Checkpoints for (mainnet) ${merkleRootMainnet} not found`,

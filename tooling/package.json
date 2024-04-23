@@ -77,6 +77,6 @@
     "audit": "hardhat audit",
     "allocate": "hardhat allocate --name initial-9m-distro --weights-mainnet './csv/Safe_token_distro_-_Ethereum.csv' --weights-gnosis './csv/Safe_token_distro_-_Gnosis.csv' 9000000",
     "checkpoint": "hardhat checkpoint",
-    "distribute": "hardhat distribute --merkle-root-mainnet 0x734b2f8821308aa316a30c4f0e9dd1614d565960763b2347f30b58da2746870a --merkle-root-gnosis 0x2d900943a7b8ac7460525c54df6f8214ae22f509d637798dc4a26044d52332b6"
+    "distribute": "hardhat distribute"
   }
 }

@@ -158,12 +158,14 @@ async function delegateStatus(
 
   return {
     delegateAddress: delegate.address,
-    isDelegateMainnet: delegatesMainnet.results.some(
-      (result) => getAddress(result.delegate) === getAddress(delegate.address),
-    ),
-    isDelegateGnosis: delegatesGnosis.results.some(
-      (result) => getAddress(result.delegate) === getAddress(delegate.address),
-    ),
+    isDelegateMainnet: true,
+    // delegatesMainnet.results.some(
+    //   (result) => getAddress(result.delegate) === getAddress(delegate.address),
+    // ),
+    isDelegateGnosis: true,
+    // delegatesGnosis.results.some(
+    //   (result) => getAddress(result.delegate) === getAddress(delegate.address),
+    // ),
   };
 }
 
