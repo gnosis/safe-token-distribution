@@ -2,17 +2,17 @@ import { readdirSync } from "fs";
 import path from "path";
 import assert from "assert";
 import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import balancemapSum from "../fns/balancemapSum";
+import { sum } from "../fns/bag";
 
 import {
   ALLOCATIONS_DIR,
   checkpointExists,
   loadSnapshot,
 } from "../persistence";
-import { formatUnits } from "ethers/lib/utils";
 
 task(
   "distribute",
@@ -50,15 +50,13 @@ task(
       if (fileName.startsWith("mainnet")) {
         const allocation = loadSnapshot(filePath);
         assert(allocation);
-        amountToFundMainnet = amountToFundMainnet.add(
-          balancemapSum(allocation),
-        );
+        amountToFundMainnet = amountToFundMainnet.add(sum(allocation));
       }
 
       if (fileName.startsWith("gnosis")) {
         const allocation = loadSnapshot(filePath);
         assert(allocation);
-        amountToFundGnosis = amountToFundGnosis.add(balancemapSum(allocation));
+        amountToFundGnosis = amountToFundGnosis.add(sum(allocation));
       }
     }
 

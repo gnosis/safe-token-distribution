@@ -1,8 +1,7 @@
 import assert from "assert";
 import { BigNumber } from "ethers";
 
-import balancemapMerge from "./balancemapMerge";
-import balancemapSum from "./balancemapSum";
+import { merge, sum } from "./bag";
 
 import { BalanceMap } from "../types";
 
@@ -16,11 +15,11 @@ export default function proportionally(
 
   const { result, rest } = divideWeighted(weights, amountToDivide);
 
-  return balancemapMerge(result, proportionally(weights, rest));
+  return merge(result, proportionally(weights, rest));
 }
 
 function divideWeighted(weights: BalanceMap, amountToDivide: BigNumber) {
-  const totalWeight = balancemapSum(weights);
+  const totalWeight = sum(weights);
   const result = Object.keys(weights)
     .map((address) => ({
       address,
@@ -35,7 +34,7 @@ function divideWeighted(weights: BalanceMap, amountToDivide: BigNumber) {
       {},
     );
 
-  const total = balancemapSum(result);
+  const total = sum(result);
   assert(total.gt(0), "Unexpected Standstill");
 
   return {

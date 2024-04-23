@@ -13,8 +13,7 @@ import {
 
 import { saveAllocation } from "../persistence";
 import proportionally from "../fns/proportionally";
-import sum from "../fns/balancemapSum";
-import balancemapWithout from "../fns/balancemapWithout";
+import { sum, without } from "../fns/bag";
 
 import { BalanceMap } from "../types";
 
@@ -33,14 +32,14 @@ task(
     undefined,
     types.string,
   )
-  .setAction(async (taskArgs) => {
+  .setAction(async (taskArgs: any) => {
     const log = (text: string) => console.info(`Task allocate -> ${text}`);
 
-    const weightsMainnet = balancemapWithout(
+    const weightsMainnet = without(
       weightsFromCSV(taskArgs.weightsMainnet),
       EXCLUDE,
     );
-    const weightsGnosis = balancemapWithout(
+    const weightsGnosis = without(
       weightsFromCSV(taskArgs.weightsGnosis),
       EXCLUDE,
     );

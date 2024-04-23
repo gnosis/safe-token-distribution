@@ -7,9 +7,8 @@ import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ALLOCATIONS_DIR, loadSnapshot } from "../persistence";
-import balancemapSum from "../fns/balancemapSum";
+import { sum, merge } from "../fns/bag";
 
-import balancemapMerge from "../fns/balancemapMerge";
 import { BalanceMap } from "../types";
 
 task("audit", "Verifies the sum of all allocations snapshots").setAction(
@@ -40,8 +39,8 @@ task("audit", "Verifies the sum of all allocations snapshots").setAction(
       log(`Considering ${fileName}`);
       const snapshot = loadSnapshot(filePath);
       assert(snapshot);
-      total = total.add(balancemapSum(snapshot));
-      allocations = balancemapMerge(allocations, snapshot);
+      total = total.add(sum(snapshot));
+      allocations = merge(allocations, snapshot);
     }
 
     for (const key of Object.keys(allocations)) {

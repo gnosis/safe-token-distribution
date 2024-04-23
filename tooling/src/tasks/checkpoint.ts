@@ -1,12 +1,10 @@
 import assert from "assert";
 import { readdirSync } from "fs";
 import path from "path";
-
 import { task } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
-import merge from "../fns/balancemapMerge";
-
+import { merge } from "../fns/bag";
 import { ALLOCATIONS_DIR, loadSnapshot, saveCheckpoint } from "../persistence";
 
 import { BalanceMap } from "../types";
