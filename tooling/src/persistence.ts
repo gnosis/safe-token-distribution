@@ -5,14 +5,6 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 import { BalanceMap } from "./types";
 
-export function loadAllocation(
-  chain: "mainnet" | "gnosis",
-  name: string,
-): BalanceMap | null {
-  const filePath = allocationFilePath(chain, name);
-  return loadSnapshot(filePath);
-}
-
 export function saveAllocation(
   chain: "mainnet" | "gnosis",
   name: string,
@@ -63,12 +55,6 @@ export function checkpointExists(id: string) {
   return fs.existsSync(checkpointPath) && fs.existsSync(treePath);
 }
 
-export function checkpointCount() {
-  const dirPath = checkpointDirPath();
-  fs.ensureDirSync(dirPath);
-  return fs.readdirSync(dirPath).length;
-}
-
 function checkpointDirPath() {
   return path.resolve(path.join(__dirname, "..", "_harvest", "checkpoints"));
 }
@@ -94,15 +80,6 @@ type StringMap = {
 };
 
 function valuesToBigNumber(map: StringMap): BalanceMap {
-  // !!this is (catastrophically) MUCH slower!!
-  // return Object.keys(map).reduce(
-  //   (prev, key) => ({
-  //     ...prev,
-  //     [key]: BigNumber.from(map[key]),
-  //   }),
-  //   {},
-  // );
-  // this is faster
   const result: BalanceMap = {};
   for (const key of Object.keys(map).sort()) {
     result[key] = BigNumber.from(map[key]);
@@ -111,16 +88,6 @@ function valuesToBigNumber(map: StringMap): BalanceMap {
 }
 
 function valuesToString(map: BalanceMap): StringMap {
-  // !!this is MUCH slower!!
-  // return Object.keys(map).reduce(
-  //   (prev, key) => ({
-  //     ...prev,
-  //     [key]: map[key].toString(),
-  //   }),
-  //   {},
-  // );
-
-  // this is faster
   const result: StringMap = {};
   for (const key of Object.keys(map).sort()) {
     result[key] = map[key].toString();

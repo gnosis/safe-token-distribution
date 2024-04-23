@@ -1,15 +1,15 @@
+import assert from "assert";
+import { readdirSync } from "fs";
+import path from "path";
+
 import { task } from "hardhat/config";
 
 import createMerkleTree from "../fns/createMerkleTree";
-import balancemapMerge from "../fns/balancemapMerge";
-import balancemapSort from "../fns/balancemapSort";
+import merge from "../fns/balancemapMerge";
 
 import { ALLOCATIONS_DIR, loadSnapshot, saveCheckpoint } from "../persistence";
 
 import { BalanceMap } from "../types";
-import { readdirSync } from "fs";
-import path from "path";
-import assert from "assert";
 
 task(
   "checkpoint",
@@ -29,14 +29,14 @@ task(
       log(`Factoring in ${fileName}`);
       const allocation = loadSnapshot(filePath);
       assert(allocation);
-      checkpointMainnet = balancemapMerge(checkpointMainnet, allocation);
+      checkpointMainnet = merge(checkpointMainnet, allocation);
     }
 
     if (fileName.startsWith("mainnet")) {
       log(`Factoring in ${fileName}`);
       const allocation = loadSnapshot(filePath);
       assert(allocation);
-      checkpointGnosis = balancemapMerge(checkpointGnosis, allocation);
+      checkpointGnosis = merge(checkpointGnosis, allocation);
     }
   }
 
@@ -44,9 +44,9 @@ task(
   const treeGnosis = createMerkleTree(checkpointGnosis);
 
   log(`Saved checkpoint ${treeMainnet.root} (Mainnet)`);
-  saveCheckpoint(balancemapSort(checkpointMainnet), treeMainnet);
+  saveCheckpoint(checkpointMainnet, treeMainnet);
   log(`Saved checkpoint ${treeGnosis.root} (Gnosis)`);
-  saveCheckpoint(balancemapSort(checkpointGnosis), treeGnosis);
+  saveCheckpoint(checkpointGnosis, treeGnosis);
 
   log("Done");
 

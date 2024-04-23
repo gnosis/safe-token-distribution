@@ -13,7 +13,6 @@ import {
 
 import { saveAllocation } from "../persistence";
 import proportionally from "../fns/proportionally";
-import sort from "../fns/balancemapSort";
 import sum from "../fns/balancemapSum";
 import balancemapWithout from "../fns/balancemapWithout";
 
@@ -69,9 +68,9 @@ task(
     });
 
     log(`${formatUnits(sum(allocationMainnet))} SAFE in Mainnet`);
-    saveAllocation("mainnet", taskArgs.name, sort(allocationMainnet));
+    saveAllocation("mainnet", taskArgs.name, allocationMainnet);
     log(`${formatUnits(sum(allocationGnosis))} SAFE in Gnosis`);
-    saveAllocation("gnosis", taskArgs.name, sort(allocationGnosis));
+    saveAllocation("gnosis", taskArgs.name, allocationGnosis);
 
     log("Done");
   });

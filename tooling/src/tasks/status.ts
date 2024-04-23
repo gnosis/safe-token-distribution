@@ -1,10 +1,10 @@
 import { constants } from "ethers";
+
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import { getAddress } from "ethers/lib/utils";
 
-import { queryBridgedAddress, queryIsPaused } from "../queries/queryToken";
 import calculateDistroAddress from "../fns/calculateDistroAdress";
 
 import {
@@ -14,7 +14,8 @@ import {
   MERKLE_DISTRO_DEPLOYMENT_SALT,
 } from "../config";
 
-import { ProviderConfig } from "../types";
+import { AddressConfig, ProviderConfig } from "../types";
+import { OmniMediator__factory, SafeToken__factory } from "../../typechain";
 
 task("status", "Checks SafeToken and MerkleDistro status")
   .addOptionalParam("silent", "No log output", false, types.boolean)
@@ -164,4 +165,34 @@ async function delegateStatus(
       (result) => getAddress(result.delegate) === getAddress(delegate.address),
     ),
   };
+}
+
+export async function queryIsPaused(
+  addresses: AddressConfig,
+  provider: ProviderConfig,
+): Promise<boolean> {
+  const safeToken = SafeToken__factory.connect(
+    addresses.mainnet.token,
+    provider.mainnet,
+  );
+
+  return safeToken.paused();
+}
+
+export async function queryBridgedAddress(
+  addresses: AddressConfig,
+  providers: ProviderConfig,
+): Promise<string | null> {
+  const omniMediatorGC = OmniMediator__factory.connect(
+    addresses.gnosis.omniMediator,
+    providers.gnosis,
+  );
+
+  const tokenAddressGC = await omniMediatorGC.bridgedTokenAddress(
+    addresses.mainnet.token,
+  );
+
+  const isBridged = tokenAddressGC !== constants.AddressZero;
+
+  return isBridged ? tokenAddressGC : null;
 }
