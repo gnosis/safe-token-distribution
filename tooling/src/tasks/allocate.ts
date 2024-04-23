@@ -94,22 +94,16 @@ function perNetwork(
   weightsGC: BalanceMap,
   amountToDistribute: BigNumber,
 ) {
-  // const result = proportionally(
-  //   {
-  //     mainnet: sum(weightsMainnet),
-  //     gnosis: sum(weightsGC),
-  //   },
-  //   amountToDistribute,
-  // );
+  const result = proportionally(
+    {
+      mainnet: sum(weightsMainnet),
+      gnosis: sum(weightsGC),
+    },
+    amountToDistribute,
+  );
 
-  // const toDistributeMainnet = BigNumber.from(result.mainnet || 0);
-  // const toDistributeGnosis = BigNumber.from(result.gnosis || 0);
-  // sanity check
-  // assert(toDistributeMainnet.add(toDistributeGnosis).eq(amountToDistribute));
-
-  // hardcoding 8.5M for Gnosis, 500K for Mainnet
-  const toDistributeMainnet = BigNumber.from(parseUnits("500000") || 0);
-  const toDistributeGnosis = BigNumber.from(parseUnits("8500000") || 0);
+  const toDistributeMainnet = BigNumber.from(result.mainnet || 0);
+  const toDistributeGnosis = BigNumber.from(result.gnosis || 0);
   // sanity check
   assert(toDistributeMainnet.add(toDistributeGnosis).eq(amountToDistribute));
 

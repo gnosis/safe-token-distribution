@@ -74,12 +74,14 @@ task("audit", "Verifies the sum of all allocations snapshots").setAction(
     log(`Accounts     + 1 SAFE ${countBucket1}`);
     log(`Accounts     < 1 SAFE ${floor}`);
 
-    const [first, second, third] = Object.entries(allocations).sort(
-      ([, v1], [, v2]) => (v1.gt(v2) ? -1 : 1),
-    );
+    const [first, second, third, fourth, fifth] = Object.entries(
+      allocations,
+    ).sort(([, v1], [, v2]) => (v1.gt(v2) ? -1 : 1));
 
     log(`First  ${first[0]} ${formatUnits(first[1])}`);
     log(`Second ${second[0]} ${formatUnits(second[1])}`);
     log(`Third  ${third[0]} ${formatUnits(third[1])}`);
+    log(`Fourth ${fourth[0]} ${formatUnits(fourth[1])}`);
+    log(`Fifth  ${fifth[0]} ${formatUnits(fifth[1])}`);
   },
 );
