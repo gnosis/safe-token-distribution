@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.b8c10928.css",
-    "main.js": "/static/js/main.050b0093.js",
-    "static/js/956.2a86c3d6.chunk.js": "/static/js/956.2a86c3d6.chunk.js",
-    "static/js/86.14922199.chunk.js": "/static/js/86.14922199.chunk.js",
-    "static/js/41.dac4bea5.chunk.js": "/static/js/41.dac4bea5.chunk.js",
-    "static/js/563.8ce7f361.chunk.js": "/static/js/563.8ce7f361.chunk.js",
-    "static/js/254.3bc4512b.chunk.js": "/static/js/254.3bc4512b.chunk.js",
+    "main.js": "/static/js/main.ce666a61.js",
+    "static/js/494.32a05cf8.chunk.js": "/static/js/494.32a05cf8.chunk.js",
+    "static/js/408.61c5a19d.chunk.js": "/static/js/408.61c5a19d.chunk.js",
+    "static/js/404.9a4a0971.chunk.js": "/static/js/404.9a4a0971.chunk.js",
+    "static/js/176.cc3158fd.chunk.js": "/static/js/176.cc3158fd.chunk.js",
+    "static/js/563.7a0cb630.chunk.js": "/static/js/563.7a0cb630.chunk.js",
     "static/js/942.1ddd3c57.chunk.js": "/static/js/942.1ddd3c57.chunk.js",
-    "static/js/836.e753ed9f.chunk.js": "/static/js/836.e753ed9f.chunk.js",
+    "static/js/836.c18034de.chunk.js": "/static/js/836.c18034de.chunk.js",
     "static/js/299.67e801ab.chunk.js": "/static/js/299.67e801ab.chunk.js",
     "static/media/AvertaBold.woff2": "/static/media/AvertaBold.8760f55e7a4d4a6bc723.woff2",
     "static/media/Averta-ExtraBold.woff2": "/static/media/Averta-ExtraBold.8fdcd8d42c7e77010193.woff2",
@@ -20,6 +20,6 @@
   },
   "entrypoints": [
     "static/css/main.b8c10928.css",
-    "static/js/main.050b0093.js"
+    "static/js/main.ce666a61.js"
   ]
 }
