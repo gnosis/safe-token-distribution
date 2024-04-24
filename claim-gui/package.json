@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "@openzeppelin/merkle-tree": "1.0.1",
-    "@rainbow-me/rainbowkit": "0.8.0",
-    "@types/node": "^16.7.13",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
+    "@tanstack/react-query": "^5.32.0",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@web3modal/wagmi": "^4.1.11",
     "buffer": "^6.0.3",
     "clsx": "^1.2.1",
+    "copy-to-clipboard": "^3.3.3",
     "d3": "^7.6.1",
     "datebook": "^7.1.0",
     "ethereum-blockies-base64": "^1.0.2",
@@ -18,9 +20,10 @@
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
     "react-scripts": "5.0.1",
-    "typescript": "4.9.4",
+    "typescript": "5.4.5",
     "use-onclickoutside": "^0.4.1",
-    "wagmi": "0.9.2"
+    "viem": "^2.9.26",
+    "wagmi": "^2.5.20"
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
@@ -47,6 +50,8 @@
     "@types/d3": "^7.4.0",
     "@types/d3-selection": "^3.0.3",
     "@types/react-modal": "^3.13.1",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
     "typescript-plugin-css-modules": "^3.4.0"
   }
 }

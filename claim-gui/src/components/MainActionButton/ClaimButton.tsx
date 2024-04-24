@@ -1,11 +1,7 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
+import { useTransaction, useWriteContract } from "wagmi";
 
 import Button from "../Button";
 
@@ -39,8 +35,9 @@ const ClaimStageMessages = [
 ];
 
 const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
-  const { isDistroEnabled, distroAddress } = useDistroSetup();
+  const { distroAddress } = useDistroSetup();
   const [claimStage, setClaimStage] = useState<ClaimStage>(ClaimStage.Idle);
+  const { data: hash, writeContract } = useWriteContract();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | undefined;
@@ -54,41 +51,24 @@ const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
       clearTimeout(timeoutId);
     };
   }, [claimStage]);
-  const { config } = usePrepareContractWrite({
-    address: distroAddress,
-    abi: MerkleDistroABI,
-    functionName: "claim",
-    args: [proof, amount],
-    enabled: isDistroEnabled,
-  });
 
-  const { data, write } = useContractWrite({
-    ...config,
-    onError(err: any) {
-      setClaimStage(
-        err.code === "ACTION_REJECTED"
-          ? ClaimStage.UserRejected
-          : ClaimStage.Error,
-      );
-    },
-  });
-
-  useWaitForTransaction({
-    hash: data?.hash,
-    confirmations: 1,
-    onSuccess() {
-      setClaimStage(ClaimStage.Success);
-    },
-    onError(err) {
-      setClaimStage(ClaimStage.Error);
-    },
+  const { status } = useTransaction({
+    hash: hash,
   });
 
   useEffect(() => {
-    if (claimStage === ClaimStage.Signing && !!data?.hash) {
+    if (status === "error") {
+      setClaimStage(ClaimStage.Error);
+    } else if (status === "success") {
+      setClaimStage(ClaimStage.Success);
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (claimStage === ClaimStage.Signing && hash) {
       setClaimStage(ClaimStage.Transacting);
     }
-  }, [claimStage, data?.hash]);
+  }, [claimStage, hash]);
 
   return (
     <div className={classes.claimContainer}>
@@ -96,7 +76,12 @@ const ClaimButton: React.FC<Props> = ({ proof, amount }: Props) => {
         primary
         onClick={() => {
           if (claimStage === ClaimStage.Idle) {
-            write?.();
+            writeContract({
+              address: distroAddress,
+              abi: MerkleDistroABI,
+              functionName: "claim",
+              args: [proof, amount.toBigInt()],
+            });
             setClaimStage(ClaimStage.Signing);
           }
         }}

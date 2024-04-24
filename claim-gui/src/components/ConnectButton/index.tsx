@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import useOnClickOutside from "use-onclickoutside";
 import copy from "copy-to-clipboard";
-import { useAccount, useDisconnect, useNetwork } from "wagmi";
+import { useAccount, useDisconnect, useChainId, useChains } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import Identicon from "../Identicon";
-import Modal from "../ConnectModal";
 import Button from "../Button";
 import classes from "./style.module.css";
 import IconButton, { IconLinkButton } from "../IconButton";
@@ -17,26 +17,18 @@ export const shortenAddress = (address: string): string => {
 };
 
 const ConnectButton: React.FC = () => {
-  const { chain } = useNetwork();
+  const chainId = useChainId();
+  const chains = useChains();
+  const chain = chains.find((c) => c.id === chainId);
   const { address, isConnected, connector } = useAccount();
   const { disconnect } = useDisconnect();
-
+  const { open } = useWeb3Modal();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const ref = useRef(null);
   useOnClickOutside(ref, () => setShowDropdown(false));
 
-  const explorer = chain?.blockExplorers && chain?.blockExplorers[0];
-
-  useEffect(() => {
-    if (address) {
-      setShowModal(false);
-    }
-  }, [address]);
   return (
     <>
-      <Modal show={showModal} setShow={setShowModal} />
-
       <div className={classes.container}>
         <button
           className={classes.button}
@@ -74,14 +66,6 @@ const ConnectButton: React.FC = () => {
                         icon="copy"
                         title="Copy to clipboard"
                       />
-                      {explorer && (
-                        <IconLinkButton
-                          icon="open"
-                          href={`${explorer.url}/address/${address}`}
-                          external
-                          title={`Open in ${explorer?.name}`}
-                        />
-                      )}
                     </div>
                   )}
                 </div>
@@ -129,7 +113,7 @@ const ConnectButton: React.FC = () => {
                   <Button
                     className={classes.dropdownButton}
                     primary
-                    onClick={() => setShowModal(true)}
+                    onClick={() => open()}
                   >
                     Connect wallet
                   </Button>

@@ -2,63 +2,73 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { mainnet, goerli } from "wagmi/chains";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { infuraProvider } from "@wagmi/core/providers/infura";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { WalletConnectConnector } from "@wagmi/core/connectors/walletConnect";
-import { CoinbaseWalletConnector } from "@wagmi/core/connectors/coinbaseWallet";
+import { createWeb3Modal } from "@web3modal/wagmi/react";
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+
+import { http, WagmiProvider } from "wagmi";
+import { gnosis, mainnet } from "wagmi/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import HomePage from "./Pages/HomePage";
 import { DistroSetupProvider } from "./hooks/useDistroSetup";
 import { AllocationProvider } from "./hooks/useAllocation";
 
-import { gnosis } from "./config";
+const queryClient = new QueryClient();
 
-const { chains, provider } = configureChains(
-  process.env.NODE_ENV === "development"
-    ? [mainnet, gnosis, goerli]
-    : [mainnet, gnosis],
-  [
-    jsonRpcProvider({
-      rpc: (chain) =>
-        chain.id === 100 ? { http: "https://rpc.gnosischain.com" } : null,
-    }),
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_KEY || "" }),
-  ],
-);
+const projectId = process.env.REACT_APP_WALLET_CONNECT_ID;
 
-const wagmiClient = createClient({
-  autoConnect: true,
-  connectors: [
-    new InjectedConnector({ chains }),
-    new WalletConnectConnector({ chains, options: { qrcode: true } }),
-    new CoinbaseWalletConnector({
-      options: {
-        appName: "GnosisDAO — Safe Claim",
-      },
-    }),
-  ],
-  provider,
+if (!projectId) {
+  throw new Error("REACT_APP_WALLET_CONNECT_ID is required");
+}
+
+// 2. Create wagmiConfig
+const metadata = {
+  name: "SAFE token claim",
+  description: "GNO ",
+  url: "https://claim-safe.gnosis.io/", // origin must match your domain & subdomain
+  icons: ["https://claim-safe.gnosis.io/gno.svg"],
+};
+
+const chains = [mainnet, gnosis] as const;
+
+export const config = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+  transports: {
+    [mainnet.id]: http(),
+    [gnosis.id]: http(),
+  },
 });
+
+// 3. Create modal
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  themeMode: "light",
+});
+
+export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </WagmiProvider>
+  );
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 
-// https://github.com/WalletConnect/walletconnect-monorepo/issues/748
-window.Buffer = window.Buffer || require("buffer").Buffer;
-
 root.render(
   <React.StrictMode>
-    <WagmiConfig client={wagmiClient}>
+    <Web3ModalProvider>
       <DistroSetupProvider>
         <AllocationProvider>
           <HomePage />
         </AllocationProvider>
       </DistroSetupProvider>
-    </WagmiConfig>
+    </Web3ModalProvider>
   </React.StrictMode>,
 );
 
