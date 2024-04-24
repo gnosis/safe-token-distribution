@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useOnClickOutside from "use-onclickoutside";
 import copy from "copy-to-clipboard";
 import { useAccount, useDisconnect, useChainId, useChains } from "wagmi";
@@ -6,7 +6,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import Identicon from "../Identicon";
 import Button from "../Button";
 import classes from "./style.module.css";
-import IconButton, { IconLinkButton } from "../IconButton";
+import IconButton from "../IconButton";
 
 export const shortenAddress = (address: string): string => {
   const VISIBLE_START = 4;

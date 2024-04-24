@@ -21,6 +21,11 @@ if (!projectId) {
   throw new Error("REACT_APP_WALLET_CONNECT_ID is required");
 }
 
+const infuraKey = process.env.REACT_APP_INFURA_KEY;
+if (!infuraKey) {
+  throw new Error("REACT_APP_INFURA_KEY is required");
+}
+
 // 2. Create wagmiConfig
 const metadata = {
   name: "SAFE token claim",
@@ -36,7 +41,9 @@ export const config = defaultWagmiConfig({
   projectId,
   metadata,
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http(
+      `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`,
+    ),
     [gnosis.id]: http(),
   },
 });

@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_INFURA_KEY: ${{ secrets.INFURA_API_KEY  }}
+      REACT_APP_WALLET_CONNECT_ID: ${{ secrets.WALLET_CONNECT_ID }}
     name: deploy claim-gui
     steps:
       - uses: actions/checkout@v2
