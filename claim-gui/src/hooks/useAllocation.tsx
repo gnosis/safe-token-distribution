@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BigNumber, constants } from "ethers";
-import { useAccount, useContractRead } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 import useDistroSetup from "./useDistroSetup";
@@ -22,13 +22,12 @@ export function AllocationProvider({
   const [allocation, setAllocation] = useState<AllocationEntry | null>(null);
 
   const { address } = useAccount();
-  const { isDistroEnabled, distroAddress } = useDistroSetup();
+  const { distroAddress } = useDistroSetup();
 
-  const result = useContractRead({
+  const result = useReadContract({
     address: distroAddress,
     abi: MerkleDistroABI,
     functionName: "merkleRoot",
-    enabled: isDistroEnabled,
   });
 
   const merkleRoot = result?.data;

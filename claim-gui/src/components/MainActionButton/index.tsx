@@ -5,10 +5,10 @@ import useAllocation from "../../hooks/useAllocation";
 import useAmountClaimed from "../../hooks/useAmountClaimed";
 
 import Button from "../Button";
-import ConnectModal from "../ConnectModal";
 import Card from "../Card";
 import ClaimButton from "./ClaimButton";
 import { BigNumber } from "ethers";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 const Zero = BigNumber.from(0);
 
@@ -23,15 +23,8 @@ const MainActionButton: React.FC = () => {
     ? amountAllocated.sub(amountClaimed)
     : Zero;
   const amountAvailableRaw = amountAvailable.toString();
-
-  const [showModal, setShowModal] = useState(false);
+  const { open } = useWeb3Modal();
   const [showAction, setShowAction] = useState(amountAvailable.gt(0));
-
-  useEffect(() => {
-    if (address) {
-      setShowModal(false);
-    }
-  }, [address]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | undefined;
@@ -50,7 +43,6 @@ const MainActionButton: React.FC = () => {
 
   return (
     <Card>
-      <ConnectModal show={showModal} setShow={setShowModal} />
       {address ? (
         <>
           {showAction && !!allocation ? (
@@ -63,7 +55,7 @@ const MainActionButton: React.FC = () => {
         </>
       ) : (
         <>
-          <Button primary onClick={() => setShowModal(true)}>
+          <Button primary onClick={() => open()}>
             Connect
           </Button>
         </>

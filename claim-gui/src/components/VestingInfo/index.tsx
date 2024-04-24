@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { useContractReads, useContractRead } from "wagmi";
+import { useReadContracts, useReadContract } from "wagmi";
 
 import SafeTag from "../SafeTag";
 import ConnectionStatus from "./ConnectionStatus";
@@ -13,7 +13,7 @@ import SafeTokenABI from "../../abis/SafeToken";
 import { BNtoFloat } from "../../utils";
 
 const VestingInfo: React.FC = () => {
-  const staticRes = useContractReads({
+  const staticRes = useReadContracts({
     contracts: [
       {
         chainId: 1,
@@ -31,7 +31,7 @@ const VestingInfo: React.FC = () => {
     ],
   });
 
-  const vestingRes = useContractRead({
+  const vestingRes = useReadContract({
     chainId: 1,
     address: vestingPoolAddress,
     abi: VestingPoolABI,
@@ -39,20 +39,23 @@ const VestingInfo: React.FC = () => {
     args: [
       "0x12c1ee9f9b122fa7a0e7a6a733f6e07d30affb7fac1ca061325b11d9ba677382",
     ],
-    watch: true,
   });
 
   // if data from contracts cannot be fetched, chart will show static
   // unvested allocation diagram,
-  const totalSAFESupply = staticRes.data
-    ? staticRes.data[1]
+  const totalSAFESupply = staticRes.isSuccess
+    ? BigNumber.from(
+        staticRes.data![1].result || "1000000000000000000000000000",
+      )
     : BigNumber.from("1000000000000000000000000000");
   const gnosisInitial = BigNumber.from("10011026319019003889472853");
-  const gnosisDAOTotal = staticRes.data
-    ? staticRes.data[0].amount.add(gnosisInitial)
+  const gnosisDAOTotal = staticRes.isSuccess
+    ? BigNumber.from(
+        staticRes.data![0].result![5] || "150000000000000000000000000",
+      ).add(gnosisInitial)
     : BigNumber.from("150000000000000000000000000");
-  const vestedAmount = vestingRes.data
-    ? vestingRes.data.vestedAmount
+  const vestedAmount = vestingRes.isSuccess
+    ? BigNumber.from(vestingRes.data[0])
     : BigNumber.from(0);
 
   return (
