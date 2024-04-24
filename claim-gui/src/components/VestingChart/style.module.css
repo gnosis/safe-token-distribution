@@ -111,7 +111,7 @@ path.gnosisVested.focus {
   border: 1px solid;
   cursor: help;
   position: relative;
-  z-index: 2000;
+  z-index: 500;
 }
 
 .help:hover .hoverButton {
