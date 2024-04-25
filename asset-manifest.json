@@ -1,15 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.fb7405fd.css",
-    "main.js": "/static/js/main.272f23ce.js",
-    "static/js/507.c8ad92d2.chunk.js": "/static/js/507.c8ad92d2.chunk.js",
-    "static/js/169.fdc76eb1.chunk.js": "/static/js/169.fdc76eb1.chunk.js",
-    "static/js/31.79a93477.chunk.js": "/static/js/31.79a93477.chunk.js",
-    "static/js/604.0a78f871.chunk.js": "/static/js/604.0a78f871.chunk.js",
-    "static/js/563.7a0cb630.chunk.js": "/static/js/563.7a0cb630.chunk.js",
-    "static/js/942.1ddd3c57.chunk.js": "/static/js/942.1ddd3c57.chunk.js",
-    "static/js/836.c18034de.chunk.js": "/static/js/836.c18034de.chunk.js",
-    "static/js/299.67e801ab.chunk.js": "/static/js/299.67e801ab.chunk.js",
+    "main.css": "/static/css/main.911f093c.css",
+    "main.js": "/static/js/main.9a445648.js",
+    "static/js/61.c7cf51a3.chunk.js": "/static/js/61.c7cf51a3.chunk.js",
+    "static/js/13.c49eea3d.chunk.js": "/static/js/13.c49eea3d.chunk.js",
+    "static/js/432.31df3b97.chunk.js": "/static/js/432.31df3b97.chunk.js",
+    "static/js/131.7061b477.chunk.js": "/static/js/131.7061b477.chunk.js",
+    "static/js/483.9cef4086.chunk.js": "/static/js/483.9cef4086.chunk.js",
+    "static/js/571.6cf4b729.chunk.js": "/static/js/571.6cf4b729.chunk.js",
+    "static/js/35.50cf90e7.chunk.js": "/static/js/35.50cf90e7.chunk.js",
+    "static/js/627.b256eed2.chunk.js": "/static/js/627.b256eed2.chunk.js",
+    "static/js/348.65e70ffe.chunk.js": "/static/js/348.65e70ffe.chunk.js",
+    "static/js/330.c77e77c4.chunk.js": "/static/js/330.c77e77c4.chunk.js",
+    "static/js/267.47a67c6c.chunk.js": "/static/js/267.47a67c6c.chunk.js",
+    "static/js/86.71a1be6d.chunk.js": "/static/js/86.71a1be6d.chunk.js",
     "static/media/AvertaBold.woff2": "/static/media/AvertaBold.8760f55e7a4d4a6bc723.woff2",
     "static/media/Averta-ExtraBold.woff2": "/static/media/Averta-ExtraBold.8fdcd8d42c7e77010193.woff2",
     "static/media/Averta-normal.woff2": "/static/media/Averta-normal.39d048797bfbc1bff77c.woff2",
@@ -19,7 +23,7 @@
     "index.html": "/index.html"
   },
   "entrypoints": [
-    "static/css/main.fb7405fd.css",
-    "static/js/main.272f23ce.js"
+    "static/css/main.911f093c.css",
+    "static/js/main.9a445648.js"
   ]
 }

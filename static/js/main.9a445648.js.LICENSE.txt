@@ -1,22 +1,4 @@
 /*!
-  Copyright (c) 2015 Jed Watson.
-  Based on code that is Copyright 2013-2015, Facebook, Inc.
-  All rights reserved.
-*/
-
-/*!
- * Adapted from jQuery UI core
- *
- * http://jqueryui.com
- *
- * Copyright 2014 jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- *
- * http://api.jqueryui.com/category/ui-core/
- */
-
-/*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
@@ -27,18 +9,40 @@
 
 /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+/**
+     * A handy class to calculate color values.
+     *
+     * @version 1.0
+     * @author Robert Eisele <robert@xarg.org>
+     * @copyright Copyright (c) 2010, Robert Eisele
+     * @link http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
+     * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+     *
+     */
 
 /**
-       * A handy class to calculate color values.
-       *
-       * @version 1.0
-       * @author Robert Eisele <robert@xarg.org>
-       * @copyright Copyright (c) 2010, Robert Eisele
-       * @link http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-       * @license http://www.opensource.org/licenses/bsd-license.php BSD License
-       *
-       */
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 
 /**
  * @license React
