@@ -69,7 +69,7 @@ function computeProof(
 
   const leaves = Object.keys(distribution).map((address) => [
     address,
-    BigNumber.from(distribution[addressLowerCase]),
+    BigNumber.from(distribution[address]),
   ]);
 
   const index = leaves.findIndex(([_address]) => _address === addressLowerCase);
