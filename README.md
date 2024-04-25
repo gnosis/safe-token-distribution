@@ -6,7 +6,7 @@ GnosisDAO received 15% of the total SAFE Token supply, vesting over 4 years. The
 
 This repo contains the codebases for the distribution contracts, the scripts for claiming and calculating distributions, and the web app used by GNO holders to claim tokens.
 
-**_Note:_** Token distributions will not be available until the SAFE Token is made transferable, and the Distribution contracts are deployed. However, daily harvests are live, and can already be inspected. Once SAFE is unpaused, and MerkleDistros deployed, distributions will automatically start happening monthly.
+**_Note:_** Token distributions will not be available until the SAFE Token is made transferable, and the Distribution contracts are deployed. Once SAFE is unpaused, and MerkleDistros deployed, distribution the first distribution will be handled manually.
 
 # Architecture
 
@@ -45,20 +45,7 @@ The task that progressively expands schedule is called `schedule:expand`:
 
 #### `Allocations`
 
-For each VestingSlice, two allocation files will be written one for mainnet and one for gnosis. [Allocations can be viewed here](tooling/_harvest/allocations).
-
-Each allocation file contains a map of addresses to amounts, and it represents the quantities of SAFE allocated to an address in a VestingSlice.
-
-The allocation formula inputs:
-
-- `balancesGNO`: retrieved by querying subgraphs at blockHeight
-- `totalAmountVested`: the total amount of tokens vested out of the VestingPool during a VestingSlice. Retrieved by directly calling the VestingPool contract at the respective block heights.
-
-Formula for amount allocated to an address during a slice:
-
-```
-allocation[address] = balancesGNO[address] / sum(balancesGNO) * totalAmountVested
-```
+Allocations were calculated using, and published in, the [safe-token-distribution-scripts repo](https://github.com/gnosis/safe-token-distribution-scripts/tree/main).
 
 #### `Checkpoints`
 
@@ -75,33 +62,9 @@ For a given blockNumber (or latest):
 
 ### **_What's Running_**
 
-We use scheduled Github Actions to run all the above scripts. [They are defined here](.github/workflows).
+The distribution is triggered by manually triggering the `Distribute` workflow, it is [defined here](.github/workflows).
 
-#### Every Day: Harvest
-
-The Harvest task runs everyday and it combines the tasks:
-
-- `schedule:expand`
-- `allocation:all`
-
-It keeps expanding the schedule by randomly generating missing slices. Calculates allocations.
-
-#### Every Month: Distribute
-
-**_Note_**: The monthly task will skip execution if the distribution contracts are not deployed.
-
-This task:
-
-- Creates a new distribution
-- Updates authorization setup
-
-##### Creating New Distribution
-
-- Creates two new checkpoints (mainnet and gnosis)
-- Creates MerkleTrees out of the new checkpoints
-- Commits the results back to repo
-
-##### Updating Authorization Setup
+#### Distribute
 
 Posts two transactions - mainnet and gnosis - that take care of the following steps:
 
@@ -129,22 +92,10 @@ To deploy the MerkleDistro.sol contract:
 
 **_Note_**: The deploy will fail if SafeToken not yet deloyed and bridged to Gnosis Chain
 
-## Calculating allocations
-
-### All allocations (up to now)
-
-- run `yarn hardhat allocate --lazy false`
-
-### One allocation (one VestingSlice)
-
-- run `yarn hardhat allocate [blockNumber]`
-
 ## Calculating checkpoint
-
-### latest
 
 - run `yarn hardhat checkpoint`
 
-### past
+## Audit
 
-- run `yarn hardhat checkpoint [blockNumber]`
+- run `yarn hardhat audit`
