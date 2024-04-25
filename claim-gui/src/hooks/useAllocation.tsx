@@ -60,16 +60,19 @@ function computeProof(
   distribution: Map,
   address: string,
 ): AllocationEntry | null {
-  if (!distribution[address]) {
+  const addressLowerCase = address.toLowerCase();
+
+  if (!distribution[addressLowerCase]) {
+    console.log(`Address (${addressLowerCase}) not found in distribution`);
     return null;
   }
 
   const leaves = Object.keys(distribution).map((address) => [
     address,
-    BigNumber.from(distribution[address]),
+    BigNumber.from(distribution[addressLowerCase]),
   ]);
 
-  const index = leaves.findIndex(([_address]) => _address === address);
+  const index = leaves.findIndex(([_address]) => _address === addressLowerCase);
   const tree = StandardMerkleTree.of(leaves, ["address", "uint256"]);
   return {
     amount: leaves[index][1] as BigNumber,
