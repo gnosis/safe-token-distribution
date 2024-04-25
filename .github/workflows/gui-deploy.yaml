@@ -6,6 +6,7 @@ on:
     paths:
       - claim-gui/**
       - tooling/_harvest/checkpoints/**
+  workflow_dispatch:
 
 defaults:
   run:
